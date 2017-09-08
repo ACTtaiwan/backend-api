@@ -31,7 +31,8 @@ schema.logonSuccessfulReturns = Joi.object().keys({
         .email()
         .required(),
       name: Joi.string().required(),
-      score: Joi.number()
+      score: Joi.number(),
+      clearedTaskCount: Joi.number()
     })
   })
 })

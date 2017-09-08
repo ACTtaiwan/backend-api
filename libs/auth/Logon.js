@@ -69,7 +69,8 @@ class Logon {
           fbUserId: user.fbUserId,
           email: user.email,
           name: user.name,
-          score: user.score
+          score: user.score,
+          clearedTaskCount: user.clearedTaskCount
         }
       }
     })
