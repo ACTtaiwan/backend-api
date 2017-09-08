@@ -3,6 +3,8 @@ import GlobalSchema from '~/libs/utils/Global.schema'
 
 let schema = {}
 
+// Get User
+
 schema.getUserParams = Joi.object()
   .keys({
     id: Joi.string().guid(),
@@ -12,14 +14,7 @@ schema.getUserParams = Joi.object()
   .or('id', 'fbUserId', 'email')
   .without('id', 'fbUserId', 'email')
 
-schema.getUserResult = Joi.object().keys({
-  id: Joi.string().guid(),
-  fbUserId: Joi.string(),
-  email: Joi.string().email(),
-  score: Joi.number(),
-  clearedTaskCount: Joi.number(),
-  name: Joi.string()
-})
+// Create User
 
 schema.createUserParams = Joi.object().keys({
   fbUserId: Joi.string(),
@@ -27,14 +22,7 @@ schema.createUserParams = Joi.object().keys({
   name: Joi.string()
 })
 
-schema.createUserResult = Joi.object().keys({
-  id: Joi.string().guid(),
-  fbUserId: Joi.string(),
-  email: Joi.string().email(),
-  score: Joi.number(),
-  clearedTaskCount: Joi.number(),
-  name: Joi.string()
-})
+// Update Last Logged On Time
 
 schema.updateLastLoggedOnParams = Joi.object().keys({
   id: Joi.string().guid(),
@@ -45,7 +33,7 @@ schema.updateLastLoggedOnParams = Joi.object().keys({
   name: Joi.string()
 })
 
-schema.updateLastLoggedOnResult = Joi.object().keys({
+schema.userInfo = Joi.object().keys({
   id: Joi.string().guid(),
   fbUserId: Joi.string(),
   email: Joi.string().email(),
@@ -57,11 +45,9 @@ schema.updateLastLoggedOnResult = Joi.object().keys({
 let validate = {}
 
 validate.getUserParams = GlobalSchema.validate.promisify(schema.getUserParams)
-validate.getUserResult = GlobalSchema.validate.promisify(schema.getUserResult)
 validate.createUserParams = GlobalSchema.validate.promisify(schema.createUserParams)
-validate.createUserResult = GlobalSchema.validate.promisify(schema.createUserResult)
 validate.updateLastLoggedOnParams = GlobalSchema.validate.promisify(schema.updateLastLoggedOnParams)
-validate.updateLastLoggedOnResult = GlobalSchema.validate.promisify(schema.updateLastLoggedOnResult)
+validate.userInfo = GlobalSchema.validate.promisify(schema.userInfo)
 
 export default {
   schema,

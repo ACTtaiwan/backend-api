@@ -24,23 +24,20 @@ class Logon {
       .logonParams(params)
       .then(params => this._initAuth(params))
       .then(() => this._logUser(params))
-      .then(response => this._genLogonResult(params, response))
+      .then(user => this._genLogonResult(user))
       .then(result => Promise.resolve(result))
       .catch(error => Promise.reject(error))
   }
 
   _initAuth(params) {
-    AWS.config.credentials = new AWS.CognitoIdentityCredentials(
-      {
-        IdentityPoolId: this._identityPoolId,
-        Logins: {
-          'graph.facebook.com': params.fbAccessToken
-        }
-      },
-      {
-        region: this._awsRegion
-      }
-    )
+    let config = {
+      IdentityPoolId: this._identityPoolId,
+      Logins: { 'graph.facebook.com': params.fbAccessToken }
+    }
+    let clientConfig = { region: this._awsRegion }
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials(config, clientConfig)
+    // when this promise gets fulfilled, the credentials
+    // will be in AWS.config.credentials
     return AWS.config.credentials.getPromise()
   }
 
@@ -48,21 +45,17 @@ class Logon {
     let userDirectory = new UserDirectory()
     return userDirectory
       .getUser({ fbUserId: params.fbUserId })
-      .then(user => {
-        console.log('found user: ', user)
-        return userDirectory.updateLastLoggedOn(user)
-      })
-      .catch(error => {
-        console.log('cannot find user: ', error)
-        return userDirectory.createUser({
+      .then(user => userDirectory.updateLastLoggedOn(user))
+      .catch(error =>
+        userDirectory.createUser({
           fbUserId: params.fbUserId,
           email: params.email,
           name: params.name
         })
-      })
+      )
   }
 
-  _genLogonResult(params, response) {
+  _genLogonResult(user) {
     return JoiSchema.validate.logonSuccessfulReturns({
       status: 'LOGON_SUCCESSFUL',
       data: {
@@ -72,10 +65,11 @@ class Logon {
           sessionToken: AWS.config.credentials.sessionToken
         },
         user: {
-          id: response.id,
-          fbUserId: response.fbUserId,
-          email: response.email,
-          name: response.name
+          id: user.id,
+          fbUserId: user.fbUserId,
+          email: user.email,
+          name: user.name,
+          score: user.score
         }
       }
     })

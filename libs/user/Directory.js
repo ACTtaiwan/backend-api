@@ -10,13 +10,14 @@ class Directory {
     this._getUserById = this._getUserById.bind(this)
     this._getUserbyEmail = this._getUserbyEmail.bind(this)
     this._getUserByFbUserId = this._getUserByFbUserId.bind(this)
-    this._genGetUserResult = this._genGetUserResult.bind(this)
     // create user
     this.createUser = this.createUser.bind(this)
     this._createUserByFbUserId = this._createUserByFbUserId.bind(this)
-    this._genCreateUserResult = this._genCreateUserResult.bind(this)
     // update user
     this.updateLastLoggedOn = this.updateLastLoggedOn.bind(this)
+    this._updateUserAttribute = this._updateUserAttribute.bind(this)
+    // general
+    this._genUserInfo = this._genUserInfo.bind(this)
   }
 
   get _awsRegion() {
@@ -41,7 +42,7 @@ class Directory {
           throw new Error('INVALID_PARAMETERS')
         }
       })
-      .then(user => this._genGetUserResult(user))
+      .then(user => this._genUserInfo(user))
       .then(result => Promise.resolve(result))
       .catch(error => Promise.reject(error))
   }
@@ -60,7 +61,20 @@ class Directory {
       .catch(error => Promise.reject(error))
   }
 
-  _getUserbyEmail({ email }) {}
+  _getUserbyEmail({ email }) {
+    const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
+    const params = {
+      TableName: this._usersTableName,
+      FilterExpression: 'email = :email',
+      ExpressionAttributeValues: { ':email': email }
+    }
+
+    return dynamoDb
+      .scan(params)
+      .promise()
+      .then(data => (data.Items.length ? Promise.resolve(data.Items[0]) : Promise.reject('USER_NOT_FOUND')))
+      .catch(error => Promise.reject(error))
+  }
 
   _getUserByFbUserId({ fbUserId }) {
     const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
@@ -73,27 +87,8 @@ class Directory {
     return dynamoDb
       .scan(params)
       .promise()
-      .then(data => {
-        if (data.Items.length) {
-          console.log('user found: ', JSON.stringify(data.Items[0], null, 2))
-          return Promise.resolve(data.Items[0])
-        }
-        return Promise.reject('USER_NOT_FOUND')
-      })
-      .catch(error => {
-        return Promise.reject(error)
-      })
-  }
-
-  _genGetUserResult(user) {
-    return JoiSchema.validate.getUserResult({
-      id: user.id,
-      fbUserId: user.fbUserId,
-      email: user.email,
-      score: user.score,
-      clearedTaskCount: user.clearedTaskCount,
-      name: user.name
-    })
+      .then(data => (data.Items.length ? Promise.resolve(data.Items[0]) : Promise.reject('USER_NOT_FOUND')))
+      .catch(error => Promise.reject(error))
   }
 
   createUser(params) {
@@ -107,7 +102,7 @@ class Directory {
           throw new Error('INVALID_PARAMETERS')
         }
       })
-      .then(user => this._genCreateUserResult(user))
+      .then(user => this._genUserInfo(user))
       .then(result => Promise.resolve(result))
       .catch(error => Promise.reject(error))
   }
@@ -131,68 +126,57 @@ class Directory {
     return dynamoDb
       .put(params)
       .promise()
-      .then(data => {
-        console.log('add user to db: ', data)
-        return Promise.resolve(params.Item)
-      })
-      .catch(error => {
-        console.log('add user to db error: ', error)
-        return Promise.reject(error)
-      })
-  }
-
-  _genCreateUserResult(user) {
-    return JoiSchema.validate.createUserResult({
-      id: user.id,
-      fbUserId: user.fbUserId,
-      email: user.email,
-      score: user.score,
-      clearedTaskCount: user.clearedTaskCount,
-      name: user.name
-    })
+      .then(data => Promise.resolve(params.Item))
+      .catch(error => Promise.reject(error))
   }
 
   updateLastLoggedOn(params) {
     return JoiSchema.validate
       .updateLastLoggedOnParams(params)
-      .then(params => this._updateLastLoggedOn(params))
-      .then(user => this._genCreateUserResult(user))
+      .then(params =>
+        this._updateUserAttribute({
+          id: params.id,
+          attributeName: 'lastLoggedOnAt',
+          attributeValue: new Date().getTime()
+        })
+      )
+      .then(user => this._genUserInfo(user))
       .then(result => Promise.resolve(result))
       .catch(error => Promise.reject(error))
   }
 
-  _updateLastLoggedOn(user) {
+  _updateUserAttribute({ id, attributeName, attributeValue }) {
     const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
     const params = {
       TableName: this._usersTableName,
-      Key: {
-        id: user.id
-      },
-      UpdateExpression: 'set lastLoggedOnAt = :loggedOnTime',
-      ExpressionAttributeValues: {
-        ':loggedOnTime': new Date().getTime()
-      }
+      Key: { id },
+      UpdateExpression: 'set #attrName = :attrValue',
+      ExpressionAttributeNames: { '#attrName': attributeName },
+      ExpressionAttributeValues: { ':attrValue': attributeValue }
     }
     return dynamoDb
       .update(params)
       .promise()
       .then(data => {
-        console.log('update user logged on time: ', user)
-        return this._getUserById({ id: user.id })
+        console.log(`update ${attributeName} successfully`)
+        return this._getUserById({ id })
       })
       .catch(error => {
-        console.log('update user logged on time error: ', error)
+        console.log(`update ${attributeName} fail`, error)
         return Promise.reject(error)
       })
   }
 
-  _genUpdateLastLoggedOnResult(user) {
-    return JoiSchema.validate.updateLastLoggedOnResult({
+  _genUserInfo(user) {
+    const clearedTaskCount = user.clearedTasks.length
+    const score = user.clearedTasks.length ? user.clearedTasks.reduce((prev, curr) => prev + curr.credit, 0) : 0
+
+    return JoiSchema.validate.userInfo({
       id: user.id,
       fbUserId: user.fbUserId,
       email: user.email,
-      score: user.score,
-      clearedTaskCount: user.clearedTaskCount,
+      score: score,
+      clearedTaskCount: clearedTaskCount,
       name: user.name
     })
   }
