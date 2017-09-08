@@ -46,7 +46,19 @@ class Directory {
       .catch(error => Promise.reject(error))
   }
 
-  _getUserById({ id }) {}
+  _getUserById({ id }) {
+    const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
+    const params = {
+      TableName: this._usersTableName,
+      Key: { id }
+    }
+
+    return dynamoDb
+      .get(params)
+      .promise()
+      .then(data => Promise.resolve(data.Item))
+      .catch(error => Promise.reject(error))
+  }
 
   _getUserbyEmail({ email }) {}
 
@@ -166,7 +178,7 @@ class Directory {
       .promise()
       .then(data => {
         console.log('update user logged on time: ', user)
-        return Promise.resolve(user)
+        return this._getUserById({ id: user.id })
       })
       .catch(error => {
         console.log('update user logged on time error: ', error)
