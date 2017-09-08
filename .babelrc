@@ -1,0 +1,4 @@
+{
+  "plugins": ["transform-runtime", ["babel-plugin-root-import"]],
+  "presets": ["es2015", "stage-3"]
+}
