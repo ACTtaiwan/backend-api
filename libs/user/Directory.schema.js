@@ -36,12 +36,32 @@ schema.createUserResult = Joi.object().keys({
   name: Joi.string()
 })
 
+schema.updateLastLoggedOnParams = Joi.object().keys({
+  id: Joi.string().guid(),
+  fbUserId: Joi.string(),
+  email: Joi.string().email(),
+  score: Joi.number(),
+  clearedTaskCount: Joi.number(),
+  name: Joi.string()
+})
+
+schema.updateLastLoggedOnResult = Joi.object().keys({
+  id: Joi.string().guid(),
+  fbUserId: Joi.string(),
+  email: Joi.string().email(),
+  score: Joi.number(),
+  clearedTaskCount: Joi.number(),
+  name: Joi.string()
+})
+
 let validate = {}
 
 validate.getUserParams = GlobalSchema.validate.promisify(schema.getUserParams)
 validate.getUserResult = GlobalSchema.validate.promisify(schema.getUserResult)
 validate.createUserParams = GlobalSchema.validate.promisify(schema.createUserParams)
 validate.createUserResult = GlobalSchema.validate.promisify(schema.createUserResult)
+validate.updateLastLoggedOnParams = GlobalSchema.validate.promisify(schema.updateLastLoggedOnParams)
+validate.updateLastLoggedOnResult = GlobalSchema.validate.promisify(schema.updateLastLoggedOnResult)
 
 export default {
   schema,

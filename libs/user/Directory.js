@@ -16,6 +16,7 @@ class Directory {
     this._createUserByFbUserId = this._createUserByFbUserId.bind(this)
     this._genCreateUserResult = this._genCreateUserResult.bind(this)
     // update user
+    this.updateLastLoggedOn = this.updateLastLoggedOn.bind(this)
   }
 
   get _awsRegion() {
@@ -130,6 +131,51 @@ class Directory {
 
   _genCreateUserResult(user) {
     return JoiSchema.validate.createUserResult({
+      id: user.id,
+      fbUserId: user.fbUserId,
+      email: user.email,
+      score: user.score,
+      clearedTaskCount: user.clearedTaskCount,
+      name: user.name
+    })
+  }
+
+  updateLastLoggedOn(params) {
+    return JoiSchema.validate
+      .updateLastLoggedOnParams(params)
+      .then(params => this._updateLastLoggedOn(params))
+      .then(user => this._genCreateUserResult(user))
+      .then(result => Promise.resolve(result))
+      .catch(error => Promise.reject(error))
+  }
+
+  _updateLastLoggedOn(user) {
+    const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
+    const params = {
+      TableName: this._usersTableName,
+      Key: {
+        id: user.id
+      },
+      UpdateExpression: 'set lastLoggedOnAt = :loggedOnTime',
+      ExpressionAttributeValues: {
+        ':loggedOnTime': new Date().getTime()
+      }
+    }
+    return dynamoDb
+      .update(params)
+      .promise()
+      .then(data => {
+        console.log('update user logged on time: ', user)
+        return Promise.resolve(user)
+      })
+      .catch(error => {
+        console.log('update user logged on time error: ', error)
+        return Promise.reject(error)
+      })
+  }
+
+  _genUpdateLastLoggedOnResult(user) {
+    return JoiSchema.validate.updateLastLoggedOnResult({
       id: user.id,
       fbUserId: user.fbUserId,
       email: user.email,

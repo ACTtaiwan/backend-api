@@ -48,9 +48,9 @@ class Logon {
     let userDirectory = new UserDirectory()
     return userDirectory
       .getUser({ fbUserId: params.fbUserId })
-      .then(data => {
-        console.log('found user: ', data)
-        return Promise.resolve(data)
+      .then(user => {
+        console.log('found user: ', user)
+        return userDirectory.updateLastLoggedOn(user)
       })
       .catch(error => {
         console.log('cannot find user: ', error)
