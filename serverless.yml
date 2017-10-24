@@ -31,6 +31,8 @@ provider:
   stage: dev
   environment:
     VOLUNTEER_USERS_DYNAMODB_TABLE: "volunteer.users"
+    VOLUNTEER_BILLS_DYNAMODB_TABLE: "volunteer.bills"
+    VOLUNTEER_BILLTYPES_DYNAMODB_TABLE: "volunteer.billTypes"
   region: us-east-1
 
 # you can add statements to the Lambda function's IAM Role here
@@ -82,11 +84,20 @@ functions:
           cors: true
 
   dashboard-userRecord:
-    handler: functions/private/volunteer/dashboard/userRecord.main
+    handler: functions/private/dashboard/userRecord.main
     events:
       - http:
           path: dashboard/userRecord
           method: get
+          cors: true
+          authorizer: aws_iam
+
+  billManagement-bills:
+    handler: functions/private/billManagement/bills.main
+    events:
+      - http:
+          path: billManagement/bills
+          method: post
           cors: true
           authorizer: aws_iam
 
@@ -138,6 +149,32 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.VOLUNTEER_USERS_DYNAMODB_TABLE}
+    VolunteerBillsDynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.VOLUNTEER_BILLS_DYNAMODB_TABLE}
+    VolunteerBillTypesDynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.VOLUNTEER_BILLTYPES_DYNAMODB_TABLE}
 #  Outputs:
 #     NewOutput:
 #       Description: "Description for the output"
