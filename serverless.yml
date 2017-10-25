@@ -33,6 +33,10 @@ provider:
     VOLUNTEER_USERS_DYNAMODB_TABLE: "volunteer.users"
     VOLUNTEER_BILLS_DYNAMODB_TABLE: "volunteer.bills"
     VOLUNTEER_BILLTYPES_DYNAMODB_TABLE: "volunteer.billTypes"
+    VOLUNTEER_VERSIONTYPES_DYNAMODB_TABLE: "volunteer.versionTypes"
+    VOLUNTEER_TASKS_DYNAMODB_TABLE: "volunteer.tasks"
+    VOLUNTEER_SUBMISSIONS_DYNAMODB_TABLE: "volunteer.submissions"
+    VOLUNTEER_BILLDOWNLOADTASK_DYNAMODB_TABLE: "volunteer.billDownloadTask"
   region: us-east-1
 
 # you can add statements to the Lambda function's IAM Role here
@@ -136,6 +140,7 @@ functions:
 # you can add CloudFormation resource templates here
 resources:
   Resources:
+    # USERS
     VolunteerUsersDynamoDbTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -149,6 +154,7 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.VOLUNTEER_USERS_DYNAMODB_TABLE}
+    # BILLS
     VolunteerBillsDynamoDbTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -162,6 +168,7 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.VOLUNTEER_BILLS_DYNAMODB_TABLE}
+   # BILL TYPES
     VolunteerBillTypesDynamoDbTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -175,6 +182,65 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.VOLUNTEER_BILLTYPES_DYNAMODB_TABLE}
+    # VERSION TYPES
+    VolunteerVersionTypesDynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.VOLUNTEER_VERSIONTYPES_DYNAMODB_TABLE}
+    # TASKS
+    VolunteerTasksDynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.VOLUNTEER_TASKS_DYNAMODB_TABLE}
+    # SUBMISSIONS
+    VolunteerSubmissionsDynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.VOLUNTEER_SUBMISSIONS_DYNAMODB_TABLE}
+    # BILL DOWNLOAD TASK
+    VolunteerBillDownloadTaskDynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.VOLUNTEER_BILLDOWNLOADTASK_DYNAMODB_TABLE}
+
+
+
 #  Outputs:
 #     NewOutput:
 #       Description: "Description for the output"

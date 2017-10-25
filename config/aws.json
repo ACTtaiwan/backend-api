@@ -10,6 +10,7 @@
   "dynamodb": {
     "VOLUNTEER_USERS_TABLE_NAME": "volunteer.users",
     "VOLUNTEER_BILLS_TABLE_NAME": "volunteer.bills",
-    "VOLUNTEER_BILLTYPES_TABLE_NAME": "volunteer.billTypes"
+    "VOLUNTEER_BILLTYPES_TABLE_NAME": "volunteer.billTypes",
+    "VOLUNTEER_VERSIONTYPES_TABLE_NAME": "volunteer.versionTypes"
   }
 }
