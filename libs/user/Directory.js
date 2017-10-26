@@ -4,8 +4,8 @@ import JoiSchema from './Directory.schema'
 import AwsConfig from '~/config/aws'
 
 class Directory {
-  constructor() {
-    //get user
+  constructor () {
+    // get user
     this.getUser = this.getUser.bind(this)
     this._getUserById = this._getUserById.bind(this)
     this._getUserbyEmail = this._getUserbyEmail.bind(this)
@@ -20,15 +20,15 @@ class Directory {
     this._genUserInfo = this._genUserInfo.bind(this)
   }
 
-  get _awsRegion() {
+  get _awsRegion () {
     return AwsConfig.metadata.REGION
   }
 
-  get _usersTableName() {
+  get _usersTableName () {
     return AwsConfig.dynamodb.VOLUNTEER_USERS_TABLE_NAME
   }
 
-  getUser(params) {
+  getUser (params) {
     return JoiSchema.validate
       .getUserParams(params)
       .then(({ id, fbUserId, email }) => {
@@ -47,7 +47,7 @@ class Directory {
       .catch(error => Promise.reject(error))
   }
 
-  _getUserById({ id }) {
+  _getUserById ({ id }) {
     const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
     const params = {
       TableName: this._usersTableName,
@@ -61,7 +61,7 @@ class Directory {
       .catch(error => Promise.reject(error))
   }
 
-  _getUserbyEmail({ email }) {
+  _getUserbyEmail ({ email }) {
     const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
     const params = {
       TableName: this._usersTableName,
@@ -72,11 +72,11 @@ class Directory {
     return dynamoDb
       .scan(params)
       .promise()
-      .then(data => (data.Items.length ? Promise.resolve(data.Items[0]) : Promise.reject('USER_NOT_FOUND')))
+      .then(data => (data.Items.length ? Promise.resolve(data.Items[0]) : Promise.reject(new Error('USER_NOT_FOUND'))))
       .catch(error => Promise.reject(error))
   }
 
-  _getUserByFbUserId({ fbUserId }) {
+  _getUserByFbUserId ({ fbUserId }) {
     const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
     const params = {
       TableName: this._usersTableName,
@@ -87,11 +87,11 @@ class Directory {
     return dynamoDb
       .scan(params)
       .promise()
-      .then(data => (data.Items.length ? Promise.resolve(data.Items[0]) : Promise.reject('USER_NOT_FOUND')))
+      .then(data => (data.Items.length ? Promise.resolve(data.Items[0]) : Promise.reject(new Error('USER_NOT_FOUND'))))
       .catch(error => Promise.reject(error))
   }
 
-  createUser(params) {
+  createUser (params) {
     return JoiSchema.validate
       .createUserParams(params)
       .then(({ fbUserId }) => {
@@ -107,7 +107,7 @@ class Directory {
       .catch(error => Promise.reject(error))
   }
 
-  _createUserByFbUserId({ fbUserId, email, name }) {
+  _createUserByFbUserId ({ fbUserId, email, name }) {
     const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
     const params = {
       TableName: this._usersTableName,
@@ -130,7 +130,7 @@ class Directory {
       .catch(error => Promise.reject(error))
   }
 
-  updateLastLoggedOn(params) {
+  updateLastLoggedOn (params) {
     return JoiSchema.validate
       .updateLastLoggedOnParams(params)
       .then(params =>
@@ -145,7 +145,7 @@ class Directory {
       .catch(error => Promise.reject(error))
   }
 
-  _updateUserAttribute({ id, attributeName, attributeValue }) {
+  _updateUserAttribute ({ id, attributeName, attributeValue }) {
     const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
     const params = {
       TableName: this._usersTableName,
@@ -167,7 +167,7 @@ class Directory {
       })
   }
 
-  _genUserInfo(user) {
+  _genUserInfo (user) {
     const clearedTaskCount = user.clearedTasks.length
     const score = user.clearedTasks.length ? user.clearedTasks.reduce((prev, curr) => prev + curr.credit, 0) : 0
 

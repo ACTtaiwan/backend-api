@@ -38,24 +38,22 @@ provider:
     VOLUNTEER_SUBMISSIONS_DYNAMODB_TABLE: "volunteer.submissions"
     VOLUNTEER_BILLDOWNLOADTASK_DYNAMODB_TABLE: "volunteer.billDownloadTask"
   region: us-east-1
-
-# you can add statements to the Lambda function's IAM Role here
-iamRoleStatements:
-  - Effect: "Allow"
-    Action:
-      - dynamodb:DescribeTable
-      - dynamodb:Query
-      - dynamodb:Scan
-      - dynamodb:GetItem
-      - dynamodb:PutItem
-      - dynamodb:UpdateItem
-      - dynamodb:DeleteItem
-    Resource: "arn:aws:dynamodb:us-east-1:*:*"
-  - Effect: "Allow"
-    Action:
-      - s3:PutObject
-      - s3:PutObjectAcl
-    Resource: "arn:aws:s3:::taiwan-related-bills/*"
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:us-east-1:*:*"
+    - Effect: "Allow"
+      Action:
+        - s3:PutObject
+        - s3:PutObjectAcl
+      Resource: "arn:aws:s3:::volunteer.bills/*"
 
 # you can define service wide environment variables here
 #  environment:
@@ -93,6 +91,15 @@ functions:
       - http:
           path: dashboard/userRecord
           method: get
+          cors: true
+          authorizer: aws_iam
+
+  billDownload-uploadUrl:
+    handler: functions/private/billDownload/uploadUrl.main
+    events:
+      - http:
+          path: billDownload/uploadUrl
+          method: post
           cors: true
           authorizer: aws_iam
 

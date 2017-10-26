@@ -4,22 +4,22 @@ import AwsConfig from '~/config/aws'
 import UserDirectory from '~/libs/user/Directory'
 
 class Logon {
-  constructor() {
+  constructor () {
     this.logon = this.logon.bind(this)
     this._initAuth = this._initAuth.bind(this)
     this._logUser = this._logUser.bind(this)
     this._genLogonResult = this._genLogonResult.bind(this)
   }
 
-  get _awsRegion() {
+  get _awsRegion () {
     return AwsConfig.metadata.REGION
   }
 
-  get _identityPoolId() {
+  get _identityPoolId () {
     return AwsConfig.cognito.IDENTITY_POOL_ID
   }
 
-  logon(params) {
+  logon (params) {
     return JoiSchema.validate
       .logonParams(params)
       .then(params => this._initAuth(params))
@@ -29,7 +29,7 @@ class Logon {
       .catch(error => Promise.reject(error))
   }
 
-  _initAuth(params) {
+  _initAuth (params) {
     let config = {
       IdentityPoolId: this._identityPoolId,
       Logins: { 'graph.facebook.com': params.fbAccessToken }
@@ -41,21 +41,22 @@ class Logon {
     return AWS.config.credentials.getPromise()
   }
 
-  _logUser(params) {
+  _logUser (params) {
     let userDirectory = new UserDirectory()
     return userDirectory
       .getUser({ fbUserId: params.fbUserId })
       .then(user => userDirectory.updateLastLoggedOn(user))
-      .catch(error =>
-        userDirectory.createUser({
+      .catch(error => {
+        console.log('the user does not exist: ', error)
+        return userDirectory.createUser({
           fbUserId: params.fbUserId,
           email: params.email,
           name: params.name
         })
-      )
+      })
   }
 
-  _genLogonResult(user) {
+  _genLogonResult (user) {
     return JoiSchema.validate.logonSuccessfulReturns({
       status: 'LOGON_SUCCESSFUL',
       data: {

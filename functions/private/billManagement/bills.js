@@ -2,12 +2,12 @@ import BillDirectory from '~/libs/bill/Directory'
 import Response from '~/libs/utils/Response'
 
 class BillsHandler {
-  constructor() {
+  constructor () {
     this.getPayload = this.getPayload.bind(this)
     this.getBills = this.getBills.bind(this)
   }
 
-  getPayload(options) {
+  getPayload (options) {
     return new Promise((resolve, reject) => {
       try {
         let payload = JSON.parse(options.event.body)
@@ -18,7 +18,7 @@ class BillsHandler {
     })
   }
 
-  getBills(options) {
+  getBills (options) {
     return new Promise((resolve, reject) => {
       let billDirectory = new BillDirectory()
       billDirectory
@@ -29,7 +29,7 @@ class BillsHandler {
   }
 }
 
-export async function main(event, context, callback) {
+export async function main (event, context, callback) {
   let billsHandler = new BillsHandler()
 
   billsHandler

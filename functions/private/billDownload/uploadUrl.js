@@ -1,10 +1,10 @@
-import Logon from '~/libs/auth/Logon'
+import BillDirectory from '~/libs/bill/Directory'
 import Response from '~/libs/utils/Response'
 
-class LogonHandler {
+class BillsHandler {
   constructor () {
     this.getPayload = this.getPayload.bind(this)
-    this.logon = this.logon.bind(this)
+    this.getBillUploadUrl = this.getBillUploadUrl.bind(this)
   }
 
   getPayload (options) {
@@ -18,11 +18,11 @@ class LogonHandler {
     })
   }
 
-  logon (options) {
+  getBillUploadUrl (options) {
     return new Promise((resolve, reject) => {
-      let logon = new Logon()
-      logon
-        .logon(options)
+      let billDirectory = new BillDirectory()
+      billDirectory
+        .getBillUploadUrl(options)
         .then(response => resolve(response))
         .catch(error => reject(error))
     })
@@ -30,17 +30,17 @@ class LogonHandler {
 }
 
 export async function main (event, context, callback) {
-  let logonHandler = new LogonHandler()
+  let billsHandler = new BillsHandler()
 
-  logonHandler
+  billsHandler
     .getPayload({ event })
-    .then(payload => logonHandler.logon(payload))
+    .then(payload => billsHandler.getBillUploadUrl(payload))
     .then(response => {
-      console.log('logon success: ', JSON.stringify(response, null, 2))
+      console.log('get bill upload url success: ', JSON.stringify(response, null, 2))
       Response.success(callback, JSON.stringify(response), true)
     })
     .catch(error => {
-      console.log('logon error: ', JSON.stringify(error, null, 2))
-      Response.error(callback, JSON.stringify('LOGON_FAILED'), true)
+      console.log('get bill upload url error: ', JSON.stringify(error, null, 2))
+      Response.error(callback, JSON.stringify('GET_UPLOAD_URL_FAILED'), true)
     })
 }

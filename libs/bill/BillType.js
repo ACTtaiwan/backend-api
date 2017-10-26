@@ -1,24 +1,24 @@
 import AWS from 'aws-sdk'
-import UUID from 'uuid/v4'
+// import UUID from 'uuid/v4'
 import JoiSchema from './BillType.schema'
 import AwsConfig from '~/config/aws'
 
 class Directory {
-  constructor() {
-    //get bill type
+  constructor () {
+    // get bill type
     this.getType = this.getType.bind(this)
     this._getTypeById = this._getTypeById.bind(this)
   }
 
-  get _awsRegion() {
+  get _awsRegion () {
     return AwsConfig.metadata.REGION
   }
 
-  get _billTypesTableName() {
+  get _billTypesTableName () {
     return AwsConfig.dynamodb.VOLUNTEER_BILLTYPES_TABLE_NAME
   }
 
-  getType(options) {
+  getType (options) {
     return JoiSchema.validate
       .getTypeParams(options)
       .then(({ id }) => {
@@ -32,7 +32,7 @@ class Directory {
       .catch(error => Promise.reject(error))
   }
 
-  _getTypeById({ id }) {
+  _getTypeById ({ id }) {
     const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
     const params = {
       TableName: this._billTypesTableName,
