@@ -37,6 +37,7 @@ provider:
     VOLUNTEER_TASKS_DYNAMODB_TABLE: "volunteer.tasks"
     VOLUNTEER_SUBMISSIONS_DYNAMODB_TABLE: "volunteer.submissions"
     VOLUNTEER_BILLDOWNLOADTASK_DYNAMODB_TABLE: "volunteer.billDownloadTask"
+    VOLUNTEER_BILLS_S3_BUCKET: "volunteer.bills.bucket"
   region: us-east-1
   iamRoleStatements:
     - Effect: "Allow"
@@ -53,7 +54,7 @@ provider:
       Action:
         - s3:PutObject
         - s3:PutObjectAcl
-      Resource: "arn:aws:s3:::volunteer.bills/*"
+      Resource: "arn:aws:s3:::*"
 
 # you can define service wide environment variables here
 #  environment:
@@ -111,6 +112,13 @@ functions:
           method: post
           cors: true
           authorizer: aws_iam
+
+  upload-billsBucket:
+    handler: functions/events/bills/pdfUpload.main
+    events:
+      - s3:
+          bucket: ${self:provider.environment.VOLUNTEER_BILLS_S3_BUCKET}
+          event: s3:ObjectCreated:*
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
@@ -245,8 +253,6 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.VOLUNTEER_BILLDOWNLOADTASK_DYNAMODB_TABLE}
-
-
 
 #  Outputs:
 #     NewOutput:
