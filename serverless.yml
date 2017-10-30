@@ -33,6 +33,7 @@ provider:
     VOLUNTEER_USERS_DYNAMODB_TABLE: "volunteer.users"
     VOLUNTEER_BILLS_DYNAMODB_TABLE: "volunteer.bills"
     VOLUNTEER_BILLTYPES_DYNAMODB_TABLE: "volunteer.billTypes"
+    VOLUNTEER_BILLACTIONS_DYNAMODB_TABLE: "volunteer.billActions"
     VOLUNTEER_VERSIONTYPES_DYNAMODB_TABLE: "volunteer.versionTypes"
     VOLUNTEER_TASKS_DYNAMODB_TABLE: "volunteer.tasks"
     VOLUNTEER_SUBMISSIONS_DYNAMODB_TABLE: "volunteer.submissions"
@@ -113,6 +114,24 @@ functions:
           cors: true
           authorizer: aws_iam
 
+  billManagement-billTypes:
+    handler: functions/private/billManagement/billTypes.main
+    events:
+      - http:
+          path: billManagement/billTypes
+          method: get
+          cors: true
+          authorizer: aws_iam
+  
+  billManagement-billActions:
+    handler: functions/private/billManagement/billActions.main
+    events:
+      - http:
+          path: billManagement/billActions
+          method: get
+          cors: true
+          authorizer: aws_iam
+
   upload-billsBucket:
     handler: functions/events/bills/pdfUpload.main
     events:
@@ -183,7 +202,7 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.VOLUNTEER_BILLS_DYNAMODB_TABLE}
-   # BILL TYPES
+    # BILL TYPES
     VolunteerBillTypesDynamoDbTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -197,6 +216,20 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.VOLUNTEER_BILLTYPES_DYNAMODB_TABLE}
+    # BILL ACTIONS
+    VolunteerBillActionsDynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.VOLUNTEER_BILLACTIONS_DYNAMODB_TABLE}
     # VERSION TYPES
     VolunteerVersionTypesDynamoDbTable:
       Type: AWS::DynamoDB::Table

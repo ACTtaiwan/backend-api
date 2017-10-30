@@ -1,14 +1,14 @@
 import AWS from 'aws-sdk'
 // import UUID from 'uuid/v4'
-import JoiSchema from './BillType.schema'
+import JoiSchema from './BillAction.schema'
 import AwsConfig from '~/config/aws'
 
 class Directory {
   constructor () {
-    // get bill type
-    this.getType = this.getType.bind(this)
-    this._getTypeById = this._getTypeById.bind(this)
-    // get all bill types
+    // get bill action
+    this.getAction = this.getAction.bind(this)
+    this._getActionById = this._getActionById.bind(this)
+    // get all bill actions
     this.getList = this.getList.bind(this)
   }
 
@@ -16,16 +16,16 @@ class Directory {
     return AwsConfig.metadata.REGION
   }
 
-  get _billTypesTableName () {
-    return AwsConfig.dynamodb.VOLUNTEER_BILLTYPES_TABLE_NAME
+  get _billActionsTableName () {
+    return AwsConfig.dynamodb.VOLUNTEER_BILLACTIONS_TABLE_NAME
   }
 
-  getType (options) {
+  getAction (options) {
     return JoiSchema.validate
-      .getTypeParams(options)
+      .getActionParams(options)
       .then(({ id }) => {
         if (id) {
-          return this._getTypeById({ id })
+          return this._getActionById({ id })
         } else {
           throw new Error('INVALID_PARAMETERS')
         }
@@ -34,10 +34,10 @@ class Directory {
       .catch(error => Promise.reject(error))
   }
 
-  _getTypeById ({ id }) {
+  _getActionById ({ id }) {
     const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
     const params = {
-      TableName: this._billTypesTableName,
+      TableName: this._billActionsTableName,
       Key: { id }
     }
 
@@ -51,7 +51,7 @@ class Directory {
   getList (options) {
     const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
     const params = {
-      TableName: this._billTypesTableName
+      TableName: this._billActionsTableName
     }
 
     return dynamoDb
