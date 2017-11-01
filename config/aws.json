@@ -15,6 +15,7 @@
     "VOLUNTEER_BILLTYPES_TABLE_NAME": "volunteer.billTypes",
     "VOLUNTEER_BILLACTIONS_TABLE_NAME": "volunteer.billActions",
     "VOLUNTEER_VERSIONTYPES_TABLE_NAME": "volunteer.versionTypes",
+    "VOLUNTEER_ROLES_TABLE_NAME": "volunteer.roles",
     "VOLUNTEER_TASKS_TABLE_NAME": "volunteer.tasks",
     "VOLUNTEER_SUBMISSIONS_TABLE_NAME": "volunteer.submissions",
     "VOLUNTEER_BILLDOWNLOADTASK_TABLE_NAME": "volunteer.billDownloadTask"
