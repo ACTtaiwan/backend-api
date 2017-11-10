@@ -42,7 +42,7 @@ module.exports = {
   }
 }
 
-function globEntries(globPath) {
+function globEntries (globPath) {
   var files = glob.sync(globPath)
 
   var entries = {}

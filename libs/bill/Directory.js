@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk'
-// import UUID from 'uuid/v4'
+import UUID from 'uuid/v4'
 import AwsConfig from '~/config/aws'
 import JoiSchema from './Directory.schema'
 import BillType from './BillType'
@@ -9,6 +9,9 @@ class Directory {
     // get bills
     this.getBills = this.getBills.bind(this)
     this._getBillList = this._getBillList.bind(this)
+    // create bill
+    this.createBill = this.createBill.bind(this)
+    this._createBill = this._createBill.bind(this)
     // get s3 upload url
     this.getBillUploadUrl = this.getBillUploadUrl.bind(this)
     this._getS3UploadUrl = this._getS3UploadUrl.bind(this)
@@ -43,23 +46,22 @@ class Directory {
   _getBillList (options) {
     // depends on the params provided, return the bill list
     // in, say, different order or with filters.
-    const dynamoDb = new AWS.DynamoDB.DocumentClient({
-      region: this._awsRegion
-    })
-    const params = {
-      TableName: this._billsTableName
-    }
+    const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
+    const params = { TableName: this._billsTableName }
     return dynamoDb
       .scan(params)
       .promise()
       .then(async data => {
         // hydrate bill type
+        console.log('000')
         let billType = new BillType()
         let bills = await Promise.all(
           data.Items.map(async bill => {
+            console.log('111', bill)
             let typeObj = await billType.getType({
               id: bill.billType.id
             })
+            console.log('222', billType)
             return {
               ...bill,
               billType: typeObj
@@ -69,6 +71,38 @@ class Directory {
         return Promise.resolve(bills)
       })
       .catch(error => Promise.reject(error))
+  }
+
+  createBill (options) {
+    return JoiSchema.validate
+      .createBillParams(options)
+      .then(({ bill }) => this._createBill(bill))
+      .then(response => Promise.resolve(response))
+      .catch(error => Promise.reject(error))
+  }
+
+  _createBill (bill) {
+    const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
+    console.log('get bill', bill)
+    const params = {
+      TableName: this._billsTableName,
+      Item: {
+        id: UUID(),
+        ...bill
+      }
+    }
+
+    return dynamoDb
+      .put(params)
+      .promise()
+      .then(data => {
+        console.log('create bill success')
+        return { success: true }
+      })
+      .catch(error => {
+        console.log('create bill fail', error)
+        return { success: false }
+      })
   }
 
   getBillUploadUrl (options) {

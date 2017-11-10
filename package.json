@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "hsuyachieh@gmail.com",
   "license": "ISC",
   "devDependencies": {
     "aws-sdk": "^2.94.0",

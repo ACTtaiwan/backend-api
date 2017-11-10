@@ -39,7 +39,7 @@ provider:
     VOLUNTEER_TASKS_DYNAMODB_TABLE: "volunteer.tasks"
     VOLUNTEER_SUBMISSIONS_DYNAMODB_TABLE: "volunteer.submissions"
     VOLUNTEER_BILLDOWNLOADTASK_DYNAMODB_TABLE: "volunteer.billDownloadTask"
-    VOLUNTEER_BILLS_S3_BUCKET: "volunteer.bills.bucket"
+    VOLUNTEER_BILLS_S3_BUCKET: "volunteer.bills"
   region: us-east-1
   iamRoleStatements:
     - Effect: "Allow"
@@ -111,7 +111,16 @@ functions:
     events:
       - http:
           path: billManagement/bills
+          method: get
+          cors: true
+      - http:
+          path: billManagement/bills
           method: post
+          cors: true
+          authorizer: aws_iam
+      - http:
+          path: billManagement/bills
+          method: put
           cors: true
           authorizer: aws_iam
 

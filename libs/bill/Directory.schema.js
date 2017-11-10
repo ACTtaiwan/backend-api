@@ -9,6 +9,10 @@ schema.getBillsParams = Joi.object().keys({
   id: Joi.string()
 })
 
+schema.createBillParams = Joi.object().keys({
+  bill: Joi.object().required()
+})
+
 schema.getBillUploadUrlParams = Joi.object().keys({
   congress: Joi.number()
     .integer()
@@ -27,6 +31,7 @@ schema.getBillUploadUrlParams = Joi.object().keys({
 let validate = {}
 
 validate.getBillsParams = GlobalSchema.validate.promisify(schema.getBillsParams)
+validate.createBillParams = GlobalSchema.validate.promisify(schema.createBillParams)
 validate.getBillUploadUrlParams = GlobalSchema.validate.promisify(schema.getBillUploadUrlParams)
 
 export default {
