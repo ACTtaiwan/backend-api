@@ -23,7 +23,7 @@ schema.getBillUploadUrlParams = Joi.object().keys({
     .integer()
     .min(1)
     .required(),
-  versionType: Joi.string().required(),
+  version: Joi.object().required(),
   versionDate: Joi.string().required(),
   contentType: Joi.string().required()
 })

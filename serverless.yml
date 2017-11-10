@@ -34,7 +34,7 @@ provider:
     VOLUNTEER_BILLS_DYNAMODB_TABLE: "volunteer.bills"
     VOLUNTEER_BILLTYPES_DYNAMODB_TABLE: "volunteer.billTypes"
     VOLUNTEER_BILLACTIONS_DYNAMODB_TABLE: "volunteer.billActions"
-    VOLUNTEER_VERSIONTYPES_DYNAMODB_TABLE: "volunteer.versionTypes"
+    VOLUNTEER_VERSIONS_DYNAMODB_TABLE: "volunteer.versions"
     VOLUNTEER_ROLES_DYNAMODB_TABLE: "volunteer.roles"
     VOLUNTEER_TASKS_DYNAMODB_TABLE: "volunteer.tasks"
     VOLUNTEER_SUBMISSIONS_DYNAMODB_TABLE: "volunteer.submissions"
@@ -249,8 +249,8 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.VOLUNTEER_BILLACTIONS_DYNAMODB_TABLE}
-    # VERSION TYPES
-    VolunteerVersionTypesDynamoDbTable:
+    # VERSIONS
+    VolunteerVersionsDynamoDbTable:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
@@ -262,7 +262,7 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.VOLUNTEER_VERSIONTYPES_DYNAMODB_TABLE}
+        TableName: ${self:provider.environment.VOLUNTEER_VERSIONS_DYNAMODB_TABLE}
     # CONGRESS MEMBER - ROLES
     VolunteerRolesDynamoDbTable:
       Type: AWS::DynamoDB::Table
