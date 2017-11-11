@@ -113,11 +113,11 @@ class Directory {
       .catch(error => Promise.reject(error))
   }
 
-  _getS3UploadUrl ({ congress, billType, billNumber, version, versionDate, contentType }) {
+  _getS3UploadUrl ({ congress, billType, billNumber, billVersion, versionDate, contentType }) {
     const s3 = new AWS.S3()
     const params = {
       Bucket: this._billsBucketName,
-      Key: `${congress}/${billType}/${billNumber}/${version.code}-${this._formatIsoDate(versionDate)}`,
+      Key: `${congress}/${billType}/${billNumber}/${billVersion.code}-${this._formatIsoDate(versionDate)}`,
       Expires: 3600,
       ContentType: contentType
     }

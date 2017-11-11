@@ -34,7 +34,7 @@ provider:
     VOLUNTEER_BILLS_DYNAMODB_TABLE: "volunteer.bills"
     VOLUNTEER_BILLTYPES_DYNAMODB_TABLE: "volunteer.billTypes"
     VOLUNTEER_BILLACTIONS_DYNAMODB_TABLE: "volunteer.billActions"
-    VOLUNTEER_VERSIONS_DYNAMODB_TABLE: "volunteer.versions"
+    VOLUNTEER_BILLVERSIONS_DYNAMODB_TABLE: "volunteer.billVersions"
     VOLUNTEER_ROLES_DYNAMODB_TABLE: "volunteer.roles"
     VOLUNTEER_TASKS_DYNAMODB_TABLE: "volunteer.tasks"
     VOLUNTEER_SUBMISSIONS_DYNAMODB_TABLE: "volunteer.submissions"
@@ -131,7 +131,6 @@ functions:
           path: billManagement/billTypes
           method: get
           cors: true
-          authorizer: aws_iam
   
   billManagement-billActions:
     handler: functions/private/billManagement/billActions.main
@@ -140,7 +139,14 @@ functions:
           path: billManagement/billActions
           method: get
           cors: true
-          authorizer: aws_iam
+
+  billManagement-billVersions:
+    handler: functions/private/billManagement/billVersions.main
+    events:
+      - http:
+          path: billManagement/billVersions
+          method: get
+          cors: true
   
   billManagement-sponsors:
     handler: functions/private/billManagement/sponsors.main
@@ -262,7 +268,7 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.VOLUNTEER_VERSIONS_DYNAMODB_TABLE}
+        TableName: ${self:provider.environment.VOLUNTEER_BILLVERSIONS_DYNAMODB_TABLE}
     # CONGRESS MEMBER - ROLES
     VolunteerRolesDynamoDbTable:
       Type: AWS::DynamoDB::Table
