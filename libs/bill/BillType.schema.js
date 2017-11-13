@@ -6,7 +6,8 @@ let schema = {}
 // Get Bills
 
 schema.getTypeParams = Joi.object().keys({
-  id: Joi.string()
+  id: Joi.string(),
+  code: Joi.string()
 })
 
 let validate = {}

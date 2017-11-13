@@ -8,6 +8,7 @@ class Directory {
     // get bill action
     this.getVersion = this.getVersion.bind(this)
     this._getVersionById = this._getVersionById.bind(this)
+    this._getVersionByCode = this._getVersionByCode.bind(this)
     // get all bill actions
     this.getList = this.getList.bind(this)
   }
@@ -23,9 +24,11 @@ class Directory {
   getVersion (options) {
     return JoiSchema.validate
       .getVersionParams(options)
-      .then(({ id }) => {
+      .then(({ id, code }) => {
         if (id) {
           return this._getVersionById({ id })
+        } else if (code) {
+          return this._getVersionByCode({ code })
         } else {
           throw new Error('INVALID_PARAMETERS')
         }
@@ -45,6 +48,24 @@ class Directory {
       .get(params)
       .promise()
       .then(data => Promise.resolve(data.Item))
+      .catch(error => Promise.reject(error))
+  }
+
+  _getVersionByCode ({ code }) {
+    const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
+    const params = {
+      TableName: this._billVersionsTableName,
+      FilterExpression: 'code = :code',
+      ExpressionAttributeValues: { ':code': code }
+    }
+
+    return dynamoDb
+      .scan(params)
+      .promise()
+      .then(
+        data =>
+          data.Items.length ? Promise.resolve(data.Items[0]) : Promise.reject(new Error('BILLLVERSION_NOT_FOUND'))
+      )
       .catch(error => Promise.reject(error))
   }
 

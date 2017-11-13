@@ -2,16 +2,22 @@ import AWS from 'aws-sdk'
 import UUID from 'uuid/v4'
 import AwsConfig from '~/config/aws'
 import JoiSchema from './Directory.schema'
-import BillType from './BillType'
+import BillVersion from './BillVersion'
 
 class Directory {
   constructor () {
+    // get bill
+    this._getBillById = this._getBillById.bind(this)
+    this._getBillByQuery = this._getBillByQuery.bind(this)
     // get bills
     this.getBills = this.getBills.bind(this)
     this._getBillList = this._getBillList.bind(this)
     // create bill
     this.createBill = this.createBill.bind(this)
     this._createBill = this._createBill.bind(this)
+    // bill version
+    this.addBillVersion = this.addBillVersion.bind(this)
+    this._addBillVersionInfo = this._addBillVersionInfo.bind(this)
     // get s3 upload url
     this.getBillUploadUrl = this.getBillUploadUrl.bind(this)
     this._getS3UploadUrl = this._getS3UploadUrl.bind(this)
@@ -28,6 +34,36 @@ class Directory {
 
   get _billsBucketName () {
     return AwsConfig.s3.VOLUNTEER_BILLS_BUCKET_NAME
+  }
+
+  _getBillById ({ id }) {
+    const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
+    const params = {
+      TableName: this._billsTableName,
+      Key: { id }
+    }
+
+    return dynamoDb
+      .get(params)
+      .promise()
+      .then(data => Promise.resolve(data.Item))
+      .catch(error => Promise.reject(error))
+  }
+
+  _getBillByQuery (QueryParams) {
+    const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
+    const params = {
+      TableName: this._billsTableName,
+      ...QueryParams
+    }
+    return dynamoDb
+      .scan(params)
+      .promise()
+      .then(data => {
+        console.log('query bill', data)
+        return data.Items.length ? Promise.resolve(data.Items[0]) : Promise.reject(new Error('BILL_NOT_FOUND'))
+      })
+      .catch(error => Promise.reject(error))
   }
 
   getBills (options) {
@@ -51,25 +87,7 @@ class Directory {
     return dynamoDb
       .scan(params)
       .promise()
-      .then(async data => {
-        // hydrate bill type
-        console.log('000')
-        let billType = new BillType()
-        let bills = await Promise.all(
-          data.Items.map(async bill => {
-            console.log('111', bill)
-            let typeObj = await billType.getType({
-              id: bill.billType.id
-            })
-            console.log('222', billType)
-            return {
-              ...bill,
-              billType: typeObj
-            }
-          })
-        )
-        return Promise.resolve(bills)
-      })
+      .then(data => Promise.resolve(data.Items))
       .catch(error => Promise.reject(error))
   }
 
@@ -83,7 +101,6 @@ class Directory {
 
   _createBill (bill) {
     const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
-    console.log('get bill', bill)
     const params = {
       TableName: this._billsTableName,
       Item: {
@@ -95,15 +112,49 @@ class Directory {
     return dynamoDb
       .put(params)
       .promise()
-      .then(data => {
-        console.log('create bill success')
-        return { success: true }
-      })
-      .catch(error => {
-        console.log('create bill fail', error)
-        return { success: false }
-      })
+      .then(data => ({ success: true }))
+      .catch(error => ({ success: false, error }))
   }
+
+  // bill version
+
+  addBillVersion (options) {
+    let billVersion = new BillVersion()
+    return JoiSchema.validate
+      .addBillVersionParams(options)
+      .then(options =>
+        Promise.all([billVersion.getVersion({ code: options.versionCode }), this._getBillById({ id: options.billId })])
+      )
+      .then(([billVersion, bill]) => this._addBillVersionInfo({ ...options, bill, billVersion }))
+      .then(response => Promise.resolve(response))
+      .catch(error => Promise.reject(error))
+  }
+
+  _addBillVersionInfo (options) {
+    let originalVersion = options.bill.versions ? options.bill.versions : []
+    let versions = originalVersion.filter(version => version.id !== options.billVersion.id)
+    versions.push({
+      ...options.billVersion,
+      date: options.versionDate,
+      bucketKey: options.bucketKey
+    })
+
+    const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
+    const params = {
+      TableName: this._billsTableName,
+      Key: { id: options.bill.id },
+      UpdateExpression: 'set #attrName = :attrValue',
+      ExpressionAttributeNames: { '#attrName': 'versions' },
+      ExpressionAttributeValues: { ':attrValue': versions }
+    }
+    return dynamoDb
+      .update(params)
+      .promise()
+      .then(data => this._getBillById({ id: options.bill.id }))
+      .catch(error => Promise.reject(error))
+  }
+
+  // get s3 upload url
 
   getBillUploadUrl (options) {
     return JoiSchema.validate
@@ -113,11 +164,11 @@ class Directory {
       .catch(error => Promise.reject(error))
   }
 
-  _getS3UploadUrl ({ congress, billType, billNumber, billVersion, versionDate, contentType }) {
+  _getS3UploadUrl ({ congress, billId, billType, billNumber, billVersion, versionDate, contentType }) {
     const s3 = new AWS.S3()
     const params = {
       Bucket: this._billsBucketName,
-      Key: `${congress}/${billType}/${billNumber}/${billVersion.code}-${this._formatIsoDate(versionDate)}`,
+      Key: `${congress}/${billType}/${billNumber}/${billId}/${billVersion.code}-${this._formatIsoDate(versionDate)}`,
       Expires: 3600,
       ContentType: contentType
     }
