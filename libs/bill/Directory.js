@@ -170,6 +170,7 @@ class Directory {
       Bucket: this._billsBucketName,
       Key: `${congress}/${billType}/${billNumber}/${billId}/${billVersion.code}-${this._formatIsoDate(versionDate)}`,
       Expires: 3600,
+      ACL: 'public-read',
       ContentType: contentType
     }
 
