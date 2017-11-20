@@ -22,7 +22,7 @@ class BillsHandler {
     return new Promise((resolve, reject) => {
       let billDirectory = new BillDirectory()
       billDirectory
-        .getBillUploadUrl(options)
+        .getBillDocUploadUrl(options)
         .then(response => resolve(response))
         .catch(error => reject(error))
     })

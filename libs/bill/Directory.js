@@ -18,9 +18,9 @@ class Directory {
     // bill version
     this.addBillVersion = this.addBillVersion.bind(this)
     this._addBillVersionInfo = this._addBillVersionInfo.bind(this)
-    this._deleteVersionDoc = this._deleteVersionDoc.bind(this)
-    // get s3 upload url
-    this.getBillUploadUrl = this.getBillUploadUrl.bind(this)
+    this._deleteBillDoc = this._deleteBillDoc.bind(this)
+    // get bill doc upload url
+    this.getBillDocUploadUrl = this.getBillDocUploadUrl.bind(this)
     this._getS3UploadUrl = this._getS3UploadUrl.bind(this)
     this._formatIsoDate = this._formatIsoDate.bind(this)
   }
@@ -148,7 +148,7 @@ class Directory {
           if (doc.contentType === options.contentType) {
             console.log('document type has already existed!')
             documentHasExisted = true
-            that._deleteVersionDoc({ bucketKey: doc.bucketKey })
+            that._deleteBillDoc({ bucketKey: doc.bucketKey })
             doc.bucketKey = options.bucketKey
           }
           return doc
@@ -195,7 +195,7 @@ class Directory {
       .catch(error => Promise.reject(error))
   }
 
-  _deleteVersionDoc ({ bucketKey }) {
+  _deleteBillDoc ({ bucketKey }) {
     const s3 = new AWS.S3()
     const params = {
       Bucket: this._billsBucketName,
@@ -215,11 +215,11 @@ class Directory {
       })
   }
 
-  // get s3 upload url
+  // get bill doc upload url
 
-  getBillUploadUrl (options) {
+  getBillDocUploadUrl (options) {
     return JoiSchema.validate
-      .getBillUploadUrlParams(options)
+      .getBillDocUploadUrlParams(options)
       .then(options => this._getS3UploadUrl(options))
       .then(url => Promise.resolve({ url }))
       .catch(error => Promise.reject(error))
