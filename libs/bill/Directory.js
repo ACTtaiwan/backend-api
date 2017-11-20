@@ -18,6 +18,7 @@ class Directory {
     // bill version
     this.addBillVersion = this.addBillVersion.bind(this)
     this._addBillVersionInfo = this._addBillVersionInfo.bind(this)
+    this._deleteVersionDoc = this._deleteVersionDoc.bind(this)
     // get s3 upload url
     this.getBillUploadUrl = this.getBillUploadUrl.bind(this)
     this._getS3UploadUrl = this._getS3UploadUrl.bind(this)
@@ -131,13 +132,53 @@ class Directory {
   }
 
   _addBillVersionInfo (options) {
-    let originalVersion = options.bill.versions ? options.bill.versions : []
-    let versions = originalVersion.filter(version => version.id !== options.billVersion.id)
-    versions.push({
-      ...options.billVersion,
-      date: options.versionDate,
-      bucketKey: options.bucketKey
+    let that = this
+    let originalVersions = options.bill.versions ? options.bill.versions : []
+    let versionHasExisted = false
+
+    let versions = originalVersions.map(version => {
+      if (version.id === options.billVersion.id) {
+        console.log('version has already existed!')
+        versionHasExisted = true
+
+        let originalDocuments = version.documents ? version.documents : []
+        let documentHasExisted = false
+
+        let documents = originalDocuments.map(doc => {
+          if (doc.contentType === options.contentType) {
+            console.log('document type has already existed!')
+            documentHasExisted = true
+            that._deleteVersionDoc({ bucketKey: doc.bucketKey })
+            doc.bucketKey = options.bucketKey
+          }
+          return doc
+        })
+
+        if (!documentHasExisted) {
+          documents.push({
+            contentType: options.contentType,
+            bucketKey: options.bucketKey
+          })
+        }
+
+        version.documents = documents
+      }
+
+      return version
     })
+
+    if (!versionHasExisted) {
+      versions.push({
+        ...options.billVersion,
+        date: options.versionDate,
+        documents: [
+          {
+            contentType: options.contentType,
+            bucketKey: options.bucketKey
+          }
+        ]
+      })
+    }
 
     const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
     const params = {
@@ -154,6 +195,26 @@ class Directory {
       .catch(error => Promise.reject(error))
   }
 
+  _deleteVersionDoc ({ bucketKey }) {
+    const s3 = new AWS.S3()
+    const params = {
+      Bucket: this._billsBucketName,
+      Key: bucketKey
+    }
+
+    return s3
+      .deleteObject(params)
+      .promise()
+      .then(data => {
+        console.log('delete version doc success')
+        return Promise.resolve(data)
+      })
+      .catch(error => {
+        console.log('delete version doc failed')
+        return Promise.reject(error)
+      })
+  }
+
   // get s3 upload url
 
   getBillUploadUrl (options) {
@@ -166,9 +227,12 @@ class Directory {
 
   _getS3UploadUrl ({ congress, billId, billType, billNumber, billVersion, versionDate, contentType }) {
     const s3 = new AWS.S3()
+    const type = contentType.split('/')[1]
     const params = {
       Bucket: this._billsBucketName,
-      Key: `${congress}/${billType}/${billNumber}/${billId}/${billVersion.code}-${this._formatIsoDate(versionDate)}`,
+      Key: `${congress}/${billType}/${billNumber}/${billId}/${billVersion.code}-${this._formatIsoDate(
+        versionDate
+      )}-${type}`,
       Expires: 3600,
       ACL: 'public-read',
       ContentType: contentType

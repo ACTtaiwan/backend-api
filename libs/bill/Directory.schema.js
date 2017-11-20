@@ -33,6 +33,7 @@ schema.getBillUploadUrlParams = Joi.object().keys({
 
 schema.addBillVersionParams = Joi.object().keys({
   bucketKey: Joi.string().required(),
+  contentType: Joi.string().required(),
   congress: Joi.number()
     .integer()
     .min(1)
