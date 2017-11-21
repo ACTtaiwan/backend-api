@@ -206,11 +206,11 @@ class Directory {
       .deleteObject(params)
       .promise()
       .then(data => {
-        console.log('delete version doc success')
+        console.log('delete version doc success', data)
         return Promise.resolve(data)
       })
       .catch(error => {
-        console.log('delete version doc failed')
+        console.log('delete version doc failed', error)
         return Promise.reject(error)
       })
   }
