@@ -3,7 +3,9 @@ import GlobalSchema from '~/libs/utils/Global.schema'
 
 let schema = {}
 
-// Get Bills
+schema.getBillParams = Joi.object().keys({
+  id: Joi.string().required()
+})
 
 schema.getBillsParams = Joi.object().keys({
   id: Joi.string()
@@ -52,6 +54,7 @@ schema.addBillVersionParams = Joi.object().keys({
 
 let validate = {}
 
+validate.getBillParams = GlobalSchema.validate.promisify(schema.getBillParams)
 validate.getBillsParams = GlobalSchema.validate.promisify(schema.getBillsParams)
 validate.createBillParams = GlobalSchema.validate.promisify(schema.createBillParams)
 validate.getBillDocUploadUrlParams = GlobalSchema.validate.promisify(schema.getBillDocUploadUrlParams)

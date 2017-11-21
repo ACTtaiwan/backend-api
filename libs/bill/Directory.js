@@ -7,6 +7,7 @@ import BillVersion from './BillVersion'
 class Directory {
   constructor () {
     // get bill
+    this.getBill = this.getBill.bind(this)
     this._getBillById = this._getBillById.bind(this)
     this._getBillByQuery = this._getBillByQuery.bind(this)
     // get bills
@@ -35,6 +36,20 @@ class Directory {
 
   get _billsBucketName () {
     return AwsConfig.s3.VOLUNTEER_BILLS_BUCKET_NAME
+  }
+
+  getBill (options) {
+    return JoiSchema.validate
+      .getBillParams(options)
+      .then(({ id }) => {
+        if (id) {
+          return this._getBillById({ id })
+        } else {
+          throw new Error('GET_BILL_INVALID_PARAMETERS')
+        }
+      })
+      .then(result => Promise.resolve(result))
+      .catch(error => Promise.reject(error))
   }
 
   _getBillById ({ id }) {

@@ -115,6 +115,14 @@ functions:
           method: get
           cors: true
       - http:
+          path: billManagement/bills/{id}
+          method: get
+          request:
+            parameters:
+              paths:
+                id: true
+          cors: true
+      - http:
           path: billManagement/bills
           method: post
           cors: true

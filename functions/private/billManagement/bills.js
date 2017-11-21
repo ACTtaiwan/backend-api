@@ -5,11 +5,13 @@ class BillsHandler {
   constructor () {
     this._billDirectory = new BillDirectory()
     this.getPayload = this.getPayload.bind(this)
+    this.getBill = this.getBill.bind(this)
     this.getBills = this.getBills.bind(this)
     this.createBill = this.createBill.bind(this)
   }
 
   getPayload (options) {
+    console.log('ooooo', JSON.stringify(options, null, 2))
     return new Promise((resolve, reject) => {
       try {
         let payload = JSON.parse(options.event.body)
@@ -17,6 +19,14 @@ class BillsHandler {
       } catch (error) {
         reject(error)
       }
+    })
+  }
+  getBill (options) {
+    return new Promise((resolve, reject) => {
+      this._billDirectory
+        .getBill(options)
+        .then(response => resolve(response))
+        .catch(error => reject(error))
     })
   }
 
@@ -45,13 +55,18 @@ export async function main (event, context, callback) {
   billsHandler
     .getPayload({ event })
     .then(payload => {
-      const action = {
-        POST: 'getBills',
-        GET: 'getBills',
-        PUT: 'createBill'
-      }[event.httpMethod]
-
-      return billsHandler[action](payload)
+      if (event.httpMethod === 'PUT') {
+        return billsHandler.createBill(payload)
+      }
+      if (event.httpMethod === 'GET' && !event.pathParameters) {
+        return billsHandler.getBills(payload)
+      }
+      if (event.httpMethod === 'GET' && event.pathParameters) {
+        return billsHandler.getBill({ id: event.pathParameters.id })
+      }
+      if (event.httpMethod === 'POST') {
+        return billsHandler.getBills(payload)
+      }
     })
     .then(response => {
       console.log('get bills success: ', JSON.stringify(response, null, 2))
