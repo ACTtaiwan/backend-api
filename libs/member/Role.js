@@ -4,7 +4,7 @@ import JoiSchema from './Role.schema'
 import AwsConfig from '~/config/aws'
 
 class Directory {
-  constructor() {
+  constructor () {
     // get a specific role
     this.getRole = this.getRole.bind(this)
     this._getRoleById = this._getRoleById.bind(this)
@@ -13,15 +13,15 @@ class Directory {
     this._getRoleList = this._getRoleList.bind(this)
   }
 
-  get _awsRegion() {
+  get _awsRegion () {
     return AwsConfig.metadata.REGION
   }
 
-  get _rolesTableName() {
+  get _rolesTableName () {
     return AwsConfig.dynamodb.VOLUNTEER_ROLES_TABLE_NAME
   }
 
-  getRole(options) {
+  getRole (options) {
     return JoiSchema.validate
       .getRoleParams(options)
       .then(({ id }) => {
@@ -35,7 +35,7 @@ class Directory {
       .catch(error => Promise.reject(error))
   }
 
-  _getRoleById({ id }) {
+  _getRoleById ({ id }) {
     const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
     const params = {
       TableName: this._rolesTableName,
@@ -49,7 +49,7 @@ class Directory {
       .catch(error => Promise.reject(error))
   }
 
-  getRoles(options) {
+  getRoles (options) {
     return JoiSchema.validate
       .getRolesParams(options)
       .then(({ query }) => {
@@ -64,7 +64,7 @@ class Directory {
       .catch(error => Promise.reject(error))
   }
 
-  _getRoleList(options) {
+  _getRoleList (options) {
     const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
     const params = { TableName: this._rolesTableName }
     return dynamoDb
@@ -74,7 +74,7 @@ class Directory {
       .catch(error => Promise.reject(error))
   }
 
-  _genNameQueryParam(name) {
+  _genNameQueryParam (name) {
     // return {
     //   QueryFilters: {
     //     'person.firstname': {
@@ -99,7 +99,7 @@ class Directory {
     }
   }
 
-  _getRolesByQuery(QueryParams) {
+  _getRolesByQuery (QueryParams) {
     const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
     const params = {
       TableName: this._rolesTableName,

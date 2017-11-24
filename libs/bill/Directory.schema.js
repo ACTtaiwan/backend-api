@@ -59,6 +59,22 @@ schema.updateCosponsorsParams = Joi.object().keys({
   cosponsors: Joi.array().items(Joi.string())
 })
 
+schema.addCategoryParams = Joi.object().keys({
+  billId: Joi.string()
+    .guid()
+    .required(),
+  category: Joi.object().required()
+})
+
+schema.removeCategoryParams = Joi.object().keys({
+  billId: Joi.string()
+    .guid()
+    .required(),
+  categoryId: Joi.string()
+    .guid()
+    .required()
+})
+
 let validate = {}
 
 validate.getBillParams = GlobalSchema.validate.promisify(schema.getBillParams)
@@ -67,6 +83,8 @@ validate.createBillParams = GlobalSchema.validate.promisify(schema.createBillPar
 validate.getBillDocUploadUrlParams = GlobalSchema.validate.promisify(schema.getBillDocUploadUrlParams)
 validate.addBillVersionParams = GlobalSchema.validate.promisify(schema.addBillVersionParams)
 validate.updateCosponsorsParams = GlobalSchema.validate.promisify(schema.updateCosponsorsParams)
+validate.addCategoryParams = GlobalSchema.validate.promisify(schema.addCategoryParams)
+validate.removeCategoryParams = GlobalSchema.validate.promisify(schema.removeCategoryParams)
 
 export default {
   schema,

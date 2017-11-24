@@ -27,6 +27,13 @@ class Directory {
     this._formatIsoDate = this._formatIsoDate.bind(this)
     // update cosponsors
     this.updateCosponsors = this.updateCosponsors.bind(this)
+    this._updateCosponsors = this._updateCosponsors.bind(this)
+    // add category
+    this.addCategory = this.addCategory.bind(this)
+    this._addCategory = this._addCategory.bind(this)
+    // remove category
+    this.removeCategory = this.removeCategory.bind(this)
+    this._removeCategory = this._removeCategory.bind(this)
   }
 
   get _awsRegion () {
@@ -277,6 +284,8 @@ class Directory {
     return `${y}${m}${d}`
   }
 
+  // update cosponsors
+
   updateCosponsors (options) {
     let role = new Role()
     return JoiSchema.validate
@@ -306,6 +315,68 @@ class Directory {
       .update(params)
       .promise()
       .then(data => this._getBillById({ id: billId }))
+      .catch(error => Promise.reject(error))
+  }
+
+  // add category
+
+  addCategory (options) {
+    return JoiSchema.validate
+      .addCategoryParams(options)
+      .then(options => this._getBillById({ id: options.billId }))
+      .then(bill => this._addCategory({ ...options, bill }))
+      .then(data => Promise.resolve(data))
+      .catch(error => Promise.reject(error))
+  }
+
+  _addCategory (options) {
+    let originalCategories = options.bill.categories ? options.bill.categories : []
+    let categories = originalCategories.filter(category => category.id !== options.category.id)
+    categories.push(options.category)
+
+    const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
+    const params = {
+      TableName: this._billsTableName,
+      Key: { id: options.billId },
+      UpdateExpression: 'set #attrName = :attrValue',
+      ExpressionAttributeNames: { '#attrName': 'categories' },
+      ExpressionAttributeValues: { ':attrValue': categories }
+    }
+    return dynamoDb
+      .update(params)
+      .promise()
+      .then(data => this._getBillById({ id: options.billId }))
+      .catch(error => Promise.reject(error))
+  }
+
+  // remove category
+
+  removeCategory (options) {
+    console.log('EEEEE', options)
+    return JoiSchema.validate
+      .removeCategoryParams(options)
+      .then(options => this._getBillById({ id: options.billId }))
+      .then(bill => this._removeCategory({ ...options, bill }))
+      .then(data => Promise.resolve(data))
+      .catch(error => Promise.reject(error))
+  }
+
+  _removeCategory (options) {
+    let originalCategories = options.bill.categories ? options.bill.categories : []
+    let categories = originalCategories.filter(category => category.id !== options.categoryId)
+
+    const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
+    const params = {
+      TableName: this._billsTableName,
+      Key: { id: options.billId },
+      UpdateExpression: 'set #attrName = :attrValue',
+      ExpressionAttributeNames: { '#attrName': 'categories' },
+      ExpressionAttributeValues: { ':attrValue': categories }
+    }
+    return dynamoDb
+      .update(params)
+      .promise()
+      .then(data => this._getBillById({ id: options.billId }))
       .catch(error => Promise.reject(error))
   }
 }

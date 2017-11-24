@@ -108,7 +108,7 @@ functions:
           cors: true
           authorizer: aws_iam
 
-  billManagement-bills:
+  billMgmt-bills:
     handler: functions/private/billManagement/bills.main
     events:
       - http:
@@ -134,7 +134,7 @@ functions:
           cors: true
           authorizer: aws_iam
 
-  billManagement-billTypes:
+  billMgmt-billTypes:
     handler: functions/private/billManagement/billTypes.main
     events:
       - http:
@@ -142,7 +142,7 @@ functions:
           method: get
           cors: true
   
-  billManagement-billActions:
+  billMgmt-billActions:
     handler: functions/private/billManagement/billActions.main
     events:
       - http:
@@ -150,7 +150,7 @@ functions:
           method: get
           cors: true
 
-  billManagement-billVersions:
+  billMgmt-billVersions:
     handler: functions/private/billManagement/billVersions.main
     events:
       - http:
@@ -158,7 +158,7 @@ functions:
           method: get
           cors: true
 
-  billManagement-billCategories:
+  billMgmt-billCategories:
     handler: functions/private/billManagement/billCategories.main
     events:
       - http:
@@ -166,7 +166,7 @@ functions:
           method: get
           cors: true
   
-  billManagement-sponsors:
+  billMgmt-sponsors:
     handler: functions/private/billManagement/sponsors.main
     events:
       - http:
@@ -186,12 +186,30 @@ functions:
           method: post
           cors: true
 
-  billManagement-cosponsors:
+  billMgmt-cosponsors:
     handler: functions/private/billManagement/cosponsors.main
     events:
       - http:
           path: billManagement/cosponsors
           method: post
+          cors: true
+          authorizer: aws_iam
+
+  billMgmt-addBillCategory:
+    handler: functions/private/billManagement/addBillCategory.main
+    events:
+      - http:
+          path: billManagement/addBillCategory
+          method: put
+          cors: true
+          authorizer: aws_iam
+  
+  billMgmt-removeBillCategory:
+    handler: functions/private/billManagement/removeBillCategory.main
+    events:
+      - http:
+          path: billManagement/removeBillCategory
+          method: delete
           cors: true
           authorizer: aws_iam
 

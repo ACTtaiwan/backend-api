@@ -1,10 +1,10 @@
-import BillAction from '~/libs/bill/BillAction'
+import BillDirectory from '~/libs/bill/Directory'
 import Response from '~/libs/utils/Response'
 
-class BillActionsHandler {
+class AddBillCategoryHandler {
   constructor () {
     this.getPayload = this.getPayload.bind(this)
-    this.getBillActions = this.getBillActions.bind(this)
+    this.addBillCategory = this.addBillCategory.bind(this)
   }
 
   getPayload (options) {
@@ -18,11 +18,11 @@ class BillActionsHandler {
     })
   }
 
-  getBillActions (options) {
+  addBillCategory (options) {
     return new Promise((resolve, reject) => {
-      let billAction = new BillAction()
-      billAction
-        .getList(options)
+      let billDirectory = new BillDirectory()
+      billDirectory
+        .addCategory(options)
         .then(response => resolve(response))
         .catch(error => reject(error))
     })
@@ -30,17 +30,17 @@ class BillActionsHandler {
 }
 
 export async function main (event, context, callback) {
-  let billActionsHandler = new BillActionsHandler()
+  let addBillCategoryHandler = new AddBillCategoryHandler()
 
-  billActionsHandler
+  addBillCategoryHandler
     .getPayload({ event })
-    .then(payload => billActionsHandler.getBillActions(payload))
+    .then(payload => addBillCategoryHandler.addBillCategory(payload))
     .then(response => {
-      console.log('get bill actions success: ', JSON.stringify(response, null, 2))
+      console.log('add bill category success: ', JSON.stringify(response, null, 2))
       Response.success(callback, JSON.stringify(response), true)
     })
     .catch(error => {
-      console.log('get bill actions error: ', JSON.stringify(error, null, 2))
-      Response.error(callback, JSON.stringify('GET_BILL_ACTIONS_FAILED'), true)
+      console.log('add bill category error: ', JSON.stringify(error, null, 2))
+      Response.error(callback, JSON.stringify('ADD_BILL_CATEGORY_FAILED'), true)
     })
 }
