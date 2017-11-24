@@ -3,6 +3,7 @@ import UUID from 'uuid/v4'
 import AwsConfig from '~/config/aws'
 import JoiSchema from './Directory.schema'
 import BillVersion from './BillVersion'
+import Role from '../member/Role'
 
 class Directory {
   constructor () {
@@ -24,6 +25,8 @@ class Directory {
     this.getBillDocUploadUrl = this.getBillDocUploadUrl.bind(this)
     this._getS3UploadUrl = this._getS3UploadUrl.bind(this)
     this._formatIsoDate = this._formatIsoDate.bind(this)
+    // update cosponsors
+    this.updateCosponsors = this.updateCosponsors.bind(this)
   }
 
   get _awsRegion () {
@@ -245,9 +248,9 @@ class Directory {
     const type = contentType.split('/')[1]
     const params = {
       Bucket: this._billsBucketName,
-      Key: `${congress}/${billType}/${billNumber}/${billId}/${billVersion.code}-${this._formatIsoDate(
-        versionDate
-      )}-${type}`,
+      Key: `${congress}/${billType}/${billNumber}/${billId}/${billVersion.code}-${this._formatIsoDate(versionDate)}-${
+        type
+      }`,
       Expires: 3600,
       ACL: 'public-read',
       ContentType: contentType
@@ -272,6 +275,38 @@ class Directory {
     let d = date.getDate()
     d = d < 10 ? '0' + d : d
     return `${y}${m}${d}`
+  }
+
+  updateCosponsors (options) {
+    let role = new Role()
+    return JoiSchema.validate
+      .updateCosponsorsParams(options)
+      .then(options => Promise.all(options.cosponsors.map(id => role.getRole({ id }))))
+      .then(cosponsors => {
+        console.log('FFFF', JSON.stringify(cosponsors, null, 2))
+        // cosponsors = cosponsors.map(cosponsor => ({ cosponsorDate: '', cosopnsorRole: cosponsor }))
+        // console.log('FFFF', JSON.stringify(cosponsors, null, 2))
+        // console.log('FFFF', JSON.stringify(options.billId, null, 2))
+        return this._updateCosponsors({ billId: options.billId, cosponsors })
+      })
+      .then(data => Promise.resolve(data))
+      .catch(error => Promise.reject(error))
+  }
+
+  _updateCosponsors ({ billId, cosponsors }) {
+    const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
+    const params = {
+      TableName: this._billsTableName,
+      Key: { id: billId },
+      UpdateExpression: 'set #attrName = :attrValue',
+      ExpressionAttributeNames: { '#attrName': 'cosponsors' },
+      ExpressionAttributeValues: { ':attrValue': cosponsors }
+    }
+    return dynamoDb
+      .update(params)
+      .promise()
+      .then(data => this._getBillById({ id: billId }))
+      .catch(error => Promise.reject(error))
   }
 }
 

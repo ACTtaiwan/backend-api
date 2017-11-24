@@ -175,6 +175,15 @@ functions:
           cors: true
           authorizer: aws_iam
 
+  billManagement-cosponsors:
+    handler: functions/private/billManagement/cosponsors.main
+    events:
+      - http:
+          path: billManagement/cosponsors
+          method: post
+          cors: true
+          authorizer: aws_iam
+
   upload-billsBucket:
     handler: functions/events/bills/pdfUpload.main
     events:

@@ -52,6 +52,13 @@ schema.addBillVersionParams = Joi.object().keys({
   versionDate: Joi.string().required()
 })
 
+schema.updateCosponsorsParams = Joi.object().keys({
+  billId: Joi.string()
+    .guid()
+    .required(),
+  cosponsors: Joi.array().items(Joi.string())
+})
+
 let validate = {}
 
 validate.getBillParams = GlobalSchema.validate.promisify(schema.getBillParams)
@@ -59,6 +66,7 @@ validate.getBillsParams = GlobalSchema.validate.promisify(schema.getBillsParams)
 validate.createBillParams = GlobalSchema.validate.promisify(schema.createBillParams)
 validate.getBillDocUploadUrlParams = GlobalSchema.validate.promisify(schema.getBillDocUploadUrlParams)
 validate.addBillVersionParams = GlobalSchema.validate.promisify(schema.addBillVersionParams)
+validate.updateCosponsorsParams = GlobalSchema.validate.promisify(schema.updateCosponsorsParams)
 
 export default {
   schema,
