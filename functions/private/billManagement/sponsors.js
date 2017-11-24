@@ -4,21 +4,32 @@ import Response from '~/libs/utils/Response'
 class SponsorsHandler {
   constructor () {
     this.getPayload = this.getPayload.bind(this)
-    this.getSponsors = this.getSponsors.bind(this)
+    this.getRoles = this.getRoles.bind(this)
+    this.getRole = this.getRole.bind(this)
   }
 
   getPayload (options) {
     return new Promise((resolve, reject) => {
       try {
         let payload = JSON.parse(options.event.body)
-        resolve(payload)
+        resolve(payload || {})
       } catch (error) {
         reject(error)
       }
     })
   }
 
-  getSponsors (options) {
+  getRole (options) {
+    return new Promise((resolve, reject) => {
+      let role = new Role()
+      role
+        .getRole(options)
+        .then(response => resolve(response))
+        .catch(error => reject(error))
+    })
+  }
+
+  getRoles (options) {
     return new Promise((resolve, reject) => {
       let role = new Role()
       role
@@ -34,7 +45,17 @@ export async function main (event, context, callback) {
 
   sponsorsHandler
     .getPayload({ event })
-    .then(payload => sponsorsHandler.getSponsors(payload))
+    .then(payload => {
+      if (event.httpMethod === 'GET' && !event.pathParameters) {
+        return sponsorsHandler.getRoles(payload)
+      }
+      if (event.httpMethod === 'GET' && event.pathParameters) {
+        return sponsorsHandler.getRole({ id: event.pathParameters.id })
+      }
+      if (event.httpMethod === 'POST') {
+        return sponsorsHandler.getRoles(payload)
+      }
+    })
     .then(response => {
       console.log('get sponsors success: ', JSON.stringify(response, null, 2))
       Response.success(callback, JSON.stringify(response), true)

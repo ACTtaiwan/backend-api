@@ -4,23 +4,24 @@ import JoiSchema from './Role.schema'
 import AwsConfig from '~/config/aws'
 
 class Directory {
-  constructor () {
+  constructor() {
     // get a specific role
     this.getRole = this.getRole.bind(this)
     this._getRoleById = this._getRoleById.bind(this)
     // get a list of roles
     this.getRoles = this.getRoles.bind(this)
+    this._getRoleList = this._getRoleList.bind(this)
   }
 
-  get _awsRegion () {
+  get _awsRegion() {
     return AwsConfig.metadata.REGION
   }
 
-  get _rolesTableName () {
+  get _rolesTableName() {
     return AwsConfig.dynamodb.VOLUNTEER_ROLES_TABLE_NAME
   }
 
-  getRole (options) {
+  getRole(options) {
     return JoiSchema.validate
       .getRoleParams(options)
       .then(({ id }) => {
@@ -34,7 +35,7 @@ class Directory {
       .catch(error => Promise.reject(error))
   }
 
-  _getRoleById ({ id }) {
+  _getRoleById({ id }) {
     const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
     const params = {
       TableName: this._rolesTableName,
@@ -48,22 +49,32 @@ class Directory {
       .catch(error => Promise.reject(error))
   }
 
-  getRoles (options) {
+  getRoles(options) {
     return JoiSchema.validate
       .getRolesParams(options)
       .then(({ query }) => {
-        if (query.name) {
+        if (query && query.name) {
           const nameQueryParam = this._genNameQueryParam(query.name)
           return this._getRolesByQuery(nameQueryParam)
         } else {
-          throw new Error('INVALID_PARAMETERS')
+          return this._getRoleList(options)
         }
       })
       .then(result => Promise.resolve(result))
       .catch(error => Promise.reject(error))
   }
 
-  _genNameQueryParam (name) {
+  _getRoleList(options) {
+    const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
+    const params = { TableName: this._rolesTableName }
+    return dynamoDb
+      .scan(params)
+      .promise()
+      .then(data => Promise.resolve(data.Items))
+      .catch(error => Promise.reject(error))
+  }
+
+  _genNameQueryParam(name) {
     // return {
     //   QueryFilters: {
     //     'person.firstname': {
@@ -88,7 +99,7 @@ class Directory {
     }
   }
 
-  _getRolesByQuery (QueryParams) {
+  _getRolesByQuery(QueryParams) {
     const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
     const params = {
       TableName: this._rolesTableName,

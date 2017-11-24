@@ -171,9 +171,20 @@ functions:
     events:
       - http:
           path: billManagement/sponsors
+          method: get
+          cors: true
+      - http:
+          path: billManagement/sponsors/{id}
+          method: get
+          request:
+            parameters:
+              paths:
+                id: true
+          cors: true
+      - http:
+          path: billManagement/sponsors
           method: post
           cors: true
-          authorizer: aws_iam
 
   billManagement-cosponsors:
     handler: functions/private/billManagement/cosponsors.main
