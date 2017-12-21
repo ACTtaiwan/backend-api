@@ -280,7 +280,7 @@ resources:
           - AttributeName: id
             KeyType: HASH
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
+          ReadCapacityUnits: 10
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.VOLUNTEER_BILLS_DYNAMODB_TABLE}
     # BILL TYPES
