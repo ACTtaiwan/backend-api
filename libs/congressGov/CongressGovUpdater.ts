@@ -102,7 +102,11 @@ export default class CongressGovUpdater {
     let s3Key = s3BucketPath + (s3BucketPath.endsWith('/') ? '' : '/')
 
     // add versionCode
-    s3Key += text.versionCode
+    if (text.versionCode === 'pl') {
+      s3Key += 'publ'
+    } else {
+      s3Key += text.versionCode
+    }
 
     // add date
     if (text.date) {
