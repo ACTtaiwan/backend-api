@@ -1,6 +1,7 @@
 var glob = require('glob')
 var path = require('path')
 var nodeExternals = require('webpack-node-externals')
+var slsw = require('serverless-webpack')
 
 // Required for Create React App Babel transform
 process.env.NODE_ENV = 'development'
@@ -8,7 +9,10 @@ process.env.NODE_ENV = 'development'
 module.exports = {
   // Use all js files in project root (except
   // the webpack config) as an entry
-  entry: globEntries('functions/**/*.js'),
+  entry: slsw.lib.entries,
+  resolve: {
+    extensions: ['.js', '.json', '.ts', '.tsx']
+  },
   target: 'node',
   // Since 'aws-sdk' is not compatible with webpack,
   // we exclude all node dependencies
@@ -30,6 +34,24 @@ module.exports = {
         loader: 'babel-loader',
         include: __dirname,
         exclude: /node_modules/
+      },
+      {
+        test: /\.ts$/,
+        loader: 'tslint-loader',
+        enforce: 'pre',
+        include: __dirname,
+        exclude: /node_modules/,
+        options: {
+          configFile: 'tslint.json'
+        }
+      },
+      {
+        test: /\.ts(x?)$/,
+        use: [
+          {
+            loader: 'ts-loader'
+          }
+        ]
       }
     ]
   },

@@ -1,4 +1,5 @@
 import BillDirectory from '~/libs/bill/Directory'
+import moment from 'moment'
 
 class BillsHandler {
   constructor () {
@@ -42,10 +43,14 @@ class BillsHandler {
   }
 
   parseDate (date) {
-    let year = date.substring(0, 4)
-    let month = date.substring(4, 6)
-    let day = date.substring(6, 8)
-    return year + '-' + month + '-' + day
+    let isValidDate = moment(date, 'YYYYMMDD').isValid()
+    if (isValidDate) {
+      let year = date.substring(0, 4)
+      let month = date.substring(4, 6)
+      let day = date.substring(6, 8)
+      return year + '-' + month + '-' + day
+    }
+    return ''
   }
 }
 
