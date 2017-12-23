@@ -50,7 +50,7 @@ class BillsHandler {
       let day = date.substring(6, 8)
       return year + '-' + month + '-' + day
     }
-    return ''
+    return 'unknown'
   }
 }
 

@@ -112,7 +112,7 @@ export default class CongressGovUpdater {
     if (text.date) {
       s3Key += '-' + Utility.datetimeStringInDCTimezone(text.date, 'YYYYMMDD')
     } else {
-      s3Key += '-unknownDate'
+      s3Key += '-unknown'
     }
 
     // add content type
