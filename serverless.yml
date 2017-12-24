@@ -230,6 +230,11 @@ functions:
           method: post
           cors: true
           authorizer: aws_iam
+      - http:
+          path: congressGov/parse
+          method: put
+          cors: true
+          authorizer: aws_iam
 
   dynamodbSync-bill:
     handler: functions/events/bills/dynamodbSync.main

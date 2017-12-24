@@ -24,6 +24,18 @@ export default class CongressGovUpdater {
     })
   }
 
+  public updateTextVersion (text: TextVersion, s3BucketPath: string): Promise<void> {
+    console.log(`[CongressGovUpdater::updateTextVersion()] Start.
+                 text = ${JSON.stringify(text, null, 2)} s3BucketPath = ${s3BucketPath}`)
+    if (text.fullTextXmlUrl) {
+      return this.processXmlContent(text, s3BucketPath)
+    } else if (text.fullTextPdfUrl) {
+      return this.processPdfContent(text, s3BucketPath)
+    } else {
+      return Promise.reject('unsupported content type')
+    }
+  }
+
   private processXmlContent (text: TextVersion, s3BucketPath: string): Promise<void> {
     if (!text.fullTextXmlUrl) {
       console.log(`[CongressGovUpdater::processXmlContent()] no XML url`)
@@ -116,19 +128,8 @@ export default class CongressGovUpdater {
     }
 
     // add content type
-    switch (contentType) {
-      case 'xml':
-        s3Key += '-xml'
-        break
+    s3Key += '.' + contentType
 
-      case 'txt':
-        s3Key += '-txt'
-        break
-
-      case 'pdf':
-        s3Key += '-pdf'
-        break
-    }
     return s3Key
   }
 }

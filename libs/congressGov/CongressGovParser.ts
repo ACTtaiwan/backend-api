@@ -7,7 +7,7 @@ export default class CongressGovParser {
   public getAllTextVersions (billPath: string): Promise<TextVersion[]> {
     return new Promise((resolve, reject) => {
       if (!billPath) {
-        reject('invalid query. Example Usage: ?path=/bill/115th-congress/house-bill/4288')
+        reject(new Error('invalid query. Example Usage: ?path=/bill/115th-congress/house-bill/4288'))
       }
 
       billPath = billPath.startsWith('/') ? billPath : '/' + billPath

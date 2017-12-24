@@ -20,9 +20,9 @@ class BillsHandler {
           billTypeCode: keys[1],
           billNumber: keys[2],
           billId: keys[3],
-          versionCode: keys[4].split('-')[0],
-          versionDate: that.parseDate(keys[4].split('-')[1]),
-          contentType: keys[4].split('-')[2]
+          versionCode: keys[4].split(/-|\./g)[0],
+          versionDate: that.parseDate(keys[4].split(/-|\./g)[1]),
+          contentType: keys[4].split(/-|\./g)[2]
         }
         console.log('bill version: ', JSON.stringify(billVersion, null, 2))
         resolve(billVersion)
