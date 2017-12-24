@@ -157,51 +157,43 @@ class Directory {
   }
 
   _addBillVersionInfo (options) {
-    let that = this
-    let originalVersions = options.bill.versions ? options.bill.versions : []
-    let versionHasExisted = false
+    console.log(`[_addBillVersionInfo()] options = ${JSON.stringify(options, null, 2)}`)
+    let versions = options.bill.versions || []
 
-    let versions = originalVersions.map(version => {
-      if (version.id === options.billVersion.id) {
-        console.log('version has already existed!')
-        versionHasExisted = true
+    let addingDoc = {
+      contentType: options.contentType,
+      bucketKey: options.bucketKey
+    }
 
-        let originalDocuments = version.documents ? version.documents : []
-        let documentHasExisted = false
-
-        let documents = originalDocuments.map(doc => {
-          if (doc.contentType === options.contentType) {
-            console.log('document type has already existed!')
-            documentHasExisted = true
-            that._deleteBillDoc({ bucketKey: doc.bucketKey })
-            doc.bucketKey = options.bucketKey
+    let existingVersinos = versions.filter(v => v.id === options.billVersion.id)
+    if (existingVersinos.length > 0) {
+      if (existingVersinos.length === 1) {
+        console.log(`[_addBillVersionInfo()] found version Id = ${options.billVersion.id}`)
+        let originalDocs = existingVersinos[0].documents || []
+        let existingDocs = originalDocs.filter(d => d.contentType === options.contentType)
+        if (existingDocs.length > 0) {
+          if (existingDocs.length === 1) {
+            console.log(`[_addBillVersionInfo()] found document content type = ${options.contentType}`)
+            existingDocs[0].bucketKey = addingDoc.bucketKey
+          } else {
+            return Promise.reject(new Error(`logical error - multiple existing same content types: ${options.contentType} 
+                                             ExistingDocs = ${JSON.stringify(existingDocs, null, 2)}`))
           }
-          return doc
-        })
-
-        if (!documentHasExisted) {
-          documents.push({
-            contentType: options.contentType,
-            bucketKey: options.bucketKey
-          })
+        } else {
+          console.log(`[_addBillVersionInfo()] NOT found document content type = ${options.contentType}. 
+                       Pushing new = ${JSON.stringify(addingDoc, null, 2)}`)
+          originalDocs.push(addingDoc)
         }
-
-        version.documents = documents
+      } else {
+        return Promise.reject(new Error(`logical error - multiple existing versions. Version Id = ${options.billVersion.id}
+                                         ExistingVersions = ${JSON.stringify(existingVersinos, null, 2)}`))
       }
-
-      return version
-    })
-
-    if (!versionHasExisted) {
+    } else {
+      console.log(`[_addBillVersionInfo()] NOT found version Id = ${options.billVersion.id}. Pushing new.`)
       versions.push({
         ...options.billVersion,
         date: options.versionDate,
-        documents: [
-          {
-            contentType: options.contentType,
-            bucketKey: options.bucketKey
-          }
-        ]
+        documents: [ addingDoc ]
       })
     }
 

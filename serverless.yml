@@ -52,6 +52,10 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
+        - dynamodb:GetRecords
+        - dynamodb:GetShardIterator
+        - dynamodb:DescribeStream
+        - dynamodb:ListStreams
       Resource: "arn:aws:dynamodb:us-east-1:*:*"
     - Effect: "Allow"
       Action:
@@ -212,6 +216,34 @@ functions:
           method: delete
           cors: true
           authorizer: aws_iam
+
+  congGov-parse:
+    handler: functions/private/congressGovAgent/congressGovHandler.main
+    events:
+      - http:
+          path: congressGov/parse
+          method: get
+          cors: true
+          authorizer: aws_iam
+      - http:
+          path: congressGov/parse
+          method: post
+          cors: true
+          authorizer: aws_iam
+      - http:
+          path: congressGov/parse
+          method: put
+          cors: true
+          authorizer: aws_iam
+
+  dynamodbSync-bill:
+    handler: functions/events/bills/dynamodbSync.main
+    events:
+      - stream:
+        arn: arn:aws:dynamodb:us-east-1:537713963720:table/volunteer.bills/stream/2017-12-23T09:01:21.034
+        batchSize: 1
+        startingPosition: TRIM_HORIZON
+        enabled: true
 
   upload-billsBucket:
     handler: functions/events/bills/pdfUpload.main

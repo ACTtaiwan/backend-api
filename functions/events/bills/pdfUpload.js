@@ -1,4 +1,5 @@
 import BillDirectory from '~/libs/bill/Directory'
+import moment from 'moment'
 
 class BillsHandler {
   constructor () {
@@ -19,9 +20,9 @@ class BillsHandler {
           billTypeCode: keys[1],
           billNumber: keys[2],
           billId: keys[3],
-          versionCode: keys[4].split('-')[0],
-          versionDate: that.parseDate(keys[4].split('-')[1]),
-          contentType: keys[4].split('-')[2]
+          versionCode: keys[4].split(/-|\./g)[0],
+          versionDate: that.parseDate(keys[4].split(/-|\./g)[1]),
+          contentType: keys[4].split(/-|\./g)[2]
         }
         console.log('bill version: ', JSON.stringify(billVersion, null, 2))
         resolve(billVersion)
@@ -42,10 +43,14 @@ class BillsHandler {
   }
 
   parseDate (date) {
-    let year = date.substring(0, 4)
-    let month = date.substring(4, 6)
-    let day = date.substring(6, 8)
-    return year + '-' + month + '-' + day
+    let isValidDate = moment(date, 'YYYYMMDD').isValid()
+    if (isValidDate) {
+      let year = date.substring(0, 4)
+      let month = date.substring(4, 6)
+      let day = date.substring(6, 8)
+      return year + '-' + month + '-' + day
+    }
+    return 'unknown'
   }
 }
 

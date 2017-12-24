@@ -49,7 +49,7 @@ schema.addBillVersionParams = Joi.object().keys({
     .min(1)
     .required(),
   versionCode: Joi.string().required(),
-  versionDate: Joi.string().required()
+  versionDate: Joi.string().optional()
 })
 
 schema.updateCosponsorsParams = Joi.object().keys({
