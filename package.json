@@ -37,6 +37,8 @@
     "@types/lodash": "^4.14.91",
     "babel-runtime": "^6.25.0",
     "cheerio": "^1.0.0-rc.2",
+    "google-auth-library": "^0.12.0",
+    "googleapis": "^23.0.0",
     "joi": "^10.6.0",
     "lodash": "^4.17.4",
     "moment": "^2.20.1",

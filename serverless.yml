@@ -59,6 +59,7 @@ provider:
       Resource: "arn:aws:dynamodb:us-east-1:*:*"
     - Effect: "Allow"
       Action:
+        - s3:GetObject
         - s3:PutObject
         - s3:DeleteObject
         - s3:PutObjectAcl
@@ -251,6 +252,15 @@ functions:
       - s3:
           bucket: ${self:provider.environment.VOLUNTEER_BILLS_S3_BUCKET}
           event: s3:ObjectCreated:*
+
+  googleApi:
+    handler: functions/private/googleApi/googleApiHandler.main
+    events:
+      - http:
+          path: googleApi/queryBillSheet
+          method: get
+          cors: true
+          authorizer: aws_iam
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

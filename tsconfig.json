@@ -8,6 +8,7 @@
       "es2015",
       "esnext.asynciterable"
     ],
-    "strictNullChecks": false
+    "strictNullChecks": false,
+    "target": "es5"
   }
 }
