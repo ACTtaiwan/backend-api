@@ -1,18 +1,18 @@
 import * as xml2js from 'xml2js'
-import CongressGovParser from './CongressGovParser'
-import { TextVersion } from './CongressGovModels'
+import { CongressGovTextParser } from './CongressGovTextParser'
+import * as models from './CongressGovModels'
 import Utility from '../utils/Utility'
 import * as aws from 'aws-sdk'
 
-export default class CongressGovUpdater {
+export class CongressGovTextUpdater {
   public updateAllTextVersions (billPath: string, s3BucketPath: string): Promise<void> {
-    console.log(`[CongressGovUpdater::updateAllTextVersions()] Start. billPath = ${billPath} s3BucketPath = ${s3BucketPath}`)
-    let fetcher = new CongressGovParser()
-    return fetcher.getAllTextVersions(billPath).then((versions: TextVersion[]) => {
+    console.log(`[CongressGovTextUpdater::updateAllTextVersions()] Start. billPath = ${billPath} s3BucketPath = ${s3BucketPath}`)
+    let fetcher = new CongressGovTextParser()
+    return fetcher.getAllTextVersions(billPath).then((versions: models.TextVersion[]) => {
       let promises: Promise<void>[] = []
 
       versions.forEach(v => {
-        console.log(`[CongressGovUpdater::updateAllTextVersions()] updating version = ${v.display}`)
+        console.log(`[CongressGovTextUpdater::updateAllTextVersions()] updating version = ${v.display}`)
         promises.push(this.processPlainTextContent(v, s3BucketPath))
         promises.push(this.processXmlContent(v, s3BucketPath))
         promises.push(this.processPdfContent(v, s3BucketPath))
@@ -24,8 +24,8 @@ export default class CongressGovUpdater {
     })
   }
 
-  public updateTextVersion (text: TextVersion, s3BucketPath: string): Promise<void> {
-    console.log(`[CongressGovUpdater::updateTextVersion()] Start.
+  public updateTextVersion (text: models.TextVersion, s3BucketPath: string): Promise<void> {
+    console.log(`[CongressGovTextUpdater::updateTextVersion()] Start.
                  text = ${JSON.stringify(text, null, 2)} s3BucketPath = ${s3BucketPath}`)
     if (text.fullTextXmlUrl) {
       return this.processXmlContent(text, s3BucketPath)
@@ -36,14 +36,14 @@ export default class CongressGovUpdater {
     }
   }
 
-  private processXmlContent (text: TextVersion, s3BucketPath: string): Promise<void> {
+  private processXmlContent (text: models.TextVersion, s3BucketPath: string): Promise<void> {
     if (!text.fullTextXmlUrl) {
-      console.log(`[CongressGovUpdater::processXmlContent()] no XML url`)
+      console.log(`[CongressGovTextUpdater::processXmlContent()] no XML url`)
       return Promise.resolve()
     } else {
-      console.log(`[CongressGovUpdater::processXmlContent()] fetching ${text.fullTextXmlUrl}`)
+      console.log(`[CongressGovTextUpdater::processXmlContent()] fetching ${text.fullTextXmlUrl}`)
       return Utility.fetchUrlContent(text.fullTextXmlUrl).then((body: string) => {
-        console.log(`[CongressGovUpdater::processXmlContent()] fetched. Replacing XSLT and DTD path...`)
+        console.log(`[CongressGovTextUpdater::processXmlContent()] fetched. Replacing XSLT and DTD path...`)
 
         const staticFilePath = '/taiwanwatch-static/xslt'
         body = body.replace(`"billres.xsl"`, `"${staticFilePath}/billres.xsl"`)
@@ -51,36 +51,36 @@ export default class CongressGovUpdater {
         body = body.replace(`"amend.dtd"`,   `"${staticFilePath}/amend.dtd"`  )
 
         let s3Key = this.generateS3BucketKey(text, s3BucketPath, 'xml')
-        console.log(`[CongressGovUpdater::processXmlContent()] s3Key = ${s3Key}`)
+        console.log(`[CongressGovTextUpdater::processXmlContent()] s3Key = ${s3Key}`)
 
         return this.putObject(body, s3Key, 'text/xml')
       })
     }
   }
 
-  private processPlainTextContent (text: TextVersion, s3BucketPath: string): Promise<void> {
+  private processPlainTextContent (text: models.TextVersion, s3BucketPath: string): Promise<void> {
     if (!text.fullText) {
-      console.log(`[CongressGovUpdater::processPlainTextContent()] no TEXT content`)
+      console.log(`[CongressGovTextUpdater::processPlainTextContent()] no TEXT content`)
       return Promise.resolve()
     } else {
       let s3Key = this.generateS3BucketKey(text, s3BucketPath, 'txt')
-      console.log(`[CongressGovUpdater::processPlainTextContent()] s3Key = ${s3Key}`)
+      console.log(`[CongressGovTextUpdater::processPlainTextContent()] s3Key = ${s3Key}`)
 
       return this.putObject(text.fullText, s3Key, 'text/plain')
     }
   }
 
-  private processPdfContent (text: TextVersion, s3BucketPath: string): Promise<void> {
+  private processPdfContent (text: models.TextVersion, s3BucketPath: string): Promise<void> {
     if (!text.fullTextPdfUrl) {
-      console.log(`[CongressGovUpdater::processPdfContent()] no PDF url`)
+      console.log(`[CongressGovTextUpdater::processPdfContent()] no PDF url`)
       return Promise.resolve()
     } else {
-      console.log(`[CongressGovUpdater::processPdfContent()] fetching ${text.fullTextPdfUrl}`)
+      console.log(`[CongressGovTextUpdater::processPdfContent()] fetching ${text.fullTextPdfUrl}`)
       return Utility.fetchUrlContent(text.fullTextPdfUrl, true).then((body: any) => {
-        console.log(`[CongressGovUpdater::processPdfContent()] fetched. PDF file lenght = ${body.length || -1}`)
+        console.log(`[CongressGovTextUpdater::processPdfContent()] fetched. PDF file lenght = ${body.length || -1}`)
 
         let s3Key = this.generateS3BucketKey(text, s3BucketPath, 'pdf')
-        console.log(`[CongressGovUpdater::processPdfContent()] s3Key = ${s3Key}`)
+        console.log(`[CongressGovTextUpdater::processPdfContent()] s3Key = ${s3Key}`)
 
         return this.putObject(body, s3Key, 'application/pdf')
       })
@@ -99,10 +99,10 @@ export default class CongressGovUpdater {
     return new Promise((resolve, reject) => {
       s3.putObject(params, (err, data) => {
         if (err) {
-          console.error(`[CongressGovUpdater::putObject()] S3 putObject failed. Error = ${err}`)
+          console.error(`[CongressGovTextUpdater::putObject()] S3 putObject failed. Error = ${err}`)
           reject(`S3 putObject failed. Error = ${err}`)
         } else {
-          console.log(`[CongressGovUpdater::putObject()] S3 putObject done.
+          console.log(`[CongressGovTextUpdater::putObject()] S3 putObject done.
                        Bucket = ${params.Bucket} Key = ${params.Key} Length = ${(<any>content).length || -1}`)
           resolve()
         }
@@ -110,7 +110,7 @@ export default class CongressGovUpdater {
     })
   }
 
-  private generateS3BucketKey (text: TextVersion, s3BucketPath: string, contentType: 'xml' | 'txt' | 'pdf'): string {
+  private generateS3BucketKey (text: models.TextVersion, s3BucketPath: string, contentType: 'xml' | 'txt' | 'pdf'): string {
     let s3Key = s3BucketPath + (s3BucketPath.endsWith('/') ? '' : '/')
 
     // add versionCode

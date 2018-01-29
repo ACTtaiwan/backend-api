@@ -222,17 +222,32 @@ functions:
     handler: functions/private/congressGovAgent/congressGovHandler.main
     events:
       - http:
-          path: congressGov/parse
+          path: congressGov/parseText
           method: get
           cors: true
           authorizer: aws_iam
       - http:
-          path: congressGov/parse
+          path: congressGov/parseText
           method: post
           cors: true
           authorizer: aws_iam
       - http:
-          path: congressGov/parse
+          path: congressGov/parseText
+          method: put
+          cors: true
+          authorizer: aws_iam
+      - http:
+          path: congressGov/parseAllInfo
+          method: get
+          cors: true
+          authorizer: aws_iam
+      - http:
+          path: congressGov/parseAllInfo
+          method: post
+          cors: true
+          authorizer: aws_iam
+      - http:
+          path: congressGov/parseAllInfo
           method: put
           cors: true
           authorizer: aws_iam

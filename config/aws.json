@@ -19,6 +19,7 @@
     "VOLUNTEER_ROLES_TABLE_NAME": "volunteer.roles",
     "VOLUNTEER_TASKS_TABLE_NAME": "volunteer.tasks",
     "VOLUNTEER_SUBMISSIONS_TABLE_NAME": "volunteer.submissions",
-    "VOLUNTEER_BILLDOWNLOADTASK_TABLE_NAME": "volunteer.billDownloadTask"
+    "VOLUNTEER_BILLDOWNLOADTASK_TABLE_NAME": "volunteer.billDownloadTask",
+    "CONGRESSGOV_SYNC_BILL_TABLE_NAME": "congressgov.sync.bill"
   }
 }

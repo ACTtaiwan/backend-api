@@ -1,9 +1,16 @@
 import { Context, Callback, APIGatewayEvent } from 'aws-lambda'
 import Response from '../../../libs/utils/Response'
 import Utility from '../../../libs/utils/Utility'
-import { TextVersion } from '../../../libs/congressGov/CongressGovModels'
-import CongressGovParser from '../../../libs/congressGov/CongressGovParser'
-import CongressGovUpdater from '../../../libs/congressGov/CongressGovUpdater'
+import { models } from '../../../libs/congressGov/CongressGovModels'
+import { CongressGovTextParser } from '../../../libs/congressGov/CongressGovTextParser'
+import { CongressGovTextUpdater } from '../../../libs/congressGov/CongressGovUpdater'
+
+/** Example:
+ *   ?path=/bill/114th-congress/senate-bill/1635
+ */
+class CongressGovRequestGetParams {
+  public static readonly PATH: string= 'path'
+}
 
 /** Example:
  * {
@@ -35,13 +42,14 @@ interface CongressGovRequestPutBody {
 
 class CongressGovHandler {
   public static handleRequest (event: APIGatewayEvent, context: Context, callback?: Callback) {
+    console.log(`[CongressGovHandler::handleRequest()] event = ${JSON.stringify(event, null, 2)}`)
     let promise: Promise<any> = null
 
     if (event.httpMethod === 'POST') {
       promise = new Promise((resolve, reject) => {
         try {
           let postBody = <CongressGovRequestPostBody> JSON.parse(event.body)
-          let updater = new CongressGovUpdater()
+          let updater = new CongressGovTextUpdater()
           updater.updateAllTextVersions(postBody.path, postBody.s3BucketPath)
             .then(() => resolve())
             .catch(error => reject(error))
@@ -53,8 +61,8 @@ class CongressGovHandler {
       promise = new Promise((resolve, reject) => {
         try {
           let putBody = <CongressGovRequestPutBody> JSON.parse(event.body)
-          let updater = new CongressGovUpdater()
-          let text = <TextVersion> {
+          let updater = new CongressGovTextUpdater()
+          let text = <models.TextVersion> {
             versionCode: putBody.versionCode,
             date: Utility.parseDateTimeStringOfFormat(putBody.date + ' -0500', 'YYYY-MM-DD Z')
           }
@@ -79,8 +87,8 @@ class CongressGovHandler {
         }
       })
     } else if (event.httpMethod === 'GET') {
-      let parser = new CongressGovParser()
-      let billPath = event.queryStringParameters.path
+      let parser = new CongressGovTextParser()
+      let billPath = event.queryStringParameters[ CongressGovRequestGetParams.PATH ]
       promise = parser.getAllTextVersions(billPath)
     }
 

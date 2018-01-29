@@ -7,3 +7,14 @@ export interface TextVersion {
   fullTextXmlUrl?: string
   fullTextPdfUrl?: string
 }
+
+export interface Tracker {
+  stepName: string
+  selected: boolean
+}
+
+export type BillTypeCode = 'hr' | 's' | 'sconres' | 'hres' | 'sres' | 'sjres' | 'hconres' | 'hjres'
+
+export type BillTrackerStatus = 'intro' | 'house' | 'senate' | 'president' | 'law'
+
+export type ChamberType = 'senate' | 'house'

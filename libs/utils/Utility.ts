@@ -52,7 +52,7 @@ export default class Utility {
     if (!Utility.timer) {
       console.log(`[Utility::pushToUrlRequestQueue()] init timer`)
       let isBusy = false
-      Utility.timer = setInterval(() => {
+      Utility.timer = setInterval(async () => {
         if (!isBusy) {
           isBusy = true
           if (!_.isEmpty(Utility.requestQueue)) {
@@ -60,20 +60,19 @@ export default class Utility {
             let randomDelay = Math.floor(200 + Math.random() * 800) // random delay to prevent DDoS blocking
             console.log(`[Utility::pushToUrlRequestQueue()] timer not busy.
                          After randomDelay = ${randomDelay} will process task = ${JSON.stringify(task.params, null, 2)}`)
-            setTimeout(() => {
-              console.log(`[Utility::pushToUrlRequestQueue()] processing task.`)
-              request(task.params, (error, response, body) => {
-                console.log(`[Utility::pushToUrlRequestQueue()] request done. set isBusy = false`)
-                isBusy = false
-                if (!error && response.statusCode === 200) {
-                  task.resolve(body)
-                } else {
-                  task.reject(`can not connect url = ${task.params.url}.
-                               Error = ${error}
-                               ResponseCode = ${response.statusCode} Body = ${body}`)
-                }
-              })
-            }, randomDelay)
+            await Utility.sleep(randomDelay)
+            console.log(`[Utility::pushToUrlRequestQueue()] processing task.`)
+            request(task.params, (error, response, body) => {
+              console.log(`[Utility::pushToUrlRequestQueue()] request done. set isBusy = false`)
+              isBusy = false
+              if (!error && response.statusCode === 200) {
+                task.resolve(body)
+              } else {
+                task.reject(`can not connect url = ${task.params.url}.
+                              Error = ${error}
+                              ResponseCode = ${response.statusCode} Body = ${body}`)
+              }
+            })
           } else {
             console.log(`[Utility::pushToUrlRequestQueue()] queue is empty. Clear timeout.`)
             clearTimeout(Utility.timer)
@@ -84,5 +83,9 @@ export default class Utility {
       }, 500);
     }
     return p
+  }
+
+  public static async sleep (ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }

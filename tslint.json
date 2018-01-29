@@ -40,7 +40,7 @@
     ],
     "quotemark": [true, "single"],
     "radix": false,
-    "semicolon": [false],
+    "semicolon": [false, "always"],
     "triple-equals": [true, "allow-null-check"],
     "variable-name": false,
     "whitespace": [true,
