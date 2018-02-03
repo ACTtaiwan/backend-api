@@ -25,7 +25,9 @@ export class DynamoDBManager {
       new CongressGovSyncBillTable(this.dynamoDbDocClient),
       new BillTable(this.dynamoDbDocClient),
       new BillTypeTable(this.dynamoDbDocClient),
-      new BillCategoryTable(this.dynamoDbDocClient)
+      new BillCategoryTable(this.dynamoDbDocClient),
+      new PersonTable(this.dynamoDbDocClient),
+      new RoleTable(this.dynamoDbDocClient)
     ]
     this.tables = _.keyBy(tables, x => x.tableName)
   }
@@ -130,53 +132,62 @@ export abstract class Table {
     })
   }
 
-  protected getAllItems (attrNamesToGet?: string[]): Promise<aws.DynamoDB.DocumentClient.ScanOutput> {
+  protected async getAllItems<T extends TableEntity> (attrNamesToGet?: (keyof T)[]): Promise<T[]> {
+    return this.scanItems<T>(null)
+  }
+
+  protected async scanItems<T extends TableEntity> (
+    filterExp: aws.DynamoDB.DocumentClient.ConditionExpression,
+    expAttrNames?: aws.DynamoDB.DocumentClient.ExpressionAttributeNameMap,
+    expAttrVals?: aws.DynamoDB.DocumentClient.ExpressionAttributeValueMap,
+    attrNamesToGet?: (keyof T)[]): Promise<T[]> {
+
     let params: aws.DynamoDB.DocumentClient.ScanInput = {
       TableName: this.tableName
     }
 
-    if (attrNamesToGet && attrNamesToGet.length > 0) {
-      params.ProjectionExpression = attrNamesToGet.join(', ')
+    if (filterExp) {
+      params.FilterExpression = filterExp
     }
 
-    return new Promise((resolve, reject) => {
-      this.docClient.scan(params, (err, data) => err ? reject(err) : resolve(data))
-    })
-  }
+    if (expAttrNames) {
+      params.ExpressionAttributeNames = expAttrNames;
+    }
 
-  protected getItemsByFilter (filterExp: aws.DynamoDB.DocumentClient.ConditionExpression,
-                              expAttrNames: aws.DynamoDB.DocumentClient.ExpressionAttributeNameMap,
-                              expAttrVals: aws.DynamoDB.DocumentClient.ExpressionAttributeValueMap,
-                              attrNamesToGet?: string[])
-  : Promise<aws.DynamoDB.DocumentClient.ScanOutput> {
-    let params: aws.DynamoDB.DocumentClient.ScanInput = {
-      TableName: this.tableName,
-      FilterExpression: filterExp,
-      ExpressionAttributeNames: expAttrNames,
-      ExpressionAttributeValues: expAttrVals
+    if (expAttrVals) {
+      params.ExpressionAttributeValues = expAttrVals;
     }
 
     if (attrNamesToGet && attrNamesToGet.length > 0) {
       params.ProjectionExpression = attrNamesToGet.join(', ')
     }
 
-    return new Promise((resolve, reject) => {
-      this.docClient.scan(params, (err, data) => err ? reject(err) : resolve(data))
-    })
+    let items: T[] = []
+    while (true) {
+      let data = await this.docClient.scan(params).promise()
+      if (data && data.Items) {
+        console.log(`batch items fetched = ` + data.Items.length)
+        items = [...items, ...(data.Items as T[])]
+        if (data.LastEvaluatedKey) {
+          params.ExclusiveStartKey = data.LastEvaluatedKey
+        } else {
+          break
+        }
+      } else {
+        break
+      }
+    }
+    return Promise.resolve(items)
   }
 
-  protected getItemsHavingAttributes<T extends TableEntity> (keys: (keyof T)[], ...attrNamesToGet: (keyof BillEntity)[])
-  : Promise<T[]> {
+  protected getItemsHavingAttributes<T extends TableEntity> (keys: (keyof T)[], ...attrNamesToGet: (keyof T)[]): Promise<T[]> {
     const filterExp = _.map(keys, k => `attribute_exists(${k})`).join(' AND ')
-    return this.getItemsByFilter(filterExp, undefined, undefined, attrNamesToGet).then(data =>
-      (data && data.Items) ? <T[]> data.Items : null)
+    return this.scanItems<T>(filterExp, undefined, undefined, attrNamesToGet)
   }
 
-  protected getItemsNotHavingAttributes<T extends TableEntity> (keys: (keyof T)[], ...attrNamesToGet: (keyof BillEntity)[])
-  : Promise<T[]> {
+  protected getItemsNotHavingAttributes<T extends TableEntity> (keys: (keyof T)[], ...attrNamesToGet: (keyof T)[]): Promise<T[]> {
     const filterExp = _.map(keys, k => `attribute_not_exists(${k})`).join(' AND ')
-    return this.getItemsByFilter(filterExp, undefined, undefined, attrNamesToGet).then(data =>
-      (data && data.Items) ? <T[]> data.Items : null)
+    return this.scanItems(filterExp, undefined, undefined, attrNamesToGet)
   }
 
   protected putItem (item: TableEntity): Promise<aws.DynamoDB.DocumentClient.PutItemOutput> {
@@ -190,15 +201,13 @@ export abstract class Table {
     })
   }
 
-  protected updateItem<T extends TableEntity> (keyName: string, keyValue: string, ...obj: [keyof T, any][])
+  protected updateItem<T extends TableEntity> (keyName: string, keyValue: string, obj: {[key in keyof T]?: any})
   : Promise<aws.DynamoDB.DocumentClient.UpdateItemOutput> {
     let exps = []
     let expKey = {}
     let expVal = {}
 
-    _.each(obj, (entry: [keyof T, any]) => {
-      const key = entry[0]
-      const val = entry[1]
+    _.each(obj, (val, key) => {
       const keySub = '#k_' + key
       const valSub = ':v_' + key
       exps.push(`${keySub} = ${valSub}`)
@@ -324,6 +333,10 @@ export class CongressGovSyncBillTable extends Table {
     return super.putItem(obj)
   }
 
+  public getAllObjects (...attrNamesToGet: (keyof CongressGovSyncBillEntity)[]): Promise<CongressGovSyncBillEntity[]> {
+    return super.getAllItems<CongressGovSyncBillEntity>(attrNamesToGet)
+  }
+
   public getObjectByUrlPath (url: string): Promise<CongressGovSyncBillEntity> {
     return super.getItem('urlPath', url).then(data =>
       (data && data.Item) ? <CongressGovSyncBillEntity> data.Item : null)
@@ -359,12 +372,11 @@ export class BillCategoryTable extends Table {
   }
 
   public getAllCategories (): Promise<BillCategoryEntity[]> {
-    return super.getAllItems().then(data =>
-      (data && data.Items) ? <BillCategoryEntity[]> data.Items : null)
+    return super.getAllItems<BillCategoryEntity>()
   }
 }
 
-// BillTable
+// BillTypeTable
 
 export interface BillTypeEntity extends TableEntity {
   id: string
@@ -396,8 +408,7 @@ export class BillTypeTable extends Table {
   }
 
   public getAllTypes (): Promise<BillTypeEntity[]> {
-    return super.getAllItems().then(data =>
-      (data && data.Items) ? <BillTypeEntity[]> data.Items : null)
+    return super.getAllItems<BillTypeEntity>()
   }
 
   public getTypeById (id: string): Promise<BillTypeEntity> {
@@ -413,14 +424,18 @@ export class BillTypeTable extends Table {
     const expAttrVals: aws.DynamoDB.DocumentClient.ExpressionAttributeValueMap = {
       ':v_val': val,
     }
-    return super.getItemsByFilter(filterExp, expAttrNames, expAttrVals).then(data =>
-      (data && data.Items) ? <BillTypeEntity[]> data.Items : null)
+    return super.scanItems<BillTypeEntity>(filterExp, expAttrNames, expAttrVals)
   }
 }
 
 // BillTable
 
 type Unknown = any
+
+export interface CosponsorEntity {
+  dateCosponsored: number
+  sponsor: RoleEntity
+}
 
 export interface BillEntity extends TableEntity {
   id: string
@@ -434,8 +449,8 @@ export interface BillEntity extends TableEntity {
   trackers?: models.Tracker[]
   currentChamber?: models.ChamberType
   actions?: Unknown[]
-  sponsor?: Unknown
-  cosponsors?: Unknown[]
+  sponsor?: RoleEntity
+  cosponsors?: CosponsorEntity[]
   relevence?: number,
   china?: string,
   insight?: string,
@@ -494,8 +509,8 @@ export class BillTable extends Table {
       ':v_billNumber': billNumber,
       ':v_billType_subKeyValue': billType[1]
     }
-    return super.getItemsByFilter(filterExp, expAttrNames, expAttrVals, attrNamesToGet).then(data =>
-      (data && data.Items && data.Items[0]) ? <BillEntity> data.Items[0] : null)
+    return super.scanItems<BillEntity>(filterExp, expAttrNames, expAttrVals, attrNamesToGet).then(items =>
+      (items && items[0]) ? <BillEntity> items[0] : null)
   }
 
   public getAllBillsBySingleKeyFilter (key: keyof BillEntity, val: any, ...attrNamesToGet: (keyof BillEntity)[]): Promise<BillEntity[]> {
@@ -506,8 +521,7 @@ export class BillTable extends Table {
     const expAttrVals: aws.DynamoDB.DocumentClient.ExpressionAttributeValueMap = {
       ':v_val': val,
     }
-    return super.getItemsByFilter(filterExp, expAttrNames, expAttrVals, attrNamesToGet).then(data =>
-      (data && data.Items) ? <BillEntity[]> data.Items : null)
+    return super.scanItems<BillEntity>(filterExp, expAttrNames, expAttrVals, attrNamesToGet)
   }
 
   public getAllBillsHavingAttributes (keys: (keyof BillEntity)[], ...attrNamesToGet: (keyof BillEntity)[]): Promise<BillEntity[]> {
@@ -519,8 +533,7 @@ export class BillTable extends Table {
   }
 
   public getAllBills (...attrNamesToGet: (keyof BillEntity)[]): Promise<BillEntity[]> {
-    return super.getAllItems(attrNamesToGet).then(data =>
-      (data && data.Items) ? <BillEntity[]> data.Items : null)
+    return super.getAllItems<BillEntity>(attrNamesToGet)
   }
 
   public deleteBills (idx: string[]): Promise<aws.DynamoDB.BatchWriteItemOutput> {
@@ -534,14 +547,122 @@ export class BillTable extends Table {
 
   public updateBill (id: string, updateBill: BillEntity)
   : Promise<aws.DynamoDB.DocumentClient.UpdateItemOutput> {
-    let kvPairs = []
-    _.each(updateBill, (v, k) => kvPairs.push([k, v]))
-    return super.updateItem<BillEntity>('id', id, ...kvPairs)
+    return super.updateItem<BillEntity>('id', id, updateBill)
   }
 
   public updateTracker (id: string, val: models.Tracker[])
   : Promise<aws.DynamoDB.DocumentClient.UpdateItemOutput> {
-    return super.updateItem<BillEntity>('id', id, ['trackers', val])
+    return super.updateItem<BillEntity>('id', id, {'trackers': val})
+  }
+
+  public updateSponsor (id: string, val: RoleEntity)
+  : Promise<aws.DynamoDB.DocumentClient.UpdateItemOutput> {
+    return super.updateItem<BillEntity>('id', id, {'sponsor': val})
+  }
+
+  public updateCoSponsors (id: string, val: CosponsorEntity[])
+  : Promise<aws.DynamoDB.DocumentClient.UpdateItemOutput> {
+    return super.updateItem<BillEntity>('id', id, {'cosponsors': val})
+  }
+}
+
+// PersonTable
+
+export interface PersonEntity extends TableEntity {
+  id: string
+  firstname: string
+  lastname: string
+  middlename?: string
+  searchName: string
+  birthday?: string
+  gender?: string
+  nameMod?: string
+  nickname?: string
+
+  createdAt?: number // UTC time
+  lastUpdatedAt?: number // UTC time
+
+  bioGuideId?: string
+  cspanId?: number
+  osId?: string
+  pvsId?: number
+  twitterId?: string
+  youtubeId?: string
+}
+
+export class PersonTable extends Table {
+  public readonly tableName = (<any> awsConfig).dynamodb.VOLUNTEER_PERSON_TABLE_NAME
+
+  constructor (db: aws.DynamoDB.DocumentClient) {
+    super(db)
+  }
+
+  public get tableDefinition (): [aws.DynamoDB.KeySchema, aws.DynamoDB.AttributeDefinitions] {
+    const keySchema: aws.DynamoDB.KeySchema = [
+      { AttributeName: 'id', KeyType: 'HASH'}
+    ]
+    const attrDef: aws.DynamoDB.AttributeDefinitions = [
+      { AttributeName: 'id', AttributeType: 'S' }
+    ]
+    return [keySchema, attrDef]
+  }
+}
+
+// RoleTable
+
+export interface RoleEntity extends TableEntity {
+  id: string
+  person: PersonEntity
+
+  createdAt?: number // UTC time
+  lastUpdatedAt?: number // UTC time
+
+  startDate?: number // UTC time
+  endDate?: number // UTC time
+  congressNumbers?: number[]
+
+  title?: string
+  titleLong?: string
+  roleType?: string
+  roleTypeDisplay?: string
+  office?: string
+  phone?: string
+  party?: string
+  caucus?: string
+  state?: string
+  district?: number
+  description?: string
+  leadershipTitle?: string
+  senatorClass?: string
+  senatorClassDisplay?: string
+  senatorRank?: string
+  senatorRankDisplay?: string
+  website?: string
+}
+
+export class RoleTable extends Table {
+  public readonly tableName = (<any> awsConfig).dynamodb.VOLUNTEER_ROLES_TABLE_NAME
+
+  constructor (db: aws.DynamoDB.DocumentClient) {
+    super(db)
+  }
+
+  public get tableDefinition (): [aws.DynamoDB.KeySchema, aws.DynamoDB.AttributeDefinitions] {
+    const keySchema: aws.DynamoDB.KeySchema = [
+      { AttributeName: 'id', KeyType: 'HASH'}
+    ]
+    const attrDef: aws.DynamoDB.AttributeDefinitions = [
+      { AttributeName: 'id', AttributeType: 'S' }
+    ]
+    return [keySchema, attrDef]
+  }
+
+  public getRolesByCongress (congress: number, ...attrNamesToGet: (keyof RoleEntity)[]): Promise<RoleEntity[]> {
+    const filterExp = `contains( congressNumbers, :v_congress )`
+    const expAttrVals: aws.DynamoDB.DocumentClient.ExpressionAttributeValueMap = {
+      ':v_congress': congress,
+    }
+    return super.scanItems<RoleEntity>(filterExp, null, expAttrVals, attrNamesToGet)
   }
 }
 

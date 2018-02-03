@@ -16,7 +16,7 @@ export default class Utility {
     let dateTimeStr = dateStr.split('-')
     let timeStr = (dateTimeStr.length > 1) ? dateTimeStr[1] : '0:00am'
     dateStr = dateTimeStr[0] + ' ' + timeStr + ' -0500'
-    return Utility.parseDateTimeStringOfFormat(dateStr, 'MM/DD/yyyy h:mma Z')
+    return Utility.parseDateTimeStringOfFormat(dateStr, 'MM/DD/YYYY h:mma Z')
   }
 
   public static parseDateTimeStringOfFormat (dateStr: string, format: string = 'YYYY-MM-DD'): Date {

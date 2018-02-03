@@ -5,35 +5,61 @@ import { CongressGovTrackerParser } from '../libs/congressGov/CongressGovTracker
 import * as models from '../libs/congressGov/CongressGovModels'
 import * as _ from 'lodash'
 
-const tblName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLS_TABLE_NAME
-const tbl = <dbLib.BillTable> dbLib.DynamoDBManager.instance().getTable(tblName)
-const congressGovTrackParser = new CongressGovTrackerParser()
+export class TrackerSync {
+  private readonly tblName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLS_TABLE_NAME
+  private readonly tbl = <dbLib.BillTable> dbLib.DynamoDBManager.instance().getTable(this.tblName)
+  private readonly congressGovTrackParser = new CongressGovTrackerParser()
 
-let syncTrackersForBillEntity = async (bill: dbLib.BillEntity) => {
-  const path = CongressGovHelper.generateCongressGovBillPath(bill.congress, bill.billType.code, bill.billNumber)
-  console.log(`Updating ${path}`)
-  const tracker = await congressGovTrackParser.getTracker(path)
-  await tbl.updateTracker(bill.id, tracker)
-}
+  public async syncTrackersForBillEntity (bill: dbLib.BillEntity) {
+    const path = CongressGovHelper.generateCongressGovBillPath(bill.congress, bill.billType.code, bill.billNumber)
+    console.log(`Updating ${path}`)
+    const tracker = await this.congressGovTrackParser.getTracker(path)
+    await this.tbl.updateTracker(bill.id, tracker)
+  }
 
-let syncTrackersForAllBills = async () => {
-  const earliestCongress = CongressGovHelper.MIN_CONGRESS_DATA_AVAILABLE
-  const bills = await tbl.getAllBills()
-  for (let i = 0; i < bills.length; ++i) {
-    const bill = bills[i]
-    if (bill.congress >= earliestCongress) {
-      await syncTrackersForBillEntity(bill)
-    } else {
-      console.log(`${dbLib.DbHelper.displayBill(bill)} Data unavailable
-      due to Congress ${bill.congress} < ${earliestCongress} (earlist available)`)
+  public async syncTrackersForAllBills (currentCongress: number) {
+    const bills = await this.tbl.getAllBills('id', 'congress', 'billType', 'billNumber', 'trackers')
+    for (let i = 0; i < bills.length; ++i) {
+      const bill = bills[i]
+      const shouldNotUpdateReason = this.shouldUpdateTrackerForBill(bill, currentCongress)
+      if (shouldNotUpdateReason) {
+        console.log(`${dbLib.DbHelper.displayBill(bill)} not updating since ${shouldNotUpdateReason}`)
+      } else {
+        await this.syncTrackersForBillEntity(bill)
+      }
+      console.log('\n\n\n')
     }
+  }
+
+  public async syncTrackersForBill (congress: number, billTypeCode: models.BillTypeCode, billNumber: number) {
+    const bill = await this.tbl.getBill(congress, billTypeCode, billNumber)
+    await this.syncTrackersForBillEntity(bill)
+  }
+
+  public async printBillsHavingNoTrackers () {
+    const bills = await this.tbl.getAllBills('id', 'congress', 'billType', 'billNumber', 'trackers')
+    const noTrackerBills = _.filter(bills, b => !b.trackers || (b.trackers && b.trackers.length === 0))
+    _.each(noTrackerBills, b => console.log(JSON.stringify(b, null, 2)))
+  }
+
+  private shouldUpdateTrackerForBill (bill: dbLib.BillEntity, currentCongress: number): string {
+    const earliestCongress = CongressGovHelper.MIN_CONGRESS_DATA_AVAILABLE
+    if (bill.trackers && bill.trackers.length > 0) {
+      // having trackers
+      if (bill.congress <= currentCongress) {
+        return `Trackers already available for non-current congress`
+      }
+    } else {
+      // not having trackers
+      if (bill.congress < earliestCongress) {
+        return `Congress ${bill.congress} < ${earliestCongress} (earlist available)`
+      }
+    }
+    return undefined
   }
 }
 
-let syncTrackersForBill = async (congress: number, billTypeCode: models.BillTypeCode, billNumber: number) => {
-  const bill = await tbl.getBill(congress, billTypeCode, billNumber)
-  await syncTrackersForBillEntity(bill)
-}
-
-syncTrackersForAllBills()
+let sync = new TrackerSync()
+// sync.syncTrackersForAllBills(115)
 // syncTrackersForBill(114, 'hconres', 88)
+sync.printBillsHavingNoTrackers()

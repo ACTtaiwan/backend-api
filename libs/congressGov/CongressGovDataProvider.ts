@@ -6,24 +6,19 @@ import { CongressGovHelper } from './CongressGovHelper'
 
 export class CongressGovDataProvider {
   public static readonly EXPIRE_IN_MIN_BASIC_INFO: number = 60 * 24 * 2 // 2 days
+  public static readonly EXPIRE_IN_MIN_ALL_INFO: number = 60 * 24 * 2 // 2 days
   public static readonly EXPIRE_IN_MIN_TEXT: number = -1; // never
 
   private db = dbLib.DynamoDBManager.instance()
 
-  public billPathToTextUrl (billPath: string): string {
-    if (!billPath) {
-      return null
-    }
-
-    billPath = billPath.startsWith('/') ? billPath : '/' + billPath
-    billPath = billPath.endsWith('/') ? billPath : billPath + '/'
-    const url = CongressGovHelper.CONGRESS_GOV_HOST + billPath + 'text'
-    return url
-  }
-
   public fetchBillInfoHtml (url: string): Promise<any> {
     console.log(`[CongressGovDataProvider::fetchBillInfoHtml()] start, url = ${url}`)
     return this.fetchBillHtml(url, CongressGovDataProvider.EXPIRE_IN_MIN_BASIC_INFO)
+  }
+
+  public fetchBillAllInfoHtml (url: string): Promise<any> {
+    console.log(`[CongressGovDataProvider::fetchBillAllInfoHtml()] start, url = ${url}`)
+    return this.fetchBillHtml(url, CongressGovDataProvider.EXPIRE_IN_MIN_ALL_INFO)
   }
 
   public fetchBillTextHtml (url: string): Promise<any> {

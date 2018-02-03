@@ -1,9 +1,9 @@
 import { Context, Callback, APIGatewayEvent } from 'aws-lambda'
 import Response from '../../../libs/utils/Response'
 import Utility from '../../../libs/utils/Utility'
-import { models } from '../../../libs/congressGov/CongressGovModels'
+import * as models from '../../../libs/congressGov/CongressGovModels'
 import { CongressGovTextParser } from '../../../libs/congressGov/CongressGovTextParser'
-import { CongressGovTextUpdater } from '../../../libs/congressGov/CongressGovUpdater'
+import { CongressGovTextUpdater } from '../../../libs/congressGov/CongressGovTextUpdater'
 
 /** Example:
  *   ?path=/bill/114th-congress/senate-bill/1635
