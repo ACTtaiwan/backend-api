@@ -47,8 +47,8 @@ export class CongressGovTextUpdater {
 
         const staticFilePath = '/taiwanwatch-static/xslt'
         body = body.replace(`"billres.xsl"`, `"${staticFilePath}/billres.xsl"`)
-        body = body.replace(`"bill.dtd"`,    `"${staticFilePath}/bill.dtd"`   )
-        body = body.replace(`"amend.dtd"`,   `"${staticFilePath}/amend.dtd"`  )
+        body = body.replace(`"bill.dtd"`, `"${staticFilePath}/bill.dtd"`)
+        body = body.replace(`"amend.dtd"`, `"${staticFilePath}/amend.dtd"`)
 
         let s3Key = this.generateS3BucketKey(text, s3BucketPath, 'xml')
         console.log(`[CongressGovTextUpdater::processXmlContent()] s3Key = ${s3Key}`)
@@ -95,7 +95,7 @@ export class CongressGovTextUpdater {
       Key: s3BucketKey,
       ContentType: contentType,
       ACL: 'public-read'
-     };
+    };
     return new Promise((resolve, reject) => {
       s3.putObject(params, (err, data) => {
         if (err) {

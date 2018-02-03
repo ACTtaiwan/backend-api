@@ -9,7 +9,7 @@ import { CongressGovTextUpdater } from '../../../libs/congressGov/CongressGovTex
  *   ?path=/bill/114th-congress/senate-bill/1635
  */
 class CongressGovRequestGetParams {
-  public static readonly PATH: string= 'path'
+  public static readonly PATH: string = 'path'
 }
 
 /** Example:
@@ -48,9 +48,10 @@ class CongressGovHandler {
     if (event.httpMethod === 'POST') {
       promise = new Promise((resolve, reject) => {
         try {
-          let postBody = <CongressGovRequestPostBody> JSON.parse(event.body)
+          let postBody = <CongressGovRequestPostBody>JSON.parse(event.body)
           let updater = new CongressGovTextUpdater()
-          updater.updateAllTextVersions(postBody.path, postBody.s3BucketPath)
+          updater
+            .updateAllTextVersions(postBody.path, postBody.s3BucketPath)
             .then(() => resolve())
             .catch(error => reject(error))
         } catch (error) {
@@ -60,26 +61,27 @@ class CongressGovHandler {
     } else if (event.httpMethod === 'PUT') {
       promise = new Promise((resolve, reject) => {
         try {
-          let putBody = <CongressGovRequestPutBody> JSON.parse(event.body)
+          let putBody = <CongressGovRequestPutBody>JSON.parse(event.body)
           let updater = new CongressGovTextUpdater()
-          let text = <models.TextVersion> {
+          let text = <models.TextVersion>{
             versionCode: putBody.versionCode,
             date: Utility.parseDateTimeStringOfFormat(putBody.date + ' -0500', 'YYYY-MM-DD Z')
           }
           switch (putBody.contentType) {
             case 'xml':
-            text.fullTextXmlUrl = putBody.url
-            break
+              text.fullTextXmlUrl = putBody.url
+              break
 
-          case 'txt':
-            text.fullTextUrl = putBody.url
-            break
+            case 'txt':
+              text.fullTextUrl = putBody.url
+              break
 
-          case 'pdf':
-            text.fullTextPdfUrl = putBody.url
-            break
+            case 'pdf':
+              text.fullTextPdfUrl = putBody.url
+              break
           }
-          updater.updateTextVersion(text, putBody.s3BucketPath)
+          updater
+            .updateTextVersion(text, putBody.s3BucketPath)
             .then(() => resolve())
             .catch(error => reject(error))
         } catch (error) {
@@ -88,16 +90,18 @@ class CongressGovHandler {
       })
     } else if (event.httpMethod === 'GET') {
       let parser = new CongressGovTextParser()
-      let billPath = event.queryStringParameters[ CongressGovRequestGetParams.PATH ]
+      let billPath = event.queryStringParameters[CongressGovRequestGetParams.PATH]
       promise = parser.getAllTextVersions(billPath)
     }
 
     if (promise) {
-      promise.then(response => {
-        Response.success(callback, JSON.stringify(response), true)
-      }).catch(error => {
-        Response.error(callback, JSON.stringify(error), true)
-      })
+      promise
+        .then(response => {
+          Response.success(callback, JSON.stringify(response), true)
+        })
+        .catch(error => {
+          Response.error(callback, JSON.stringify(error), true)
+        })
     } else {
       Response.error(callback, `No Handler For Request: ${JSON.stringify(event, null, 2)}`, true)
     }
