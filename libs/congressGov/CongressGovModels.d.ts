@@ -38,7 +38,7 @@ export interface CongressGovAction {
 }
 
 export interface CongressGovCoSponsor {
-  sponsor: CongressGovSponsor
+  cosponsor: CongressGovSponsor
   dateCosponsored?: number // UTC
 }
 

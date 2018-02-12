@@ -1,8 +1,8 @@
 import * as awsConfig from '../config/aws.json'
-import * as dbLib from '../libs/utils/DynamoDBManager'
-import { CongressGovHelper } from '../libs/congressGov/CongressGovHelper'
-import { CongressGovTrackerParser } from '../libs/congressGov/CongressGovTrackerParser'
-import * as models from '../libs/congressGov/CongressGovModels'
+import * as dbLib from '../../libs/dbLib/DbLib'
+import { CongressGovHelper } from '../../libs/congressGov/CongressGovHelper'
+import { CongressGovTrackerParser } from '../../libs/congressGov/CongressGovTrackerParser'
+import * as models from '../../libs/congressGov/CongressGovModels'
 import * as _ from 'lodash'
 
 export class TrackerSync {

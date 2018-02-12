@@ -174,7 +174,7 @@ export class CongressGovAllInfoParser {
     _.each(items, item => {
       item = $(item)
       let spnsrNode = item.find('td.actions > a')
-      let sponsor = this.parseSponsor(spnsrNode)
+      let cosponsor = this.parseSponsor(spnsrNode)
 
       let dateNode = item.find('td.date')
       let date = (dateNode.length === 1) && dateNode[0].children && dateNode[0].children[0] && dateNode[0].children[0].data
@@ -182,8 +182,8 @@ export class CongressGovAllInfoParser {
 
       let obj = <models.CongressGovCoSponsor> {}
 
-      if (sponsor) {
-        obj.sponsor = sponsor
+      if (cosponsor) {
+        obj.cosponsor = cosponsor
       }
 
       if (date) {
@@ -199,7 +199,6 @@ export class CongressGovAllInfoParser {
 
   private parseSponsor (nodes: any): models.CongressGovSponsor {
     if (nodes && nodes.length === 1 && nodes[0].attribs && nodes[0].attribs.href) {
-      console.log(`[CongressGovAllInfoParser::parseSponsor()] sponsor found`)
       let path: string = nodes[0].attribs.href
       let congressGovUrl = path && CongressGovHelper.pathToFullUrl(path)
       let bioGuideId = path.split('/').pop()

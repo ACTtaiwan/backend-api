@@ -19,6 +19,8 @@
     "VOLUNTEER_PERSON_TABLE_NAME": "volunteer.persons",
     "VOLUNTEER_ROLES_TABLE_NAME": "volunteer.roles",
     "VOLUNTEER_PERSONS_DYNAMODB_TABLE": "volunteer.persons",
+    "VOLUNTEER_TAGS_TABLE_NAME": "volunteer.tags",
+    "VOLUNTEER_TAGS_META_TABLE_NAME": "volunteer.tags.meta",
     "VOLUNTEER_TASKS_TABLE_NAME": "volunteer.tasks",
     "VOLUNTEER_SUBMISSIONS_TABLE_NAME": "volunteer.submissions",
     "VOLUNTEER_BILLDOWNLOADTASK_TABLE_NAME": "volunteer.billDownloadTask",

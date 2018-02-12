@@ -14,9 +14,9 @@ export class CongressGovSponsorParser {
     const url = CongressGovHelper.billPathToTextUrl(billPath)
 
     return new Promise((resolve, reject) => {
-      console.log(`[CongressGovSponsorParser::getTracker()] ready to fetch url = ${url}`)
+      console.log(`[CongressGovSponsorParser::getSponsorBioGuideId()] ready to fetch url = ${url}`)
       this.dataProvider.fetchBillInfoHtml(url).then($ => {
-        console.log(`[CongressGovSponsorParser::getTracker()] fetched done. Start parsing tracker`)
+        console.log(`[CongressGovSponsorParser::getSponsorBioGuideId()] fetched done. Start parsing tracker`)
         resolve(this.parseSponsor($))
       }).catch(error => {
         reject(error)

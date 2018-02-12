@@ -57,6 +57,7 @@ provider:
         - dynamodb:GetShardIterator
         - dynamodb:DescribeStream
         - dynamodb:ListStreams
+        - dynamodb:BatchGetItem
       Resource: "arn:aws:dynamodb:us-east-1:*:*"
     - Effect: "Allow"
       Action:
@@ -115,7 +116,7 @@ functions:
           authorizer: aws_iam
 
   billMgmt-bills:
-    handler: functions/private/billManagement/bills.main
+    handler: functions/private/billManagement/billHandler.main
     events:
       - http:
           path: billManagement/bills
@@ -129,16 +130,16 @@ functions:
               paths:
                 id: true
           cors: true
-      - http:
-          path: billManagement/bills
-          method: post
-          cors: true
-          authorizer: aws_iam
-      - http:
-          path: billManagement/bills
-          method: put
-          cors: true
-          authorizer: aws_iam
+      # - http:
+      #     path: billManagement/bills
+      #     method: post
+      #     cors: true
+      #     authorizer: aws_iam
+      # - http:
+      #     path: billManagement/bills
+      #     method: put
+      #     cors: true
+      #     authorizer: aws_iam
 
   billMgmt-billTypes:
     handler: functions/private/billManagement/billTypes.main
@@ -262,12 +263,12 @@ functions:
         startingPosition: TRIM_HORIZON
         enabled: true
 
-  upload-billsBucket:
-    handler: functions/events/bills/pdfUpload.main
-    events:
-      - s3:
-          bucket: ${self:provider.environment.VOLUNTEER_BILLS_S3_BUCKET}
-          event: s3:ObjectCreated:*
+  # upload-billsBucket:
+  #   handler: functions/events/bills/pdfUpload.main
+  #   events:
+  #     - s3:
+  #         bucket: ${self:provider.environment.VOLUNTEER_BILLS_S3_BUCKET}
+  #         event: s3:ObjectCreated:*
 
   googleApi:
     handler: functions/private/googleApi/googleApiHandler.main
