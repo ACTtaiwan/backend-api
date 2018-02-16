@@ -58,7 +58,7 @@ export interface CongressGovBill {
   congress: number
   typeCode: BillTypeCode
   billNumber: number
-  congressGovUrl: string
+  congressGovUrl?: string
 }
 
 export interface CongressGovSummaryParagraph {

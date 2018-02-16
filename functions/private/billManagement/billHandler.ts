@@ -9,7 +9,8 @@ import * as _ from 'lodash'
 
 export interface QueryBillsRequest {
   congress?: number[]
-  categories?: string[]
+  categoryIdx?: string[]
+  sponsorRoleId?: string[]
 }
 
 export type QueryBillsResponse = string[]
@@ -30,15 +31,29 @@ export class BillApi {
 
   public async queryBills (req: QueryBillsRequest): Promise<QueryBillsResponse> {
     let out: Promise<QueryBillsResponse>
+    let queryAttrs: (keyof dbLib.BillEntity)[] = ['id', 'introducedDate']
+    if (req.categoryIdx) {
+      queryAttrs.push('categories')
+    }
+    if (req.sponsorRoleId) {
+      queryAttrs.push(<any> 'sponsor.id')
+    }
     if (!req.congress) {
-      out = this.tbl.getAllBills('id').then(out => _.map(out, x => x.id))
+      out = this.tbl.getAllBills(...queryAttrs).then(out => {
+        let rtn = this.sortAndFilter(req, out, queryAttrs)
+        return _.map(rtn, x => x.id)
+      })
     } else {
-      let promises: Promise<QueryBillsResponse>[] = []
+      let promises: Promise<dbLib.BillEntity[]>[] = []
       _.each(req.congress, congress => {
-        let p = this.tbl.queryBillsByCongress(congress, ['id']).then(out => _.map(out.results, x => x.id))
+        let p = this.tbl.queryBillsByCongress(congress, queryAttrs).then(out => out.results)
         promises.push(p)
       })
-      out = Promise.all(promises).then(results => _.concat<string>([], ...results))
+      out = Promise.all(promises).then(results => {
+        let combined = _.concat<dbLib.BillEntity>([], ...results)
+        let rtn = this.sortAndFilter(req, combined, queryAttrs)
+        return _.map(rtn, x => x.id)
+      })
     }
     return out
   }
@@ -51,6 +66,17 @@ export class BillApi {
       return this.tbl.getBillsById(req.id, ...attrNamesToGet)
     }
   }
+
+  private sortAndFilter (req: QueryBillsRequest, results: dbLib.BillEntity[], queryAttrs: (keyof dbLib.BillEntity)[]): dbLib.BillEntity[] {
+    if (req.categoryIdx && req.categoryIdx.length > 0 && queryAttrs && _.includes(queryAttrs, 'categories')) {
+      results = _.filter(results, bill =>
+        (bill.categories && bill.categories.length > 0) ?
+          !!_.find(bill.categories, cat => _.includes(req.categoryIdx, cat.id)) : false
+      )
+    }
+    results = _.orderBy(results, ['introducedDate'], ['desc'])
+    return results
+  }
 }
 
 /**
@@ -61,15 +87,17 @@ export class BillApi {
 
 class BillHandlerGetParams {
   congress?: string
+  categoryIdx?: string
   attrNamesToGet?: string
   id?: string
 }
 
 class BillHandler {
   public static handleRequest (event: APIGatewayEvent, context: Context, callback?: Callback) {
-    console.log(`[CongressGovHandler::BillHandler()] event = ${JSON.stringify(event, null, 2)}`)
+    console.log(`[BillHandler::handleRequest()] event = ${JSON.stringify(event, null, 2)}`)
     let params = <BillHandlerGetParams> {
       congress: (event.queryStringParameters && event.queryStringParameters.congress) || undefined,
+      categoryIdx: (event.queryStringParameters && event.queryStringParameters.categoryIdx) || undefined,
       attrNamesToGet: (event.queryStringParameters && event.queryStringParameters.attrNamesToGet) || undefined,
       id: (event.pathParameters && event.pathParameters.id)
        || (event.queryStringParameters && event.queryStringParameters.id)
@@ -93,33 +121,32 @@ class BillHandler {
   private static dispatchEvent (httpMethod: string, params: BillHandlerGetParams): Promise<any> {
     let api = new BillApi()
 
+    // pre-fetch
     if (httpMethod === 'GET' && (params.congress || _.isEmpty(params))) {
       let req: QueryBillsRequest = {}
       if (params.congress) {
-        req.congress = BillHandler.stringToArray(params.congress, parseInt)
+        req.congress = Utility.stringToArray(params.congress, parseInt)
       }
-      console.log(`[CongressGovHandler::BillHandler()] request = ${JSON.stringify(req, null, 2)}`)
+      if (params.categoryIdx) {
+        req.categoryIdx = Utility.stringToArray(params.categoryIdx)
+      }
+      console.log(`[BillHandler::dispatchEvent()] request = ${JSON.stringify(req, null, 2)}`)
       return api.queryBills(req)
     }
 
+    // full fetch
     if (httpMethod === 'GET' && params.id) {
       let req: GetBillByIdRequest = {
-        id: BillHandler.stringToArray(params.id)
+        id: Utility.stringToArray(params.id)
       }
 
       if (params.attrNamesToGet) {
-        req.attrNamesToGet = BillHandler.stringToArray(params.attrNamesToGet)
+        req.attrNamesToGet = Utility.stringToArray(params.attrNamesToGet)
       }
 
-      console.log(`[CongressGovHandler::BillHandler()] request = ${JSON.stringify(req, null, 2)}`)
+      console.log(`[BillHandler::dispatchEvent()] request = ${JSON.stringify(req, null, 2)}`)
       return api.getBillById(req)
     }
-  }
-
-  private static stringToArray<T> (str: string, postConvert: (x: string) => T = _.identity): T[] {
-    let arr = _.filter(str.trim().split(','), x => x)
-    let rtn = _.map(arr, x => postConvert(x.trim()))
-    return rtn
   }
 }
 

@@ -3,7 +3,7 @@ import * as awsConfig from '../../config/aws.json'
 import * as models from '../congressGov/CongressGovModels'
 import * as _ from 'lodash'
 import { CongressGovSyncBillTable, BillTable, TagTable, TagMetaTable,
-  RoleTable, PersonTable, BillTypeTable, BillCategoryTable } from './DbLib'
+  RoleTable, PersonTable, BillTypeTable, BillCategoryTable, BillVersionTable } from './DbLib'
 
 export class DynamoDBManager {
   private static _instance: DynamoDBManager
@@ -26,7 +26,8 @@ export class DynamoDBManager {
       new CongressGovSyncBillTable(this.dynamoDbDocClient),
       new BillTable(this.dynamoDbDocClient),
       new BillTypeTable(this.dynamoDbDocClient),
-      new BillCategoryTable(this.dynamoDbDocClient),
+      new BillCategoryTable(this.dynamoDbDocClient, this.dynamoDb),
+      new BillVersionTable(this.dynamoDbDocClient),
       new PersonTable(this.dynamoDbDocClient),
       new RoleTable(this.dynamoDbDocClient),
       new TagTable(this.dynamoDbDocClient, this.dynamoDb),
@@ -193,7 +194,16 @@ export abstract class Table {
   protected async getAllItems<T extends TableEntity> (
     attrNamesToGet?: (keyof T)[], flushOut: boolean = true, lastKey?: aws.DynamoDB.DocumentClient.Key
   ): Promise<ScanOutput<T>> {
-    return this.scanItems<T>({ attrNamesToGet, flushOut, lastKey })
+    const options: ScanInput<T> = {flushOut, lastKey}
+    if (attrNamesToGet && attrNamesToGet.length > 0) {
+      options.attrNamesToGet = []
+      options.expAttrNames = {}
+      _.each(attrNamesToGet, attr => {
+        options.attrNamesToGet.push(<any> `#k_${attr}`)
+        options.expAttrNames[ `#k_${attr}` ] = attr
+      })
+    }
+    return this.scanItems<T>(options)
   }
 
   protected async scanItems<T extends TableEntity> (options: ScanInput<T> = {}): Promise<ScanOutput<T>> {

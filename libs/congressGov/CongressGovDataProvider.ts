@@ -5,8 +5,8 @@ import * as awsConfig from '../../config/aws.json'
 import { CongressGovHelper } from './CongressGovHelper'
 
 export class CongressGovDataProvider {
-  public static readonly EXPIRE_IN_MIN_BASIC_INFO: number = 60 * 24 * 2 // 2 days
-  public static readonly EXPIRE_IN_MIN_ALL_INFO: number = 60 * 24 * 2 // 2 days
+  public static readonly EXPIRE_IN_MIN_BASIC_INFO: number = 60 * 24 * 1 // 1 day
+  public static readonly EXPIRE_IN_MIN_ALL_INFO: number = 60 * 24 * 1 // 1 day
   public static readonly EXPIRE_IN_MIN_TEXT: number = -1; // never
 
   private db = dbLib.DynamoDBManager.instance()

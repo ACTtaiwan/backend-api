@@ -7,7 +7,8 @@
     "IDENTITY_POOL_ID": "us-east-1:e84af633-3267-4c1e-9031-9507c1207dc2"
   },
   "s3": {
-    "VOLUNTEER_BILLS_BUCKET_NAME": "volunteer.bills"
+    "VOLUNTEER_BILLS_FULLTEXT_BUCKET_NAME": "volunteer.bills.fulltext",
+    "VOLUNTEER_BILLS_STATICINFO_BUCKET_NAME": "volunteer.bills.staticinfo"
   },
   "dynamodb": {
     "VOLUNTEER_USERS_TABLE_NAME": "volunteer.users",

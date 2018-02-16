@@ -5,9 +5,9 @@ import * as fs from 'fs'
 import * as _ from 'lodash'
 import { BillRow } from '../../libs/googleApi/CongressSheetModels';
 import { v4 as uuid } from 'uuid';
-import { TagManager } from '../../libs/tag/TagManager';
+import { TagManager } from '../../libs/dataManager/TagManager';
 
-export class GoogleSheetSync {
+export class GoogleBillSheetSync {
   private readonly db = dbLib.DynamoDBManager.instance()
 
   private readonly tblName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLS_TABLE_NAME
@@ -65,7 +65,7 @@ export class GoogleSheetSync {
     // add bills
     if (billsToAdd.length > 0) {
       console.log('Adding bills...')
-      this.addBills(billsToAdd)
+      await this.addBills(billsToAdd)
     }
 
     // delete bills
@@ -257,7 +257,7 @@ export class GoogleSheetSync {
   }
 }
 
-let sync = new GoogleSheetSync()
+let sync = new GoogleBillSheetSync()
 // sync.removeJustAddedBills()
 // sync.test()
 sync.syncDb()

@@ -1,4 +1,4 @@
-import * as awsConfig from '../config/aws.json'
+import * as awsConfig from '../../config/aws.json'
 import * as dbLib from '../../libs/dbLib/DbLib'
 import { CongressGovHelper } from '../../libs/congressGov/CongressGovHelper'
 import { CongressGovTrackerParser } from '../../libs/congressGov/CongressGovTrackerParser'
@@ -12,9 +12,13 @@ export class TrackerSync {
 
   public async syncTrackersForBillEntity (bill: dbLib.BillEntity) {
     const path = CongressGovHelper.generateCongressGovBillPath(bill.congress, bill.billType.code, bill.billNumber)
-    console.log(`Updating ${path}`)
     const tracker = await this.congressGovTrackParser.getTracker(path)
-    await this.tbl.updateTracker(bill.id, tracker)
+    if (!_.isEqual(bill.trackers, tracker)) {
+      console.log(`Updating ${path}`)
+      await this.tbl.updateTracker(bill.id, tracker)
+    } else {
+      console.log(`Not updating ${path} - same values`)
+    }
   }
 
   public async syncTrackersForAllBills (currentCongress: number) {
@@ -46,7 +50,7 @@ export class TrackerSync {
     const earliestCongress = CongressGovHelper.MIN_CONGRESS_DATA_AVAILABLE
     if (bill.trackers && bill.trackers.length > 0) {
       // having trackers
-      if (bill.congress <= currentCongress) {
+      if (bill.congress < currentCongress) {
         return `Trackers already available for non-current congress`
       }
     } else {
@@ -60,6 +64,6 @@ export class TrackerSync {
 }
 
 let sync = new TrackerSync()
-// sync.syncTrackersForAllBills(115)
+sync.syncTrackersForAllBills(CongressGovHelper.CURRENT_CONGRESS)
 // syncTrackersForBill(114, 'hconres', 88)
-sync.printBillsHavingNoTrackers()
+// sync.printBillsHavingNoTrackers()

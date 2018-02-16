@@ -2,9 +2,11 @@ import * as models from './CongressGovModels'
 import { CongressGovDataProvider } from './CongressGovDataProvider'
 import { CongressGovHelper } from './CongressGovHelper'
 import Utility from '../utils/Utility'
+import * as _ from 'lodash'
 
 export class CongressGovTextParser {
   private dataProvider = new CongressGovDataProvider()
+  private _versionLookupTable: {[code: string]: string} // key = code, value = version display name
 
   public getAllTextVersions (billPath: string): Promise<models.TextVersion[]> {
     if (!billPath) {
@@ -46,6 +48,14 @@ export class CongressGovTextParser {
     })
   }
 
+  public get versionLookupTable () {
+    return this._versionLookupTable
+  }
+
+  public set versionLookupTable (val: {[displayName: string]: string} ) {
+    this._versionLookupTable = val
+  }
+
   private parseAllAvailableVersions ($: any): models.TextVersion[] {
     let versions = $('#textVersion > option')
     let results: models.TextVersion[] = []
@@ -59,13 +69,48 @@ export class CongressGovTextParser {
       // try to parse single version
       let curVer = $(`h3[class='currentVersion'] > span`)
       if (curVer.length === 1 && curVer[0].children.length === 1 && curVer[0].children[0].data) {
-        let display = curVer[0].children[0].data
+        let display: string = curVer[0].children[0].data
         let versionCode = 'unknown'
-        if (display.startsWith('Introduced in Senate')) {
-          versionCode = 'is'
-        } else if (display.startsWith('Introduced in House')) {
-          versionCode = 'ih'
+
+        if (this.versionLookupTable) {
+          _.each(this.versionLookupTable, (displayName, code) => {
+            if (display.toLowerCase().startsWith(displayName.toLowerCase())) {
+              versionCode = code
+              return false // break
+            }
+          })
+        } else {
+          if (display.startsWith('Introduced in Senate')) {
+            versionCode = 'is'
+          } else if (display.startsWith('Introduced in House')) {
+            versionCode = 'ih'
+          }
         }
+
+        if (versionCode === 'unknown') {
+          // 'Shown Here:' possibly with wrong version name. Try to find it again in full text
+          let text: string = $('#billTextContainer').text()
+          if (text && this.versionLookupTable) {
+            let lines: string[] = text.split('\n').slice(0, 5) // scan first 5 lines
+            if (lines && lines.length > 0) {
+              let invVerMap = _.invert(this.versionLookupTable)
+              let dispNames = _.keys(invVerMap)
+              _.each(lines, l => {
+                let found = _.find(dispNames, x => l.toLowerCase().includes(x.toLowerCase()) )
+                if (found) {
+                  versionCode = invVerMap[found]
+                  return false // break
+                }
+              })
+            }
+          }
+
+          // still can't find version code
+          if (versionCode === 'unknown') {
+            console.log(`[CongressGovTextParser::parseAllAvailableVersions()] version code not found = ${display}`)
+          }
+        }
+
         results.push({versionCode, display})
       }
     }

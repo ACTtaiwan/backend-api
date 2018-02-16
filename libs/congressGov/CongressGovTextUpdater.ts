@@ -1,21 +1,30 @@
-import * as xml2js from 'xml2js'
 import { CongressGovTextParser } from './CongressGovTextParser'
 import * as models from './CongressGovModels'
 import Utility from '../utils/Utility'
 import * as aws from 'aws-sdk'
+import * as s3Lib from '../s3Lib';
+import * as dbLib from '../dbLib/DbLib';
+import * as awsConfig from '../../config/aws.json'
+import { CongressGovHelper } from './CongressGovHelper';
+import * as _ from 'lodash'
+import { S3BucketHelper } from '../s3Lib';
 
 export class CongressGovTextUpdater {
-  public updateAllTextVersions (billPath: string, s3BucketPath: string): Promise<void> {
-    console.log(`[CongressGovTextUpdater::updateAllTextVersions()] Start. billPath = ${billPath} s3BucketPath = ${s3BucketPath}`)
-    let fetcher = new CongressGovTextParser()
-    return fetcher.getAllTextVersions(billPath).then((versions: models.TextVersion[]) => {
+  public readonly parser = new CongressGovTextParser()
+  private s3Bucket = <s3Lib.BillTextBucket> s3Lib.S3Manager.instance().getBucket((<any> awsConfig).s3.VOLUNTEER_BILLS_FULLTEXT_BUCKET_NAME)
+
+  public updateAllTextVersions (billPath: string): Promise<void> {
+    const bill = CongressGovHelper.parseBillUrlOrPath(billPath)
+    console.log(`[CongressGovTextUpdater::updateAllTextVersions()] Start. billPath = ${billPath}`)
+    console.log(`[CongressGovTextUpdater::updateAllTextVersions()] Bill = ${bill.congress}-${bill.typeCode}-${bill.billNumber}`)
+    return this.parser.getAllTextVersions(billPath).then((versions: models.TextVersion[]) => {
       let promises: Promise<void>[] = []
 
       versions.forEach(v => {
         console.log(`[CongressGovTextUpdater::updateAllTextVersions()] updating version = ${v.display}`)
-        promises.push(this.processPlainTextContent(v, s3BucketPath))
-        promises.push(this.processXmlContent(v, s3BucketPath))
-        promises.push(this.processPdfContent(v, s3BucketPath))
+        promises.push(this.processPlainTextContent(v, bill))
+        promises.push(this.processXmlContent(v, bill))
+        promises.push(this.processPdfContent(v, bill))
       })
 
       return Promise.all(promises)
@@ -24,19 +33,30 @@ export class CongressGovTextUpdater {
     })
   }
 
-  public updateTextVersion (text: models.TextVersion, s3BucketPath: string): Promise<void> {
+  public updateTextVersion (text: models.TextVersion, congress: number, typeCode: models.BillTypeCode, billNumber: number): Promise<void> {
     console.log(`[CongressGovTextUpdater::updateTextVersion()] Start.
-                 text = ${JSON.stringify(text, null, 2)} s3BucketPath = ${s3BucketPath}`)
+                 text = ${JSON.stringify(text, null, 2)} Bill = ${congress}-${typeCode}-${billNumber}`)
+    const bill: models.CongressGovBill = {congress, typeCode, billNumber}
     if (text.fullTextXmlUrl) {
-      return this.processXmlContent(text, s3BucketPath)
+      return this.processXmlContent(text, bill)
     } else if (text.fullTextPdfUrl) {
-      return this.processPdfContent(text, s3BucketPath)
+      return this.processPdfContent(text, bill)
     } else {
       return Promise.reject('unsupported content type')
     }
   }
 
-  private processXmlContent (text: models.TextVersion, s3BucketPath: string): Promise<void> {
+  private processPlainTextContent (text: models.TextVersion, bill: models.CongressGovBill): Promise<void> {
+    if (!text.fullText) {
+      console.log(`[CongressGovTextUpdater::processPlainTextContent()] no TEXT content`)
+      return Promise.resolve()
+    } else {
+      return this.s3Bucket.putDocument(text, text.fullText, 'txt', bill.congress, bill.typeCode, bill.billNumber).then(url =>
+        console.log(`[CongressGovTextUpdater::processPlainTextContent()] Object put. S3 url = ${url}`))
+    }
+  }
+
+  private processXmlContent (text: models.TextVersion, bill: models.CongressGovBill): Promise<void> {
     if (!text.fullTextXmlUrl) {
       console.log(`[CongressGovTextUpdater::processXmlContent()] no XML url`)
       return Promise.resolve()
@@ -50,27 +70,13 @@ export class CongressGovTextUpdater {
         body = body.replace(`"bill.dtd"`, `"${staticFilePath}/bill.dtd"`)
         body = body.replace(`"amend.dtd"`, `"${staticFilePath}/amend.dtd"`)
 
-        let s3Key = this.generateS3BucketKey(text, s3BucketPath, 'xml')
-        console.log(`[CongressGovTextUpdater::processXmlContent()] s3Key = ${s3Key}`)
-
-        return this.putObject(body, s3Key, 'text/xml')
+        return this.s3Bucket.putDocument(text, body, 'xml', bill.congress, bill.typeCode, bill.billNumber).then(url =>
+          console.log(`[CongressGovTextUpdater::processXmlContent()] Object put. S3 url = ${url}`))
       })
     }
   }
 
-  private processPlainTextContent (text: models.TextVersion, s3BucketPath: string): Promise<void> {
-    if (!text.fullText) {
-      console.log(`[CongressGovTextUpdater::processPlainTextContent()] no TEXT content`)
-      return Promise.resolve()
-    } else {
-      let s3Key = this.generateS3BucketKey(text, s3BucketPath, 'txt')
-      console.log(`[CongressGovTextUpdater::processPlainTextContent()] s3Key = ${s3Key}`)
-
-      return this.putObject(text.fullText, s3Key, 'text/plain')
-    }
-  }
-
-  private processPdfContent (text: models.TextVersion, s3BucketPath: string): Promise<void> {
+  private processPdfContent (text: models.TextVersion, bill: models.CongressGovBill): Promise<void> {
     if (!text.fullTextPdfUrl) {
       console.log(`[CongressGovTextUpdater::processPdfContent()] no PDF url`)
       return Promise.resolve()
@@ -79,57 +85,9 @@ export class CongressGovTextUpdater {
       return Utility.fetchUrlContent(text.fullTextPdfUrl, true).then((body: any) => {
         console.log(`[CongressGovTextUpdater::processPdfContent()] fetched. PDF file lenght = ${body.length || -1}`)
 
-        let s3Key = this.generateS3BucketKey(text, s3BucketPath, 'pdf')
-        console.log(`[CongressGovTextUpdater::processPdfContent()] s3Key = ${s3Key}`)
-
-        return this.putObject(body, s3Key, 'application/pdf')
+        return this.s3Bucket.putDocument(text, body, 'pdf', bill.congress, bill.typeCode, bill.billNumber).then(url =>
+          console.log(`[CongressGovTextUpdater::processPdfContent()] Object put. S3 url = ${url}`))
       })
     }
-  }
-
-  private putObject (content: aws.S3.Body, s3BucketKey: string, contentType: aws.S3.ContentType): Promise<void> {
-    let s3 = new aws.S3()
-    let params: aws.S3.Types.PutObjectRequest = {
-      Body: content,
-      Bucket: 'volunteer.bills',
-      Key: s3BucketKey,
-      ContentType: contentType,
-      ACL: 'public-read'
-    };
-    return new Promise((resolve, reject) => {
-      s3.putObject(params, (err, data) => {
-        if (err) {
-          console.error(`[CongressGovTextUpdater::putObject()] S3 putObject failed. Error = ${err}`)
-          reject(`S3 putObject failed. Error = ${err}`)
-        } else {
-          console.log(`[CongressGovTextUpdater::putObject()] S3 putObject done.
-                       Bucket = ${params.Bucket} Key = ${params.Key} Length = ${(<any>content).length || -1}`)
-          resolve()
-        }
-      })
-    })
-  }
-
-  private generateS3BucketKey (text: models.TextVersion, s3BucketPath: string, contentType: 'xml' | 'txt' | 'pdf'): string {
-    let s3Key = s3BucketPath + (s3BucketPath.endsWith('/') ? '' : '/')
-
-    // add versionCode
-    if (text.versionCode === 'pl') {
-      s3Key += 'publ'
-    } else {
-      s3Key += text.versionCode
-    }
-
-    // add date
-    if (text.date) {
-      s3Key += '-' + Utility.datetimeStringInDCTimezone(text.date, 'YYYYMMDD')
-    } else {
-      s3Key += '-unknown'
-    }
-
-    // add content type
-    s3Key += '.' + contentType
-
-    return s3Key
   }
 }

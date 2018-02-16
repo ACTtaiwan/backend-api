@@ -1,9 +1,20 @@
 import * as aws from 'aws-sdk'
 import * as awsConfig from '../../config/aws.json'
 import * as models from '../congressGov/CongressGovModels'
-import {TableEntity, BillCategoryEntity, BillTypeEntity, RoleEntity, Table, ScanInput, QueryInput} from './DbLib'
+import {TableEntity, BillCategoryEntity, BillTypeEntity, BillVersionEntity, RoleEntity, Table, ScanInput, QueryInput} from './DbLib'
+import { BillTextContentType } from '../s3Lib';
 
 // BillTable
+
+export interface S3BillDocument {
+  s3Entity: string
+  contentType?: BillTextContentType
+}
+
+export interface BillTextDocument extends BillVersionEntity {
+  date?: number // UTC time
+  documents?: S3BillDocument[]
+}
 
 export interface CosponsorEntity {
   dateCosponsored?: number
@@ -43,6 +54,9 @@ export interface BillEntity extends TableEntity {
   relatedBills?: (models.CongressGovBill & {id?: string})[]
   subjects?: string[]
   s3Entity?: string // static content stored in S3
+
+  // full text
+  versions?: BillTextDocument[]
 }
 
 export interface BillScanOutput {
@@ -135,8 +149,8 @@ export class BillTable extends Table {
       ':v_billNumber': billNumber,
       ':v_billType_subKeyValue': billType[1]
     }
-    return super.scanItems<BillEntity>({filterExp, expAttrNames, expAttrVals, attrNamesToGet}).then(items =>
-      (items && items[0]) ? <BillEntity> items[0] : null)
+    return super.scanItems<BillEntity>({filterExp, expAttrNames, expAttrVals, attrNamesToGet, flushOut: true}).then(out =>
+      (out && out.results && out.results[0]) ? <BillEntity> out.results[0] : null)
   }
 
   public getAllBillsBySingleKeyFilterPaging (

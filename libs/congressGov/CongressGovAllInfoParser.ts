@@ -304,7 +304,7 @@ export class CongressGovAllInfoParser {
     _.each(nodes, node => {
       let href = node.attribs && node.attribs.href
       if (href) {
-        let bill = CongressGovHelper.parseBillUrl(href)
+        let bill = CongressGovHelper.parseBillUrlOrPath(href)
         bills.push(bill)
       }
     })

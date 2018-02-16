@@ -54,4 +54,4 @@ export class IntroducedDateSync {
 }
 
 let sync = new IntroducedDateSync()
-sync.syncIntroducedDateForAllBills(115)
+sync.syncIntroducedDateForAllBills(CongressGovHelper.CURRENT_CONGRESS)

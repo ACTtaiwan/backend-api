@@ -1,6 +1,6 @@
 import * as dbLib from '../../libs/dbLib/DynamoDBManager'
 import * as _ from 'lodash'
-import { TagManager } from '../../libs/tag/TagManager';
+import { TagManager } from '../../libs/dataManager/TagManager';
 import { v4 as uuid } from 'uuid';
 import Utility from '../../libs/utils/Utility';
 

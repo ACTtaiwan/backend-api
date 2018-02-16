@@ -166,11 +166,19 @@ functions:
           cors: true
 
   billMgmt-billCategories:
-    handler: functions/private/billManagement/billCategories.main
+    handler: functions/private/billManagement/billCategoryHandler.main
     events:
       - http:
           path: billManagement/billCategories
           method: get
+          cors: true
+      - http:
+          path: billManagement/billCategories/{id}
+          method: get
+          request:
+            parameters:
+              paths:
+                id: true
           cors: true
   
   billMgmt-sponsors:
@@ -263,6 +271,11 @@ functions:
         startingPosition: TRIM_HORIZON
         enabled: true
 
+  cronjobs:
+    handler: functions/events/cronjobs/dailySync.main
+    events:
+      - schedule: cron(0 12 * * ? *) # Run at 12:00 pm (UTC) every day
+      
   # upload-billsBucket:
   #   handler: functions/events/bills/pdfUpload.main
   #   events:

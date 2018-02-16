@@ -4,6 +4,7 @@ export * from './PersonTable'
 export * from './RoleTable'
 export * from './BillTable'
 export * from './BillTypeTable'
+export * from './BillVersionTable'
 export * from './BillCategoryTable'
 export * from './TagTable'
 

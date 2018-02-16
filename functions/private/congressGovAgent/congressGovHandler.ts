@@ -4,6 +4,7 @@ import Utility from '../../../libs/utils/Utility'
 import * as models from '../../../libs/congressGov/CongressGovModels'
 import { CongressGovTextParser } from '../../../libs/congressGov/CongressGovTextParser'
 import { CongressGovTextUpdater } from '../../../libs/congressGov/CongressGovTextUpdater'
+import { BillTextContentType } from '../../../libs/s3Lib';
 
 /** Example:
  *   ?path=/bill/114th-congress/senate-bill/1635
@@ -15,12 +16,10 @@ class CongressGovRequestGetParams {
 /** Example:
  * {
  *   "path": "/bill/114th-congress/senate-bill/1635",
- *   "s3BucketPath": "114/s/1635/9bff167a-847c-4dd2-9732-315dd0828529"
  *  }
  */
 interface CongressGovRequestPostBody {
   path: string
-  s3BucketPath: string
 }
 
 /** Example:
@@ -29,15 +28,19 @@ interface CongressGovRequestPostBody {
  *   "date": "2016-12-05",
  *   "contentType": "xml",
  *   "url": "https://www.congress.gov/114/bills/s1635/BILLS-114s1635eah.xml",
- *   "s3BucketPath": "114/s/1635/9bff167a-847c-4dd2-9732-315dd0828529"
+ *   "congress": 114
+ *   "billTypeCode": "s"
+ *   "billNumber": 1635
  * }
  */
 interface CongressGovRequestPutBody {
   versionCode: string
   date: string
-  contentType: 'xml' | 'txt' | 'pdf'
+  contentType: BillTextContentType
   url: string
-  s3BucketPath: string
+  congress: number
+  billTypeCode: models.BillTypeCode
+  billNumber: number
 }
 
 class CongressGovHandler {
@@ -51,7 +54,7 @@ class CongressGovHandler {
           let postBody = <CongressGovRequestPostBody>JSON.parse(event.body)
           let updater = new CongressGovTextUpdater()
           updater
-            .updateAllTextVersions(postBody.path, postBody.s3BucketPath)
+            .updateAllTextVersions(postBody.path)
             .then(() => resolve())
             .catch(error => reject(error))
         } catch (error) {
@@ -81,7 +84,7 @@ class CongressGovHandler {
               break
           }
           updater
-            .updateTextVersion(text, putBody.s3BucketPath)
+            .updateTextVersion(text, putBody.congress, putBody.billTypeCode, putBody.billNumber)
             .then(() => resolve())
             .catch(error => reject(error))
         } catch (error) {
