@@ -14,7 +14,7 @@ let test = async (req: api.QueryBillsRequest = {}) => {
 //   attrNamesToGet: ['id', 'billType', 'billNumber', 'congress']
 // })
 
-test({congress: [114, 115]})
+test({congress: [114, 115], categoryIdx: ['9a6cb046-2f66-4d4b-8148-10b57793341b']})
 // test()
 
 let test2 = async () => {

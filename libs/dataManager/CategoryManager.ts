@@ -19,8 +19,8 @@ export class CategoryManager {
     const bills = await this.tblBill.getAllBills('id', 'congress', 'billNumber', 'billType', 'categories')
     const billsWithCats = _.filter(bills, b => b.categories && b.categories.length > 0)
 
-    for (let b = 0; b < bills.length; ++b) {
-      const bill = bills[b]
+    for (let b = 0; b < billsWithCats.length; ++b) {
+      const bill = billsWithCats[b]
       const billDisplay = dbLib.DbHelper.displayBill(bill)
       console.log(`\n---------------------------------- Updating ${billDisplay} ----------------------------------\n`)
       for (let i = 0; i < bill.categories.length; ++i) {

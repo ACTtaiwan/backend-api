@@ -1,5 +1,5 @@
 import * as dbLib from '../../libs/dbLib/DbLib'
-import * as awsConfig from '../config/aws.json'
+import * as awsConfig from '../../config/aws.json'
 import * as aws from 'aws-sdk'
 import { CongressGovDataProvider } from '../../libs/congressGov/CongressGovDataProvider'
 import { CongressGovTextParser } from '../../libs/congressGov/CongressGovTextParser'
@@ -47,8 +47,8 @@ tblSync.getAllObjects('urlPath').then(objs => console.log('total size =' + objs.
 // p.getAllTextVersions('bill/115th-congress/house-bill/4288').then(result => console.log(JSON.stringify(result, null, 2)))
 // p.getAllTextVersions('bill/114th-congress/senate-bill/1635').then(result => console.log(JSON.stringify(result, null, 2)))
 
-const tblName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLS_TABLE_NAME
-const tbl = <dbLib.BillTable> dbLib.DynamoDBManager.instance().getTable(tblName)
+// const tblName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLS_TABLE_NAME
+// const tbl = <dbLib.BillTable> dbLib.DynamoDBManager.instance().getTable(tblName)
 // tbl.getAllBills().then(objs => console.log('total size =' + objs.length))
 // const id = '9bff167a-847c-4dd2-9732-315dd0828529'
 // tbl.getObjectById(id).then(obj => {
@@ -67,3 +67,13 @@ const tbl = <dbLib.BillTable> dbLib.DynamoDBManager.instance().getTable(tblName)
 //   let url = _.map(obj, o => CongressGovHelper.generateCongressGovUrl(o.congress, o.billType.code, o.billNumber))
 //   console.log(JSON.stringify(url, null, 2))
 // })
+
+const tblName = (<any> awsConfig).dynamodb.VOLUNTEER_ROLES_TABLE_NAME
+const tbl = <dbLib.RoleTable> dbLib.DynamoDBManager.instance().getTable(tblName)
+
+let f = async () => {
+  let roles = await tbl.getRolesByCongress(115)
+  console.log(JSON.stringify(roles, null, 2))
+}
+
+f()

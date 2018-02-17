@@ -29,7 +29,7 @@ export class DynamoDBManager {
       new BillCategoryTable(this.dynamoDbDocClient, this.dynamoDb),
       new BillVersionTable(this.dynamoDbDocClient),
       new PersonTable(this.dynamoDbDocClient),
-      new RoleTable(this.dynamoDbDocClient),
+      new RoleTable(this.dynamoDbDocClient, this.dynamoDb),
       new TagTable(this.dynamoDbDocClient, this.dynamoDb),
       new TagMetaTable(this.dynamoDbDocClient)
     ]
@@ -237,7 +237,7 @@ export abstract class Table {
       while (true) {
         let data = await this.docClient.scan(params).promise()
         if (data && data.Items) {
-          console.log(`batch items fetched = ` + data.Items.length)
+          console.log(`[${this.tableName}] batch items fetched = ` + data.Items.length)
           items = [...items, ...(data.Items as T[])]
           if (options.maxItems && items.length >= options.maxItems) {
             break

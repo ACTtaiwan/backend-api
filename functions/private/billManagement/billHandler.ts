@@ -4,6 +4,7 @@ import Utility from '../../../libs/utils/Utility'
 import * as dbLib from '../../../libs/dbLib/DbLib'
 import * as awsConfig from '../../../config/aws.json'
 import * as _ from 'lodash'
+import { BillCategoryApi } from './billCategoryHandler';
 
 // queryBills()
 
@@ -33,8 +34,26 @@ export class BillApi {
     let out: Promise<QueryBillsResponse>
     let queryAttrs: (keyof dbLib.BillEntity)[] = ['id', 'introducedDate']
     if (req.categoryIdx) {
-      queryAttrs.push('categories')
+      console.log(`[BillApi::queryBills()] Redirect to category api. req.categoryIdx = ${JSON.stringify(req.categoryIdx)}`)
+      let catApi = new BillCategoryApi()
+      let promise = req.congress ? catApi.fullFetchWithCongress(req.categoryIdx, req.congress) : catApi.fullFetch(req.categoryIdx)
+      return promise.then(cats => {
+        let billIdx: string[] = []
+        _.each(cats, x => billIdx = billIdx.concat(x.billId))
+        billIdx = _.uniq(billIdx)
+        if (billIdx.length === 0) {
+          return []
+        } else {
+          return this.tbl.getBillsById(billIdx, ...queryAttrs).then(bills => {
+            let rtn = this.sortAndFilter(req, bills, queryAttrs)
+            return _.map(rtn, x => x.id)
+          })
+        }
+      })
     }
+    // if (req.categoryIdx) {
+    //   queryAttrs.push('categories')
+    // }
     if (req.sponsorRoleId) {
       queryAttrs.push(<any> 'sponsor.id')
     }
