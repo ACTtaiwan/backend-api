@@ -156,5 +156,3 @@ export class RoleManager {
   }
 }
 
-let mngr = new RoleManager()
-mngr.rebuildIndex()

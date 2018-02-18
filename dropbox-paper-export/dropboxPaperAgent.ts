@@ -6,7 +6,7 @@ export interface PaperTableItem {
   billTypeDisplay?: string
   billNumber?: number
   version?: string
-  category?: string
+  category?: string[]
   tags?: string[]
   comment?: string
 }
@@ -43,7 +43,38 @@ let convert = (fname: string): PaperTableItem[] => {
             break
 
           case 'tags':
-            obj.tags = v.split(',').map(x => x.trim()).filter(x => x)
+            obj.tags = v.split(/;|,/).map(x => x.trim()).filter(x => x)
+            break
+
+          case 'category':
+            obj.category = v.split(/;|,/).map(x => x.trim()).filter(x => x)
+            obj.category = _.map(obj.category, cat => {
+              switch (cat.toLowerCase()) {
+                case 'Trade'.toLowerCase():
+                case 'Trade/Economy'.toLowerCase():
+                  return 'Trade & Economy'
+
+                case 'Arms sales/transfer'.toLowerCase():
+                case 'Arms sales'.toLowerCase():
+                case 'Arms sale'.toLowerCase():
+                  return 'Arms Sales & Transfer'
+
+                case 'Others'.toLowerCase():
+                  return 'Other'
+
+                case 'International Particpation'.toLowerCase():
+                case 'international particlipation'.toLowerCase():
+                  return 'International Participation'
+
+                case 'appropriation/International Participation'.toLowerCase():
+                  obj.category.push('Appropriation')
+                  return 'International Participation'
+
+                case 'Taiwan Defense'.toLowerCase():
+                  return 'Taiwan’s Defense'
+              }
+              return cat
+            })
             break
 
           default:

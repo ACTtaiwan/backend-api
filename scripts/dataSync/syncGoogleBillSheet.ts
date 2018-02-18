@@ -1,11 +1,18 @@
 import * as awsConfig from '../../config/aws.json'
-import GoogleSheetAgent from '../../libs/googleApi/GoogleSheetAgent'
+import { GoogleSheetAgent } from '../../libs/googleApi/GoogleSheetAgent'
 import * as dbLib from '../../libs/dbLib/DbLib'
 import * as fs from 'fs'
 import * as _ from 'lodash'
-import { BillRow } from '../../libs/googleApi/CongressSheetModels';
+import { BillRow, CategoryRow } from '../../libs/googleApi/CongressSheetModels';
 import { v4 as uuid } from 'uuid';
 import { TagManager } from '../../libs/dataManager/TagManager';
+import { CategoryManager } from '../../libs/dataManager/CategoryManager';
+
+export class GoogleBillSheetSyncOption {
+  syncBasicInfo?: boolean = true
+  syncCategories?: boolean = true
+  syncTags?: boolean = true
+}
 
 export class GoogleBillSheetSync {
   private readonly db = dbLib.DynamoDBManager.instance()
@@ -20,17 +27,13 @@ export class GoogleBillSheetSync {
   private readonly tblBillCat = <dbLib.BillCategoryTable> this.db.getTable(this.tblBillCatName)
 
   private readonly sheet = new GoogleSheetAgent()
+  private readonly categoryManager = new CategoryManager()
 
   private types: dbLib.BillTypeEntity[]
   private cats: dbLib.BillCategoryEntity[]
+  private catRows: CategoryRow[]
 
-  public async init () {
-    this.types = await this.tblBillType.getAllTypes()
-    this.cats = await this.tblBillCat.getAllCategories()
-  }
-
-  public async syncDb () {
-    await this.init()
+  public async syncDb (options: GoogleBillSheetSyncOption = new GoogleBillSheetSyncOption()) {
     const rows: BillRow[] = await this.sheet.getBillSheet()
     const billsToDelete = await this.tbl.getAllBills('id', 'congress', 'billType', 'billNumber', 'tags')
     const billsToUpdate: [BillRow, dbLib.BillEntity][] = []
@@ -58,7 +61,7 @@ export class GoogleBillSheetSync {
       while (!_.isEmpty(billsToUpdate)) {
         console.log(`Remaining ${billsToUpdate.length} bills`)
         const batch = billsToUpdate.splice(0, batchSize)
-        await this.batchUpdate(batch)
+        await this.batchUpdate(batch, options)
       }
     }
 
@@ -73,6 +76,10 @@ export class GoogleBillSheetSync {
       console.log('Deleting bills...')
       await this.tbl.deleteBills(_.map(billsToDelete, x => x.id))
     }
+
+    // rebuild category index
+    console.log(`Rebuilding category index...`)
+    await options.syncCategories && this.categoryManager.rebuildIndex()
   }
 
   public async test () {
@@ -89,7 +96,10 @@ export class GoogleBillSheetSync {
     }
   }
 
-  public addBill (billRow: BillRow) {
+  public async addBill (billRow: BillRow) {
+    if (!this.types) {
+      this.types = await this.tblBillType.getAllTypes()
+    }
     const typeToAdd = _.find(this.types, t => t.display === billRow.billTypeDisplay)
     const entity = <dbLib.BillEntity> {
       id: <string> uuid(),
@@ -104,13 +114,13 @@ export class GoogleBillSheetSync {
     _.assign(entity, optionals)
 
     // categories
-    const catsFound = this.findCategories(billRow)
+    const catsFound = await this.findCategories(billRow.categories)
     entity.categories = catsFound
 
     return this.tbl.putBill(entity)
   }
 
-  public async batchUpdate (billsToUpdate: [BillRow, dbLib.BillEntity][]) {
+  public async batchUpdate (billsToUpdate: [BillRow, dbLib.BillEntity][], options: GoogleBillSheetSyncOption) {
     let billIdRowMap = {}
     _.each(billsToUpdate, x => billIdRowMap[ x[1].id ] = x[0])
 
@@ -123,8 +133,9 @@ export class GoogleBillSheetSync {
       const billId = billIdx[i]
       const row = billIdRowMap[billId]
       const bill = billIdEntityMap[billId]
-      // await this.updateBill(row, bill)
-      await this.updateTag(row, bill)
+      options.syncBasicInfo && await this.updateBill(row, bill)
+      options.syncTags && await this.updateTag(row, bill)
+      options.syncCategories && await this.updateCategory(row, bill)
     }
   }
 
@@ -156,22 +167,6 @@ export class GoogleBillSheetSync {
     updateLiteralField('china')
     updateLiteralField('insight')
     updateLiteralField('comment')
-
-    if (row.categories && row.categories.length > 0) {
-      const catsFound = this.findCategories(row)
-      if (!bill.categories) {
-        console.log(`${this.displayBill(bill)} -> categories: invalid (empty to assign)`)
-        update.categories = catsFound
-      } else {
-        const notEqual = (catsFound.length !== bill.categories.length)
-                      || !_.isEqualWith(_.sortBy(catsFound, 'id'), _.sortBy(bill.categories, 'id'), (x, y) => x.id === y.id)
-        if (notEqual) {
-          console.log(`${this.displayBill(bill)} -> categories: invalid (existing to update)`)
-          // update.categories = _.uniqBy(_.concat(bill.categories, catsFound), 'id') // merge
-          update.categories = catsFound // overwrite
-        }
-      }
-    }
 
     if (!_.isEmpty(update)) {
       console.log(`Incremental bill update = ${JSON.stringify(update, null, 2)}`)
@@ -212,25 +207,60 @@ export class GoogleBillSheetSync {
     }
   }
 
+  public async updateCategory (row: BillRow, bill: dbLib.BillEntity) {
+    let update = <dbLib.BillEntity> {}
+
+    if (row.categories && row.categories.length > 0) {
+      const catsFound = await this.findCategories(row.categories)
+      if (!bill.categories) {
+        console.log(`${this.displayBill(bill)} -> categories: invalid (empty to assign)`)
+        update.categories = catsFound
+      } else {
+        const notEqual = (catsFound.length !== bill.categories.length)
+                      || !_.isEqualWith(_.sortBy(catsFound, 'id'), _.sortBy(bill.categories, 'id'), (x, y) => x.id === y.id)
+        if (notEqual) {
+          console.log(`${this.displayBill(bill)} -> categories: invalid (existing to update)`)
+          update.categories = catsFound // overwrite
+        }
+      }
+    }
+
+    if (!_.isEmpty(update)) {
+      console.log(`Incremental bill update = ${JSON.stringify(update, null, 2)}`)
+      return this.tbl.updateBill(bill.id, update)
+    } else {
+      return Promise.resolve()
+    }
+  }
+
   public async removeJustAddedBills () {
     const bills = await this.tbl.getAllBillsNotHavingAttributes(['currentChamber', 'actions', 'trackers', 'sponsor', 'cosponsors'], 'id')
     const idx = _.map(bills, x => x.id)
     await this.tbl.deleteBills(idx)
   }
 
-  private findCategories (row: BillRow): dbLib.BillCategoryEntity[] {
-    const found: dbLib.BillCategoryEntity[] = []
-    if (row.categories && row.categories.length > 0) {
-      _.each(row.categories, rowCat => {
-        let cat = _.find(this.cats, c => this.stringCompare(c.name, rowCat))
+  public async findCategories (categories: string[]): Promise<dbLib.BillCategoryEntity[]> {
+    if (!this.cats) {
+      this.cats = await this.tblBillCat.getAllCategories()
+    }
+    if (!this.catRows) {
+      this.catRows = await this.sheet.getCategorySheet()
+    }
+    const found: CategoryRow[] = []
+    if (categories && categories.length > 0) {
+      _.each(categories, rowCat => {
+        let cat = _.find(this.catRows, c => this.stringCompare(c.displayName, rowCat))
         if (!cat) {
-          console.log(`Cannot find category '${rowCat}' for row = ${this.displayRow(row)}`)
+          console.log(`Cannot find category '${rowCat}'`)
         } else {
           found.push(cat)
         }
       })
     }
-    return found
+
+    const dbEntityCodeMap = _.keyBy(this.cats, 'code')
+    const dbEntities = _.filter(_.map(found, x => dbEntityCodeMap[x.code]), _.identity)
+    return _.clone(dbEntities)
   }
 
   private stringCompare (str1: string, str2: string): boolean {
@@ -260,4 +290,4 @@ export class GoogleBillSheetSync {
 let sync = new GoogleBillSheetSync()
 // sync.removeJustAddedBills()
 // sync.test()
-sync.syncDb()
+sync.syncDb({syncBasicInfo: false, syncTags: false, syncCategories: true})

@@ -39,7 +39,3 @@ export class CategoryManager {
     }
   }
 }
-
-let mngr = new CategoryManager()
-mngr.rebuildIndex()
-// mngr.resetBillsForCategoryTable()
