@@ -24,9 +24,13 @@ class Directory {
   getRole (options) {
     return JoiSchema.validate
       .getRoleParams(options)
-      .then(({ id }) => {
+      .then(({
+        id
+      }) => {
         if (id) {
-          return this._getRoleById({ id })
+          return this._getRoleById({
+            id
+          })
         } else {
           throw new Error('INVALID_PARAMETERS')
         }
@@ -35,11 +39,17 @@ class Directory {
       .catch(error => Promise.reject(error))
   }
 
-  _getRoleById ({ id }) {
-    const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
+  _getRoleById ({
+    id
+  }) {
+    const dynamoDb = new AWS.DynamoDB.DocumentClient({
+      region: this._awsRegion
+    })
     const params = {
       TableName: this._rolesTableName,
-      Key: { id }
+      Key: {
+        id
+      }
     }
 
     return dynamoDb
@@ -52,7 +62,9 @@ class Directory {
   getRoles (options) {
     return JoiSchema.validate
       .getRolesParams(options)
-      .then(({ query }) => {
+      .then(({
+        query
+      }) => {
         if (query && query.name) {
           const nameQueryParam = this._genNameQueryParam(query.name)
           return this._getRolesByQuery(nameQueryParam)
@@ -65,8 +77,12 @@ class Directory {
   }
 
   _getRoleList (options) {
-    const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
-    const params = { TableName: this._rolesTableName }
+    const dynamoDb = new AWS.DynamoDB.DocumentClient({
+      region: this._awsRegion
+    })
+    const params = {
+      TableName: this._rolesTableName
+    }
     return dynamoDb
       .scan(params)
       .promise()
@@ -100,7 +116,9 @@ class Directory {
   }
 
   _getRolesByQuery (QueryParams) {
-    const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: this._awsRegion })
+    const dynamoDb = new AWS.DynamoDB.DocumentClient({
+      region: this._awsRegion
+    })
     const params = {
       TableName: this._rolesTableName,
       ...QueryParams
