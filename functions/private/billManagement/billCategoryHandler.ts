@@ -29,6 +29,7 @@ export class BillCategoryApi {
       if (billIdx.length === 0) {
         return cats
       } else {
+        console.log(`[BillCategoryApi::fullFetchWithCongress()] query billIdx = ${JSON.stringify(billIdx, null, 2)}`)
         return this.tblBill.getBillsById(billIdx, 'id', 'congress').then(bills => {
           let billIdxCongressFiltered = _.map(_.filter(bills, b => _.includes(congress, b.congress)), 'id')
           _.each(cats, cat => cat.billId = _.intersection(cat.billId, billIdxCongressFiltered))

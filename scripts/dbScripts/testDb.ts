@@ -38,7 +38,7 @@ const tblSync = <dbLib.CongressGovSyncBillTable> dbLib.DynamoDBManager.instance(
 // tbl.getObjectByUrlPath(url).then(obj => {
 //   console.log(JSON.stringify(obj, null, 2))
 // })
-tblSync.getAllObjects('urlPath').then(objs => console.log('total size =' + objs.length))
+// tblSync.getAllObjects('urlPath').then(objs => console.log('total size =' + objs.length))
 
 // let p = new CongressGovTrackerParser()
 // p.getTracker('bill/115th-congress/house-bill/4288').then(result => console.log(JSON.stringify(result, null, 2)))

@@ -1,5 +1,5 @@
 import * as awsConfig from '../../config/aws.json'
-import GoogleSheetAgent from '../../libs/googleApi/GoogleSheetAgent'
+import { GoogleSheetAgent } from '../../libs/googleApi/GoogleSheetAgent'
 import * as dbLib from '../../libs/dbLib/DbLib'
 import * as _ from 'lodash'
 import { VersionRow } from '../../libs/googleApi/CongressSheetModels';

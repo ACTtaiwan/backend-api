@@ -1,6 +1,6 @@
 import { Context, Callback, APIGatewayEvent } from 'aws-lambda'
 import Response from '../../../libs/utils/Response'
-import GoogleSheetAgent from '../../../libs/googleApi/GoogleSheetAgent'
+import { GoogleSheetAgent } from '../../../libs/googleApi/GoogleSheetAgent'
 
 class GoogleApiHandler {
   public static handleRequest (event: APIGatewayEvent, context: Context, callback?: Callback) {

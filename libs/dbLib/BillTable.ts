@@ -3,6 +3,7 @@ import * as awsConfig from '../../config/aws.json'
 import * as models from '../congressGov/CongressGovModels'
 import {TableEntity, BillCategoryEntity, BillTypeEntity, BillVersionEntity, RoleEntity, Table, ScanInput, QueryInput} from './DbLib'
 import { BillTextContentType } from '../s3Lib';
+import * as _ from 'lodash'
 
 // BillTable
 
@@ -124,8 +125,19 @@ export class BillTable extends Table {
   }
 
   public getBillsById (idx: string[], ...attrNamesToGet: (keyof BillEntity)[]): Promise<BillEntity[]> {
-    return super.getItems<BillEntity>('id', idx, attrNamesToGet).then(data =>
-      (data && data.Responses && data.Responses[this.tableName]) ? <BillEntity[]> data.Responses[this.tableName] : null)
+    const batchSize = 70
+    const promises: Promise<BillEntity[]>[] = []
+    while (!_.isEmpty(idx)) {
+      const batchIdx = idx.splice(0, batchSize)
+      if (batchIdx.length === 0) {
+        promises.push(Promise.resolve([]))
+      } else {
+        const promise = super.getItems<BillEntity>('id', batchIdx, attrNamesToGet).then(data =>
+          (data && data.Responses && data.Responses[this.tableName]) ? <BillEntity[]> data.Responses[this.tableName] : null)
+        promises.push(promise)
+      }
+    }
+    return Promise.all(promises).then((res: BillEntity[][]) => _.flatten(res))
   }
 
   public getBill (congress: number, billTypeCode: models.BillTypeCode, billNumber: number, ...attrNamesToGet: (keyof BillEntity)[])
