@@ -1,0 +1,10135 @@
+[
+  {
+    "congress": 101,
+    "billNumber": 204,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "trade/economy",
+    "tags": [
+      "trade",
+      "steel"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 21,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "trade/economy",
+    "tags": [
+      "conservation",
+      "driftnet fishing"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 214,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "trade/economy",
+    "tags": [
+      "conservation",
+      "whales"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 233,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "democracy",
+    "tags": [
+      "1989 prodemocracy demonstration in China",
+      "political freedom",
+      "economic freedom",
+      "human rights"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 234,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "US-Taiwan Relations",
+    "tags": [
+      "TRA",
+      "Taiwan’s future",
+      "peaceful means"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 235,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "democracy",
+    "tags": [
+      "TRA",
+      "human rights",
+      "martial law",
+      "Taiwanese political activists in the US",
+      "rule of law",
+      "election"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 293,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "US-Taiwan Relations",
+    "tags": [
+      "TRA",
+      "Taiwan’s future",
+      "peaceful means",
+      "plebiscite"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 89,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "conservation",
+      "fishery import",
+      "driftnet monitoring and enforcement"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 1487,
+    "billTypeDisplay": "H.R.",
+    "version": "enr",
+    "category": "appropriation",
+    "tags": [
+      "AIT",
+      "TRA"
+    ],
+    "comment": "AIT $11,300,000 for the fiscal year 1990 and $11,752,000 for the fiscal year 1991"
+  },
+  {
+    "congress": 101,
+    "billNumber": 1748,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "US-Taiwan Free Trade area",
+      "Omnibus Trade and Competitiveness Act of 1988"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 1751,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "US-Korea Free Trade area",
+      "Omnibus Trade and Competitiveness Act of 1988"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 1752,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "US-ASEAN Free Trade area",
+      "Omnibus Trade and Competitiveness Act of 1988"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 2655,
+    "billTypeDisplay": "H.R.",
+    "version": "rh",
+    "category": "Trade/Economy, International Participation",
+    "tags": [
+      "OECD"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 2925,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "immigrants"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 2991,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 101,
+    "billNumber": 3409,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 101,
+    "billNumber": 3496,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "conservation",
+      "driftnet fishing",
+      "fishery import"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 3743,
+    "billTypeDisplay": "H.R.",
+    "version": "enr",
+    "category": "appropriation, Trade/Economy",
+    "tags": [
+      "Asian Development Bank",
+      "name rectification"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 3792,
+    "billTypeDisplay": "H.R.",
+    "version": "enr",
+    "category": "appropriation",
+    "tags": [
+      "AIT",
+      "TRA"
+    ],
+    "comment": "AIT $11,300,000 for the fiscal year 1990 and $11,752,000 for the fiscal year 1991"
+  },
+  {
+    "congress": 101,
+    "billNumber": 4445,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "appropriation",
+    "tags": [
+      "AIT",
+      "TRA"
+    ],
+    "comment": "AIT $14,000,000 for fiscal year 1991, strike out $11,752,000"
+  },
+  {
+    "congress": 101,
+    "billNumber": 4610,
+    "billTypeDisplay": "H.R.",
+    "version": "rh",
+    "category": "appropriation",
+    "tags": [
+      "AIT",
+      "TRA"
+    ],
+    "comment": "AIT $14,000,000 for fiscal year 1991, strike out $11,752,000"
+  },
+  {
+    "congress": 101,
+    "billNumber": 4939,
+    "billTypeDisplay": "H.R.",
+    "version": "ih, rds, rfs",
+    "category": "Trade/Economy",
+    "tags": [
+      "China",
+      "human rights",
+      "non-discriminatory treatment",
+      "GATT"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 5021,
+    "billTypeDisplay": "H.R.",
+    "version": "enr",
+    "category": "appropriation",
+    "tags": [
+      "AIT",
+      "TRA"
+    ],
+    "comment": "AIT $11,752,000"
+  },
+  {
+    "congress": 101,
+    "billNumber": 5114,
+    "billTypeDisplay": "H.R.",
+    "version": "enr",
+    "category": "appropriation, Trade/Economy",
+    "tags": [
+      "Asian Development Bank",
+      "name rectification"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 5252,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy, International Participation",
+    "tags": [
+      "GATT"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 514,
+    "billTypeDisplay": "H.Res.",
+    "tags": [
+      "conservation"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 2035,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 101,
+    "billNumber": 928,
+    "billTypeDisplay": "S.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 101,
+    "billNumber": 944,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 179,
+    "billTypeDisplay": "S.Res.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 210,
+    "billTypeDisplay": "S.Res.",
+    "category": "democracy",
+    "tags": [
+      "human rights"
+    ]
+  },
+  {
+    "congress": 101,
+    "billNumber": 296,
+    "billTypeDisplay": "S.Res.",
+    "tags": [
+      "GATT"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 193,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 102,
+    "billNumber": 210,
+    "billTypeDisplay": "H.Con.Res.",
+    "tags": [
+      "UN"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 248,
+    "billTypeDisplay": "H.Con.Res.",
+    "category": "democracy",
+    "tags": [
+      "human rights"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 436,
+    "billTypeDisplay": "H.J.Res.",
+    "tags": [
+      "sport"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 1415,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 102,
+    "billNumber": 2212,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "GATT"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 2468,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "GATT"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 2508,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 102,
+    "billNumber": 2569,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 2608,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 102,
+    "billNumber": 2621,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "Asian Development Bank"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 2709,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 2785,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "GATT"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 3165,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 102,
+    "billNumber": 3489,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "AIT"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 4070,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "OECD"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 4376,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 102,
+    "billNumber": 4380,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 4533,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 4546,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "OECD"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 4756,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 4974,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 102,
+    "billNumber": 5100,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 5368,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 102,
+    "billNumber": 5412,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "navy"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 5678,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 102,
+    "billNumber": 5757,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "OECD"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 6150,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 102,
+    "billNumber": 142,
+    "billTypeDisplay": "H.Res."
+  },
+  {
+    "congress": 102,
+    "billNumber": 143,
+    "billTypeDisplay": "H.Res."
+  },
+  {
+    "congress": 102,
+    "billNumber": 297,
+    "billTypeDisplay": "H.Res.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 334,
+    "billTypeDisplay": "H.Res.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 1192,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 102,
+    "billNumber": 1361,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 2321,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 102,
+    "billNumber": 2409,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 2719,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 2856,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 3019,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 3026,
+    "billTypeDisplay": "S.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 102,
+    "billNumber": 3384,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 102,
+    "billNumber": 579,
+    "billTypeDisplay": "S.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 102,
+    "billNumber": 884,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "conservation"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 136,
+    "billTypeDisplay": "S.Con.Res.",
+    "tags": [
+      "UN"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 99,
+    "billTypeDisplay": "S.Con.Res.",
+    "category": "democracy",
+    "tags": [
+      "human rights"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 116,
+    "billTypeDisplay": "S.Res.",
+    "tags": [
+      "GATT"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 119,
+    "billTypeDisplay": "S.Res."
+  },
+  {
+    "congress": 102,
+    "billNumber": 230,
+    "billTypeDisplay": "S.Res.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 102,
+    "billNumber": 234,
+    "billTypeDisplay": "S.Res.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 113,
+    "billTypeDisplay": "H.Con.Res.",
+    "tags": [
+      "APEC"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 148,
+    "billTypeDisplay": "H.Con.Res.",
+    "tags": [
+      "UN"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 166,
+    "billTypeDisplay": "H.Con.Res.",
+    "tags": [
+      "UN"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 168,
+    "billTypeDisplay": "H.Con.Res.",
+    "tags": [
+      "UN"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 1944,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "history"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 2295,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 103,
+    "billNumber": 2333,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "high-level visit"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 2519,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 103,
+    "billNumber": 2521,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "history"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 2561,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "navy"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 3471,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "navy"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 3664,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "conservation"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 3809,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 103,
+    "billNumber": 3987,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "conservation"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 4301,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 103,
+    "billNumber": 4426,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 103,
+    "billNumber": 4429,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "navy"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 4603,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 103,
+    "billNumber": 4606,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "high-level visit",
+      "trade",
+      "conservation"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 4650,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "high-level visit"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 4924,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "conservation"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 5155,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "navy"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 763,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 783,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 103,
+    "billNumber": 533,
+    "billTypeDisplay": "H.Res.",
+    "tags": [
+      "AIT"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 1091,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 103,
+    "billNumber": 1099,
+    "billTypeDisplay": "S.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 103,
+    "billNumber": 1197,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "AIT"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 1281,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "AIT"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 1467,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 103,
+    "billNumber": 149,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 103,
+    "billNumber": 1925,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "conservation"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 2182,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "high-level visit"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 2208,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 103,
+    "billNumber": 2211,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 103,
+    "billNumber": 971,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "history"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 20,
+    "billTypeDisplay": "S.Con.Res.",
+    "tags": [
+      "UN"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 29,
+    "billTypeDisplay": "S.Con.Res.",
+    "tags": [
+      "APEC"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 45,
+    "billTypeDisplay": "S.Con.Res.",
+    "tags": [
+      "UN"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 55,
+    "billTypeDisplay": "S.Con.Res.",
+    "tags": [
+      "UN"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 148,
+    "billTypeDisplay": "S.Res.",
+    "tags": [
+      "UN"
+    ]
+  },
+  {
+    "congress": 103,
+    "billNumber": 261,
+    "billTypeDisplay": "S.Res."
+  },
+  {
+    "congress": 103,
+    "billNumber": 270,
+    "billTypeDisplay": "S.Res.",
+    "tags": [
+      "high-level visit"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 12,
+    "billTypeDisplay": "H.Con.Res.",
+    "tags": [
+      "UN"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 138,
+    "billTypeDisplay": "H.Con.Res.",
+    "tags": [
+      "China"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 140,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 104,
+    "billNumber": 148,
+    "billTypeDisplay": "H.Con.Res.",
+    "tags": [
+      "China"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 154,
+    "billTypeDisplay": "H.Con.Res.",
+    "category": "democracy",
+    "tags": [
+      "election"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 212,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 104,
+    "billNumber": 33,
+    "billTypeDisplay": "H.Con.Res.",
+    "tags": [
+      "high-level visit"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 53,
+    "billTypeDisplay": "H.Con.Res.",
+    "tags": [
+      "high-level visit"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 63,
+    "billTypeDisplay": "H.Con.Res.",
+    "tags": [
+      "UN"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 1292,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "AIT"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 1460,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "high-level visit"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 1561,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "AIT",
+      "high-level visit"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 1563,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 104,
+    "billNumber": 1564,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 104,
+    "billNumber": 2047,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 104,
+    "billNumber": 2053,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "China"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 2058,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "China"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 2076,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 104,
+    "billNumber": 3019,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 104,
+    "billNumber": 3121,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "navy"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 3230,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "navy"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 3569,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "WTO"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 3577,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "China"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 3814,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 104,
+    "billNumber": 3987,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 4278,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 104,
+    "billNumber": 4312,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "AIT"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 461,
+    "billTypeDisplay": "H.Res.",
+    "tags": [
+      "China"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 463,
+    "billTypeDisplay": "H.Res.",
+    "tags": [
+      "China"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 490,
+    "billTypeDisplay": "H.Res.",
+    "tags": [
+      "WTO"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 1441,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "TRA",
+      "high-level visit"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 1594,
+    "billTypeDisplay": "S.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 104,
+    "billNumber": 1745,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "navy"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 1762,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "navy"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 1978,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 908,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "AIT",
+      "high-level visit"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 961,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 104,
+    "billNumber": 3,
+    "billTypeDisplay": "S.Con.Res.",
+    "tags": [
+      "UN"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 43,
+    "billTypeDisplay": "S.Con.Res.",
+    "tags": [
+      "China"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 9,
+    "billTypeDisplay": "S.Con.Res.",
+    "tags": [
+      "high-level visit"
+    ]
+  },
+  {
+    "congress": 104,
+    "billNumber": 63,
+    "billTypeDisplay": "S.J.Res.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 104,
+    "billNumber": 97,
+    "billTypeDisplay": "S.Res.",
+    "tags": [
+      "South China Sea"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 100,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 105,
+    "billNumber": 132,
+    "billTypeDisplay": "H.Con.Res.",
+    "tags": [
+      "UN"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 178,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 105,
+    "billNumber": 219,
+    "billTypeDisplay": "H.Con.Res.",
+    "tags": [
+      "WHO"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 270,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 105,
+    "billNumber": 300,
+    "billTypeDisplay": "H.Con.Res.",
+    "tags": [
+      "TRA"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 301,
+    "billTypeDisplay": "H.Con.Res.",
+    "tags": [
+      "TRA"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 328,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 105,
+    "billNumber": 334,
+    "billTypeDisplay": "H.Con.Res.",
+    "tags": [
+      "WHO"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 338,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 105,
+    "billNumber": 350,
+    "billTypeDisplay": "H.Con.Res.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 56,
+    "billTypeDisplay": "H.Con.Res.",
+    "tags": [
+      "WTO"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 126,
+    "billTypeDisplay": "H.J.Res.",
+    "tags": [
+      "WTO"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 1119,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "navy"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 1171,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "TRA"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 1253,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 105,
+    "billNumber": 1486,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation",
+    "tags": [
+      "navy"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 1757,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation",
+    "tags": [
+      "WTO"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 1759,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "navy"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 2035,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "navy"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 2188,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "China"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 2267,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 105,
+    "billNumber": 2386,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 105,
+    "billNumber": 2580,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "China"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 2607,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 105,
+    "billNumber": 2647,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "China"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 2651,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 2716,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "AIT"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 311,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "TRA"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 3616,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "navy"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 387,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "TRA"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 4103,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 105,
+    "billNumber": 4276,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 105,
+    "billNumber": 527,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "TRA"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 87,
+    "billTypeDisplay": "H.R.",
+    "tags": [
+      "China"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 124,
+    "billTypeDisplay": "H.Res."
+  },
+  {
+    "congress": 105,
+    "billNumber": 190,
+    "billTypeDisplay": "H.Res.",
+    "tags": [
+      "WTO"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 225,
+    "billTypeDisplay": "H.Res."
+  },
+  {
+    "congress": 105,
+    "billNumber": 252,
+    "billTypeDisplay": "H.Res."
+  },
+  {
+    "congress": 105,
+    "billNumber": 282,
+    "billTypeDisplay": "H.Res."
+  },
+  {
+    "congress": 105,
+    "billNumber": 302,
+    "billTypeDisplay": "H.Res."
+  },
+  {
+    "congress": 105,
+    "billNumber": 598,
+    "billTypeDisplay": "H.Res."
+  },
+  {
+    "congress": 105,
+    "billNumber": 1022,
+    "billTypeDisplay": "S.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 105,
+    "billNumber": 1083,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "China"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 1164,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 105,
+    "billNumber": 1303,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "China"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 2057,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "navy"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 2060,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "navy"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 2260,
+    "billTypeDisplay": "S.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 105,
+    "billNumber": 2377,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 105,
+    "billNumber": 2463,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "navy"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 465,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 519,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "TRA"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 903,
+    "billTypeDisplay": "S.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 105,
+    "billNumber": 924,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "navy"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 936,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "navy"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 107,
+    "billTypeDisplay": "S.Con.Res.",
+    "tags": [
+      "TRA"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 121,
+    "billTypeDisplay": "S.Con.Res.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 15,
+    "billTypeDisplay": "S.Con.Res.",
+    "tags": [
+      "WTO"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 30,
+    "billTypeDisplay": "S.Con.Res.",
+    "tags": [
+      "IMF",
+      "World Bank"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 53,
+    "billTypeDisplay": "S.Con.Res."
+  },
+  {
+    "congress": 105,
+    "billNumber": 57,
+    "billTypeDisplay": "S.Con.Res.",
+    "tags": [
+      "TRA"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 114,
+    "billTypeDisplay": "S.Res."
+  },
+  {
+    "congress": 105,
+    "billNumber": 125,
+    "billTypeDisplay": "S.Res."
+  },
+  {
+    "congress": 105,
+    "billNumber": 149,
+    "billTypeDisplay": "S.Res.",
+    "tags": [
+      "China"
+    ]
+  },
+  {
+    "congress": 105,
+    "billNumber": 242,
+    "billTypeDisplay": "S.Res."
+  },
+  {
+    "congress": 106,
+    "billNumber": 166,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Democracy",
+    "tags": [
+      "One China One Taiwan Policy",
+      "WHO",
+      "One China Policy"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 22,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "1996 missile crisis"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 262,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "WTO"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 272,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Democracy",
+    "tags": [
+      "presidential election",
+      "democracy",
+      "TRA"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 292,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "pcs",
+    "category": "Democracy",
+    "tags": [
+      "presidential election",
+      "democracy",
+      "TRA",
+      "Lee Teng-hui",
+      "Chen Shui-bian",
+      "Annette Hsiu-Lien Lu"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 330,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "WTO",
+      "APEC/GATT"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 334,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "China",
+      "article XXI of the GATT 1994"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 335,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "China",
+      "article XXI of the GATT 1994",
+      "International Emergency Economic Powers Act"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 354,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "US-Taiwan Relations",
+    "tags": [
+      "ambassador Stephen S.F. Chen",
+      "TECRO"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 390,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "enr",
+    "category": "International Participation",
+    "tags": [
+      "UN",
+      "Taiwan Policy Review"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 401,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "US-Taiwan Relations",
+    "tags": [
+      "high-level visits",
+      "Immigration and Nationality Technical Corrections Act",
+      "President Chen Shui-bian"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 53,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "US-Taiwan Relations",
+    "tags": [
+      "TRA"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 56,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rfs",
+    "category": "US-Taiwan Relations",
+    "tags": [
+      "TRA",
+      "20th anniversary"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 61,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "international institutions"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 70,
+    "billTypeDisplay": "H.J.Res.",
+    "version": "ih",
+    "category": "Others",
+    "tags": [
+      "Natural Disaster",
+      "Humanitarian Aid",
+      "WHO"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 1211,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comment": "$15,760,000"
+  },
+  {
+    "congress": 106,
+    "billNumber": 1794,
+    "billTypeDisplay": "H.R.",
+    "version": "rs",
+    "category": "International Participation",
+    "tags": [
+      "WHO"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 1835,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Others",
+    "tags": [
+      "North Korea"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 1838,
+    "billTypeDisplay": "H.R.",
+    "version": "pcs",
+    "category": "Taiwan’s defense",
+    "tags": [
+      "navy",
+      "Taiwan Security Enhancement Act",
+      "Taiwan Strait",
+      "Taiwan Relations Act",
+      "Self-defense",
+      "AIT"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 1908,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Taiwan’s defense",
+    "tags": [
+      "navy",
+      "TRA",
+      "TECRO",
+      "Arms Export Control Act"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 2415,
+    "billTypeDisplay": "H.R.",
+    "version": "eas",
+    "category": "appropriation/International Participation",
+    "tags": [
+      "AIT",
+      "international organizations"
+    ],
+    "comment": "AIT $15,760,000"
+  },
+  {
+    "congress": 106,
+    "billNumber": 2561,
+    "billTypeDisplay": "H.R.",
+    "version": "eas, pp",
+    "category": "appropriation, Taiwan’s Defense",
+    "tags": [
+      "DOD",
+      "TRA"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 2606,
+    "billTypeDisplay": "H.R.",
+    "version": "enr",
+    "category": "appropriation, Arms Sales",
+    "tags": [
+      "TRA",
+      "Arms Sales"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 2670,
+    "billTypeDisplay": "H.R.",
+    "version": "enr",
+    "category": "appropriation",
+    "tags": [
+      "AIT",
+      "TRA"
+    ],
+    "comment": "$15,375,000"
+  },
+  {
+    "congress": 106,
+    "billNumber": 3196,
+    "billTypeDisplay": "H.R.",
+    "version": "eh",
+    "category": "appropriation",
+    "tags": [
+      "TRA",
+      "Arms Sales"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 332,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Others",
+    "tags": [
+      "TRA",
+      "OPIC"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 3421,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "appropriation",
+    "tags": [
+      "AIT",
+      "TRA"
+    ],
+    "comment": "$15,375,000"
+  },
+  {
+    "congress": 106,
+    "billNumber": 3422,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "appropriation",
+    "tags": [
+      "TRA",
+      "Arms Sales"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 3425,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "appropriation, Taiwan’s Defense",
+    "tags": [
+      "DOD",
+      "TRA"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 3427,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "appropriation, International Particpation",
+    "tags": [
+      "AIT",
+      "State department",
+      "international organizations"
+    ],
+    "comment": "$15,760,000 in 2000, $15,918,000 in 2001"
+  },
+  {
+    "congress": 106,
+    "billNumber": 3707,
+    "billTypeDisplay": "H.R.",
+    "version": "ern",
+    "category": "appropriation",
+    "tags": [
+      "AIT building and facility renewal"
+    ],
+    "comment": "$75,000,000"
+  },
+  {
+    "congress": 106,
+    "billNumber": 4004,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Global Health",
+    "tags": [
+      "WHO/WHA",
+      "observer status",
+      "health",
+      "disease transmission"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 4022,
+    "billTypeDisplay": "H.R.",
+    "version": "eh",
+    "category": "Arms sales/transfer",
+    "tags": [
+      "China",
+      "Taiwan Strait"
+    ],
+    "comment": "This bill is about Russian destroyers sold to PROC, so the relevance is low."
+  },
+  {
+    "congress": 106,
+    "billNumber": 4444,
+    "billTypeDisplay": "H.R.",
+    "category": "International Participation",
+    "tags": [
+      "WTO/GATT",
+      "PROC"
+    ],
+    "comment": "An act"
+  },
+  {
+    "congress": 106,
+    "billNumber": 4509,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "WTO/GATT",
+      "PROC"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 4654,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "International Criminal Court",
+      "military assistance"
+    ],
+    "comment": "Relevance is low"
+  },
+  {
+    "congress": 106,
+    "billNumber": 4690,
+    "billTypeDisplay": "H.R.",
+    "version": "rs",
+    "category": "appropriation",
+    "tags": [
+      "AIT",
+      "TRA"
+    ],
+    "comment": "$16,345,000"
+  },
+  {
+    "congress": 106,
+    "billNumber": 4811,
+    "billTypeDisplay": "H.R.",
+    "version": "rh",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "PROC",
+      "China",
+      "Israel",
+      "airborne radar system",
+      "arms sales"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 5526,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Arms sales/transfer",
+    "tags": [
+      "Defense article",
+      "defense service",
+      "purchase"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 5548,
+    "billTypeDisplay": "H.R.",
+    "version": "ih1s",
+    "category": "appropriation",
+    "tags": [
+      "AIT",
+      "TRA"
+    ],
+    "comment": "AIT $16,345,000"
+  },
+  {
+    "congress": 106,
+    "billNumber": 888,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Environmental protection",
+      "sulfur",
+      "gasoline",
+      "clean air",
+      "diesel fuel"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 973,
+    "billTypeDisplay": "H.R.",
+    "version": "rfs",
+    "category": "Others",
+    "tags": [
+      "NAVY"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 984,
+    "billTypeDisplay": "H.R.",
+    "version": "rh",
+    "category": "Others",
+    "tags": [
+      "humanitarian aid"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 297,
+    "billTypeDisplay": "H.Res.",
+    "version": "eh",
+    "category": "Others",
+    "tags": [
+      "natural disaster",
+      "921"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 408,
+    "billTypeDisplay": "H.Res.",
+    "version": "eh",
+    "category": "Taiwan Defense",
+    "tags": [
+      "International support"
+    ],
+    "comment": "Related Bill:H.R. 1838"
+  },
+  {
+    "congress": 106,
+    "billNumber": 659,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Democracy",
+    "tags": [
+      "Deomocracy"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 1059,
+    "billTypeDisplay": "S.",
+    "category": "Arms sales/transfer",
+    "tags": [
+      "China",
+      "PLA",
+      "PROC",
+      "Taiwan Strait",
+      "transfer",
+      "naval vessels"
+    ],
+    "comment": "An act"
+  },
+  {
+    "congress": 106,
+    "billNumber": 1060,
+    "billTypeDisplay": "S.",
+    "version": "es",
+    "category": "Taiwan Defense",
+    "tags": [
+      "China",
+      "PLA",
+      "PROC",
+      "Taiwan Strait",
+      "TRA",
+      "DOD"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 1217,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "appropriation",
+    "tags": [
+      "AIT",
+      "TRA"
+    ],
+    "comment": "$16,000,000"
+  },
+  {
+    "congress": 106,
+    "billNumber": 1352,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Others",
+    "tags": [
+      "North Korea"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 171,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Others",
+    "tags": [
+      "Clean air",
+      "Gasoline"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 1712,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "Others",
+    "tags": [
+      "Export"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 2522,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "appropriation, arms sales",
+    "tags": [
+      "TRA",
+      "arms sales"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 2687,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Russian antiship missiles",
+      "PROC",
+      "Taiwan strait",
+      "South China Sea",
+      "US national Security"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 371,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Others",
+    "tags": [
+      "humanitarian aid"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 691,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Others",
+    "tags": [
+      "repeal TRA section 5",
+      "OPIC (Overseas Private Investment Corporation)"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 693,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "TRA",
+      "Taiwan’s self-defense",
+      "missile defense equipment",
+      "satellite early warning data",
+      "air defense equipments",
+      "naval defense systems",
+      "US-Taiwan military communication",
+      "technical staff in AIT"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 886,
+    "billTypeDisplay": "S.",
+    "version": "pp",
+    "category": "International Participation",
+    "tags": [
+      "American Institute in Taiwan",
+      "International Organization"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 121,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "rfh",
+    "category": "Other",
+    "tags": [
+      "Stephen S. F. Chen retirement"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 140,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "is",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "high-level visits"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 17,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "es",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "TRA"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 99,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "ats",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "Democracy",
+      "President Chen Shui-bian"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 194,
+    "billTypeDisplay": "S.Res.",
+    "version": "ats",
+    "category": "Other",
+    "tags": [
+      "Natural disaster"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 26,
+    "billTypeDisplay": "S.Res.",
+    "version": "ats",
+    "category": "International Participation",
+    "tags": [
+      "WHO"
+    ]
+  },
+  {
+    "congress": 106,
+    "billNumber": 60,
+    "billTypeDisplay": "S.Res.",
+    "version": "ats",
+    "category": "Other",
+    "tags": [
+      "Tibet"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 121,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "China",
+      "PROC",
+      "military threat"
+    ],
+    "comment": "Taiwan was only mentioned in one paragraph."
+  },
+  {
+    "congress": 107,
+    "billNumber": 125,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "ARDA",
+      "democracy",
+      "human rights",
+      "Asia"
+    ],
+    "comment": "Taiwan was only mentioned in one sentence."
+  },
+  {
+    "congress": 107,
+    "billNumber": 13,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "humanitarian aid"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 135,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rfs",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "high-level visit",
+      "Chen Shui-bien"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 15,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rfs",
+    "category": "Other",
+    "tags": [
+      "humanitarian aid"
+    ],
+    "comment": "Same as H.Con.Res151"
+  },
+  {
+    "congress": 107,
+    "billNumber": 151,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "humanitarian aid"
+    ],
+    "comment": "Same as H.Con.Res.15"
+  },
+  {
+    "congress": 107,
+    "billNumber": 194,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "APEC",
+      "Chen Shui-bien"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 219,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "UN",
+      "Asian Development Bank",
+      "APEC",
+      "WTO/GATT",
+      "World Bank",
+      "International Monetary Fund",
+      "State Department",
+      "international support"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 221,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Future of Taiwan",
+      "consent of Taiwanese",
+      "status change"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 67,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "TRA",
+      "self-defense",
+      "military aid",
+      "China",
+      "renunciation of force"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 1283,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Missile defense system"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 1385,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "China",
+      "Gao Zhan",
+      "China-Taiwan relations study"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 1646,
+    "billTypeDisplay": "H.R.",
+    "category": "U.S.-Taiwan Relations, Appropriation",
+    "tags": [
+      "AIT",
+      "Taiwan Strait",
+      "defense",
+      "personnel assignment",
+      "defense article transfer",
+      "defense service",
+      "security assistance",
+      "TECRO"
+    ],
+    "comment": "An act, paid $18,817,000 to AIT for fiscal year 2003"
+  },
+  {
+    "congress": 107,
+    "billNumber": 1794,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Military assistance prohibition",
+      "International Criminal Court"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 2500,
+    "billTypeDisplay": "H.R.",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comment": "An act, $17,044,000"
+  },
+  {
+    "congress": 107,
+    "billNumber": 2506,
+    "billTypeDisplay": "H.R.",
+    "category": "Arms sales/transfer",
+    "tags": [
+      "Defense article purchase",
+      "Government of Taiwan"
+    ],
+    "comment": "An act"
+  },
+  {
+    "congress": 107,
+    "billNumber": 2557,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "End-use verification",
+      "high risk",
+      "dual-use",
+      "technology"
+    ],
+    "comment": "Same as H.R.2568"
+  },
+  {
+    "congress": 107,
+    "billNumber": 2568,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "End-use verification",
+      "high risk",
+      "dual-use",
+      "technology"
+    ],
+    "comment": "Same as H.R.2557"
+  },
+  {
+    "congress": 107,
+    "billNumber": 2581,
+    "billTypeDisplay": "H.R.",
+    "version": "rh",
+    "category": "Trade/Economy",
+    "tags": [
+      "End-use verification",
+      "high risk",
+      "dual-use",
+      "technology"
+    ],
+    "comment": "Same as H.R.2557, H.R. 2568"
+  },
+  {
+    "congress": 107,
+    "billNumber": 2646,
+    "billTypeDisplay": "H.R.",
+    "category": "Trade/Economy",
+    "tags": [
+      "Trade",
+      "cane sugar",
+      "export",
+      "qualified supplying country",
+      "the U.S."
+    ],
+    "comment": "An act"
+  },
+  {
+    "congress": 107,
+    "billNumber": 2739,
+    "billTypeDisplay": "H.R.",
+    "category": "Global Health",
+    "tags": [
+      "WHO/WHA",
+      "observer status"
+    ],
+    "comment": "An act"
+  },
+  {
+    "congress": 107,
+    "billNumber": 2835,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "U.S. Armed Forces",
+      "U.S. civilian employee",
+      "prisoner of war during WWII",
+      "compensation",
+      "Japanese military",
+      "slave labor",
+      "war industry"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 3130,
+    "billTypeDisplay": "H.R.",
+    "category": "Other",
+    "tags": [
+      "Education",
+      "natural science",
+      "engineering"
+    ],
+    "comment": "An act"
+  },
+  {
+    "congress": 107,
+    "billNumber": 3338,
+    "billTypeDisplay": "H.R.",
+    "version": "pp",
+    "category": "Other",
+    "tags": [
+      "International Criminal Court",
+      "exemption"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 428,
+    "billTypeDisplay": "H.R.",
+    "category": "Global Health",
+    "tags": [
+      "WHO/WHA",
+      "observer status"
+    ],
+    "comment": "An act"
+  },
+  {
+    "congress": 107,
+    "billNumber": 4546,
+    "billTypeDisplay": "H.R.",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "senior officer exchanges",
+      "US-Taiwan military communication",
+      "security",
+      "Armed forces"
+    ],
+    "comment": "Taiwan mentioned in sec. 1210"
+  },
+  {
+    "congress": 107,
+    "billNumber": 4775,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation",
+    "tags": [
+      "allied persons"
+    ],
+    "comment": "defines Taiwan as an ally"
+  },
+  {
+    "congress": 107,
+    "billNumber": 5410,
+    "billTypeDisplay": "H.R.",
+    "version": "rh",
+    "category": "Arms sales/transfer",
+    "tags": [
+      "Defense article",
+      "defense service"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 16,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "trade",
+      "steel",
+      "import"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 160,
+    "billTypeDisplay": "H.Res.",
+    "version": "eh",
+    "category": "other",
+    "tags": [
+      "China",
+      "human rights"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 221,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "International participation",
+    "tags": [
+      "UN",
+      "Asian Development Bank",
+      "APEC",
+      "International Monetary Fund (IMF) Chen Shui-bien"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 411,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "other",
+    "tags": [
+      "Taiwanese American Heritage Week"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 533,
+    "billTypeDisplay": "H.Res.",
+    "version": "eh",
+    "category": "International participation",
+    "tags": [
+      "high-level visit",
+      "Chen Wu Sue-jen",
+      "First Lady"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 613,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "other",
+    "tags": [
+      "Asian Pacific American"
+    ],
+    "comment": "Honoring the life of Dr. Chang-Lin Tien, model educator, diplomat, and mentor."
+  },
+  {
+    "congress": 107,
+    "billNumber": 1215,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "appropriation",
+    "tags": [
+      "TRA",
+      "AIT"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 1302,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "other",
+    "tags": [
+      "history",
+      "prisoner of war during WWII",
+      "Japan"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 1307,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "other",
+    "tags": [
+      "China",
+      "enterprise",
+      "US capital markets"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 1401,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "appropriation, arms sale",
+    "tags": [
+      "AIT",
+      "DOD (department of defense)",
+      "defense articles",
+      "defense services"
+    ],
+    "comment": "AIT $17,044,000 in 2002, $17,896, 000 in 2003"
+  },
+  {
+    "congress": 107,
+    "billNumber": 1416,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "appropriation, arms sale",
+    "tags": [
+      "naval vessels",
+      "TECRO",
+      "TRA",
+      "KIDD class missile destroyer"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 1419,
+    "billTypeDisplay": "S.",
+    "version": "es",
+    "category": "appropriation, arms sale",
+    "tags": [
+      "naval vessels",
+      "TECRO",
+      "TRA",
+      "KIDD class missile destroyer"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 1438,
+    "billTypeDisplay": "S.",
+    "version": "enr",
+    "category": "appropriation, arms sale",
+    "tags": [
+      "naval vessels",
+      "TECRO",
+      "TRA",
+      "KIDD class missile destroyer"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 149,
+    "billTypeDisplay": "S.",
+    "version": "es",
+    "category": "others",
+    "tags": [
+      "export",
+      "end-use verification"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 1549,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "others",
+    "tags": [
+      "technology  talent",
+      "science and engineering"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 1610,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "others",
+    "tags": [
+      "international criminal court",
+      "exemption",
+      "alliance"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 1636,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Trade/Economy",
+    "tags": [
+      "free trade agreement"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 1803,
+    "billTypeDisplay": "S.",
+    "version": "rfh",
+    "category": "Arms sales/transfer",
+    "tags": [
+      "TECRO/KIDD class missile destroyer"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 1932,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "international participation",
+    "tags": [
+      "WHA",
+      "WHO"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 2778,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "appropriation",
+    "tags": [
+      "AIT",
+      "TRA"
+    ],
+    "comment": "$17,044,000"
+  },
+  {
+    "congress": 107,
+    "billNumber": 2779,
+    "billTypeDisplay": "S.",
+    "version": "rs",
+    "category": "appropriation",
+    "tags": [
+      "Defense articles",
+      "defense services"
+    ],
+    "comment": "Related bill: H.R. 5410"
+  },
+  {
+    "congress": 107,
+    "billNumber": 700,
+    "billTypeDisplay": "S.",
+    "category": "other",
+    "tags": [
+      "Disease prevention"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 708,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "other",
+    "tags": [
+      "Disease prevention"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 857,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "other",
+    "tags": [
+      "International Criminal Court"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 123,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "is",
+    "category": "Other",
+    "tags": [
+      "Future of Taiwan",
+      "consent of Taiwanese",
+      "status change",
+      "undetermined status"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 38,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "is",
+    "category": "Other",
+    "tags": [
+      "ARDA",
+      "human rights",
+      "democracy"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 6,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "es",
+    "category": "Other",
+    "tags": [
+      "Humanitarian aid",
+      "India"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 128,
+    "billTypeDisplay": "S.Res.",
+    "version": "ats",
+    "category": "Other",
+    "tags": [
+      "China",
+      "PROC",
+      "Li Shaomin",
+      "spy"
+    ]
+  },
+  {
+    "congress": 107,
+    "billNumber": 89,
+    "billTypeDisplay": "S.Res.",
+    "version": "is",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "President Chen Shui-bian",
+      "visit",
+      "U.S.A."
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 117,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "TRA",
+      "defense service",
+      "peace",
+      "security",
+      "human rights preservation",
+      "commercial relation",
+      "PROC",
+      "missile threat",
+      "military threat",
+      "Free Trade Agreement"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 232,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "Security",
+      "PROC",
+      "missile threat",
+      "military threat",
+      "peace",
+      "future of Taiwan",
+      "TRA",
+      "Aegis system",
+      "China"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 284,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "UN",
+      "Asian Development Bank",
+      "WTO/GATT",
+      "APEC",
+      "International Monetary Fund (IMF)",
+      "International Bank for Reconstruction and Development",
+      "U.S. support"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 285,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Loss of manufacturing jobs",
+      "foreign currency manipulation"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 302,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rfs",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "President Chen Shui-bian",
+      "cooperation"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 340,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Future of Taiwan",
+      "Democracy",
+      "WHO/WHA",
+      "military threat",
+      "PROC (People’s Republic of China)"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 426,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Taiwanese American Heritage Week"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 437,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Chen Shui-bian",
+      "military assistance",
+      "Taiwanese Marines",
+      "war on terrrorism"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 440,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "Shanghai Communique",
+      "One China Policy",
+      "UN",
+      "WHO",
+      "Diplomatic Relations"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 462,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rfs",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "TRA",
+      "PROC (People’s Republic of China)",
+      "Future of Taiwan",
+      "defense article transfer",
+      "visit",
+      "One China Policy"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 481,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "high-level visit",
+      "President Chen Shui-bian"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 512,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "China"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 98,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "trade",
+      "Free Trade Agreement",
+      "World Trade Organization"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 2,
+    "billTypeDisplay": "H.J.Res.",
+    "category": "Appropriation",
+    "tags": [
+      "AIT",
+      "Democracy Fund",
+      "TRA"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 1454,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Missiles defense requipment"
+    ],
+    "comment": "against ballistic missile attack"
+  },
+  {
+    "congress": 108,
+    "billNumber": 1950,
+    "billTypeDisplay": "H.R.",
+    "version": "pcs",
+    "category": "U.S.-Taiwan Relations, International Participation",
+    "tags": [
+      "WHA",
+      "observer status",
+      "security",
+      "TRA",
+      "AIT"
+    ],
+    "comment": "AIT $19,773,000 in 2004, $20,716,000 in 2005"
+  },
+  {
+    "congress": 108,
+    "billNumber": 2050,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "universal jurisdiction",
+      "covered allied person"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 230,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Gao Zhan",
+      "China-Taiwan relations study"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 247,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "appropriation",
+    "tags": [
+      "TRA",
+      "AIT"
+    ],
+    "comment": "$18,450,000"
+  },
+  {
+    "congress": 108,
+    "billNumber": 2673,
+    "billTypeDisplay": "H.R.",
+    "version": "enr",
+    "category": "appropriation",
+    "tags": [
+      "TRA",
+      "AIT"
+    ],
+    "comment": "$18,782,000"
+  },
+  {
+    "congress": 108,
+    "billNumber": 2799,
+    "billTypeDisplay": "H.R.",
+    "version": "pcs",
+    "category": "appropriation",
+    "tags": [
+      "TRA",
+      "AIT"
+    ],
+    "comment": "$18,782,000"
+  },
+  {
+    "congress": 108,
+    "billNumber": 2800,
+    "billTypeDisplay": "H.R.",
+    "version": "eas",
+    "category": "appropriation, Democracy",
+    "tags": [
+      "democracy program",
+      "political and legal reform"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 3269,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "trading partner",
+      "Foreign currency manipulation"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 3616,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "key world theaters",
+      "Taiwan Straits"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 3793,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "WHO"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 4019,
+    "billTypeDisplay": "H.R.",
+    "version": "rfs",
+    "category": "International Participation",
+    "tags": [
+      "WHO",
+      "The Government of the Republic of China on Taiwan",
+      "The Taiwanese Government",
+      "SARS"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 4200,
+    "billTypeDisplay": "H.R.",
+    "version": "publ",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "navy",
+      "TRA",
+      "TECRO"
+    ],
+    "comment": "Ronald W. Reagan National Defense Authorization Act for Fiscal Year 2005"
+  },
+  {
+    "congress": 108,
+    "billNumber": 441,
+    "billTypeDisplay": "H.R.",
+    "version": "rfs",
+    "category": "International Participation",
+    "tags": [
+      "WHA",
+      "The government of Taiwan"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 4754,
+    "billTypeDisplay": "H.R.",
+    "version": "rfs",
+    "category": "Appropriation",
+    "tags": [
+      "AIT",
+      "TRA"
+    ],
+    "comment": "$19,482,000"
+  },
+  {
+    "congress": 108,
+    "billNumber": 4818,
+    "billTypeDisplay": "H.R.",
+    "category": "Appropriation",
+    "tags": [
+      "AIT",
+      "TRA",
+      "Economic Support Fund",
+      "Political reform",
+      "Legal reform"
+    ],
+    "comment": "$19,482,000. An Act"
+  },
+  {
+    "congress": 108,
+    "billNumber": 55,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "Trade",
+      "Export",
+      "End-use verification"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 228,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "Taiwanese American",
+      "Taiwanese-American Heritage Week"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 729,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Food aid program",
+      "democracy",
+      "commercial trading partner"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 862,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "China",
+      "PROC",
+      "peaceful resolution",
+      "European Parliament",
+      "European Council",
+      "European Union (EU)",
+      "political relation"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 1426,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "Appropriation",
+    "tags": [
+      "Economic Support Fund",
+      "political reform",
+      "legal reform"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 1585,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "Appropriation",
+    "tags": [
+      "AIT",
+      "TRA"
+    ],
+    "comment": "$19,893,000"
+  },
+  {
+    "congress": 108,
+    "billNumber": 1592,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Trade/economy",
+    "tags": [
+      "Currency manipulation",
+      "foreign currency reserve",
+      "world trade deficit",
+      "the U.S."
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 2092,
+    "billTypeDisplay": "S.",
+    "category": "International Participation, Global Health",
+    "tags": [
+      "WHO/WHA",
+      "public health",
+      "observer status",
+      "infectious disease",
+      "disease transmission"
+    ],
+    "comment": "An act"
+  },
+  {
+    "congress": 108,
+    "billNumber": 2144,
+    "billTypeDisplay": "S.",
+    "version": "rs",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comment": "$19,482,000"
+  },
+  {
+    "congress": 108,
+    "billNumber": 2400,
+    "billTypeDisplay": "S.",
+    "version": "pp",
+    "category": "Arms sales/transfer",
+    "tags": [
+      "TECRO",
+      "transfer",
+      "naval vessels"
+    ],
+    "comment": "Same as S. 2401"
+  },
+  {
+    "congress": 108,
+    "billNumber": 2401,
+    "billTypeDisplay": "S.",
+    "version": "es",
+    "category": "Arms sales/transfer",
+    "tags": [
+      "TECRO",
+      "transfer",
+      "naval  vessels"
+    ],
+    "comment": "Same as S. 2400"
+  },
+  {
+    "congress": 108,
+    "billNumber": 243,
+    "billTypeDisplay": "S.",
+    "version": "publ",
+    "category": "International Participation",
+    "tags": [
+      "WHO"
+    ],
+    "comment": "Related bill: H.R. 441"
+  },
+  {
+    "congress": 108,
+    "billNumber": 2717,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Other"
+  },
+  {
+    "congress": 108,
+    "billNumber": 2809,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "appropriation",
+    "tags": [
+      "AIT",
+      "TRA"
+    ],
+    "comment": "$132,600,000"
+  },
+  {
+    "congress": 108,
+    "billNumber": 2812,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "appropriation",
+    "tags": [
+      "Economic Support Fund"
+    ],
+    "comment": "furthering political and legal reforms"
+  },
+  {
+    "congress": 108,
+    "billNumber": 2917,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "appropriation"
+  },
+  {
+    "congress": 108,
+    "billNumber": 3016,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "democracy",
+    "tags": [
+      "democracy",
+      "human rights"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 790,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "appropriation",
+    "tags": [
+      "AIT"
+    ]
+  },
+  {
+    "congress": 108,
+    "billNumber": 925,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comment": "$19,773,000"
+  },
+  {
+    "congress": 108,
+    "billNumber": 402,
+    "billTypeDisplay": "S.Res.",
+    "version": "ats",
+    "category": "other",
+    "tags": [
+      "food aid program"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 141,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "other",
+    "tags": [
+      "International Olympic Committee",
+      "Olympics",
+      "human rights"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 154,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "international particlipation",
+    "tags": [
+      "WHO",
+      "SARS",
+      "Avian influenza"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 203,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "other",
+    "tags": [
+      "WTO",
+      "China"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 219,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "TRA",
+      "security",
+      "missile threat"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 237,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rfs",
+    "category": "US-Taiwan Relations",
+    "tags": [
+      "high-level visit",
+      "President Chen Shui-bian"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 342,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "US-Taiwan Relations, Trade/Economy",
+    "tags": [
+      "free trade agreement"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 346,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "US-Taiwan Relations, Trade/Economy",
+    "tags": [
+      "free trade agreement"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 381,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "US-Taiwan Relations",
+    "tags": [
+      "high-level visit"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 69,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "US-Taiwan Relations",
+    "tags": [
+      "resume normal diplomatic relations",
+      "“One China Policy”",
+      "“One China",
+      "One Taiwan Policy”",
+      "the Republic of China on Taiwan"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 70,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "China",
+      "PROC",
+      "security",
+      "peace",
+      "self-defense",
+      "anti-secession legislation",
+      "status quo"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 76,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "China",
+      "PROC",
+      "anti-secession legislation",
+      "TRA",
+      "peace"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 98,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rfs",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "China",
+      "PROC",
+      "anti-secession legislation",
+      "status quo",
+      "TRA",
+      "peace",
+      "future of Taiwan"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 1450,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/economy",
+    "tags": [
+      "Nonmarket economy country",
+      "PROC"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 1815,
+    "billTypeDisplay": "H.R.",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Military development of China",
+      "PROC",
+      "anti-secession legislation"
+    ],
+    "comment": "An act"
+  },
+  {
+    "congress": 109,
+    "billNumber": 2601,
+    "billTypeDisplay": "H.R.",
+    "version": "pcs",
+    "category": "Appropriation; Taiwan’s Defense; U.S.-Taiwan Relations",
+    "tags": [
+      "AIT; China",
+      "PROC",
+      "military threat; high-level direct communication",
+      "high-level visit",
+      "renunciation of force"
+    ],
+    "comment": "An act fiscal year 2006 - $19,751,000; fiscal year 2007 - $20,146,020"
+  },
+  {
+    "congress": 109,
+    "billNumber": 2862,
+    "billTypeDisplay": "H.R.",
+    "category": "Appropriation",
+    "tags": [
+      "AIT",
+      "TRA"
+    ],
+    "comment": "An act $19,751,000"
+  },
+  {
+    "congress": 109,
+    "billNumber": 3057,
+    "billTypeDisplay": "H.R.",
+    "category": "Appropriation",
+    "tags": [
+      "Democracy Fund",
+      "political reform",
+      "legal reform",
+      "Economic Support Fund"
+    ],
+    "comment": "An act"
+  },
+  {
+    "congress": 109,
+    "billNumber": 3100,
+    "billTypeDisplay": "H.R.",
+    "version": "rh",
+    "category": "Arms sales/transfer",
+    "tags": [
+      "Europe",
+      "U.S.A.",
+      "PROC",
+      "arms transfer",
+      "status change"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 3283,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/economy",
+    "tags": [
+      "WTO",
+      "Agreement on Government Procurement"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 4392,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "WTO"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 4780,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "global internet freedom",
+      "dual-use technology"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 5122,
+    "billTypeDisplay": "H.R.",
+    "version": "eh, rh, pcs",
+    "category": "Taiwan’s Defense, appropriation",
+    "tags": [
+      "Capstone overseas field studies",
+      "military education exchange",
+      "diesel electric submarine"
+    ],
+    "comment": "Taiwan’s part is not in the introduced version, was added after introduction and passed the House, but got taken away at Senate amendment, and eventually was not on the final bill"
+  },
+  {
+    "congress": 109,
+    "billNumber": 5522,
+    "billTypeDisplay": "H.R.",
+    "version": "rs",
+    "category": "appropriation",
+    "tags": [
+      "AIT",
+      "TRA",
+      "Democracy Fund"
+    ],
+    "comment": "*$15,826,000*"
+  },
+  {
+    "congress": 109,
+    "billNumber": 5672,
+    "billTypeDisplay": "H.R.",
+    "version": "rh, rfs, eh,",
+    "category": "appropriation",
+    "tags": [
+      "AIT",
+      "TRA"
+    ],
+    "comment": "$15,826,000 (part about Taiwan was struck out at the latest version of the bill “reported by Senate committee”)"
+  },
+  {
+    "congress": 109,
+    "billNumber": 5972,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Others",
+    "tags": [
+      "history",
+      "US war prisoners as slaves to Japanese Corporations during WWII"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 43,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "EU embargo on arms sales to China"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 57,
+    "billTypeDisplay": "H.Res.",
+    "version": "eh",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "EU embargo on arms sales to China"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 84,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Others",
+    "tags": [
+      "sunset review",
+      "anti-dumping on steel products"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 1042,
+    "billTypeDisplay": "S.",
+    "version": "pp",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "China’s military advancement"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 1043,
+    "billTypeDisplay": "S.",
+    "version": "es",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "China’s military advancement"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 1117,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Trade/economy",
+    "tags": [
+      "China"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 1421,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Trade/economy",
+    "tags": [
+      "Agreement on Government Procurement"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 2242,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Missile defense system",
+      "ballistic missile attack"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 3722,
+    "billTypeDisplay": "S.",
+    "version": "rfh",
+    "category": "Arms sales/transfer",
+    "tags": [
+      "Vessel transfer"
+    ],
+    "comment": "An act"
+  },
+  {
+    "congress": 109,
+    "billNumber": 377,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Trade/economy",
+    "tags": [
+      "Currency manipulation",
+      "foreign currency reserve",
+      "world trade deficit"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 3811,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Other",
+    "tags": [
+      "Compensation",
+      "Japanese military",
+      "slave labor",
+      "war industry",
+      "U.S. armed forces",
+      "U.S. civilian employee"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 41,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Other",
+    "tags": [
+      "Arsenic",
+      "drinking water",
+      "study assessment"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 600,
+    "billTypeDisplay": "S.",
+    "version": "pcs1s",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comment": "$19,751,000"
+  },
+  {
+    "congress": 109,
+    "billNumber": 106,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "is",
+    "category": "U.S.-Taiwan relations",
+    "tags": [
+      "High-level visit",
+      "high-level direct communication"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 21,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "is",
+    "category": "Taiwan’s defense",
+    "tags": [
+      "China",
+      "PROC",
+      "anti-secession law",
+      "status quo",
+      "peace",
+      "security",
+      "TRA"
+    ],
+    "comment": "Same as S.Con.Res 24"
+  },
+  {
+    "congress": 109,
+    "billNumber": 24,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "is",
+    "category": "Taiwan’s defense",
+    "tags": [
+      "China",
+      "PROC",
+      "anti-secession law",
+      "status quo",
+      "peace",
+      "security",
+      "TRA"
+    ],
+    "comment": "Same as S.Con.Res 21"
+  },
+  {
+    "congress": 109,
+    "billNumber": 36,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "is",
+    "category": "Other",
+    "tags": [
+      "Nuclear"
+    ],
+    "comment": "Taiwan was only mentioned once in one paragraph. 1"
+  },
+  {
+    "congress": 109,
+    "billNumber": 84,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "is",
+    "category": "Trade/Economy",
+    "tags": [
+      "trade",
+      "economy"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 220,
+    "billTypeDisplay": "S.Res.",
+    "version": "is",
+    "category": "Taiwan’s defense",
+    "tags": [
+      "China",
+      "Taiwan Strait"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 59,
+    "billTypeDisplay": "S.Res.",
+    "version": "is",
+    "category": "Taiwan’s defense",
+    "tags": [
+      "China",
+      "TRA",
+      "Taiwan Strait"
+    ]
+  },
+  {
+    "congress": 109,
+    "billNumber": 91,
+    "billTypeDisplay": "S.Res.",
+    "version": "ats",
+    "category": "Other",
+    "tags": [
+      "China",
+      "TRA",
+      "future of Taiwan",
+      "arms embargo"
+    ],
+    "comment": "2"
+  },
+  {
+    "congress": 110,
+    "billNumber": 136,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rfs",
+    "category": "U.S.-Taiwan relations",
+    "tags": [
+      "U.S.-Taiwan Relations",
+      "high-level visit",
+      "democracy"
+    ],
+    "comment": "5"
+  },
+  {
+    "congress": 110,
+    "billNumber": 137,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "Free Trade Agreement",
+      "beef",
+      "trade",
+      "economy",
+      "import"
+    ],
+    "comment": "5"
+  },
+  {
+    "congress": 110,
+    "billNumber": 160,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "China",
+      "debt",
+      "U.S. Citizen"
+    ],
+    "comment": "1"
+  },
+  {
+    "congress": 110,
+    "billNumber": 170,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "Olympics"
+    ],
+    "comment": "5"
+  },
+  {
+    "congress": 110,
+    "billNumber": 250,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "UN",
+      "Taiwan Policy Review"
+    ],
+    "comment": "5"
+  },
+  {
+    "congress": 110,
+    "billNumber": 278,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rfs",
+    "category": "Democracy",
+    "tags": [
+      "Presidential election",
+      "human rights"
+    ],
+    "comment": "5"
+  },
+  {
+    "congress": 110,
+    "billNumber": 73,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "U.S.-Taiwan relations",
+    "tags": [
+      "Diplomatic relations"
+    ],
+    "comment": "5"
+  },
+  {
+    "congress": 110,
+    "billNumber": 20,
+    "billTypeDisplay": "H.J.Res.",
+    "version": "pcs",
+    "category": "appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comment": "3"
+  },
+  {
+    "congress": 110,
+    "billNumber": 1390,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "U.S.-Taiwan relations",
+    "tags": [
+      "AIT",
+      "senate confirmation"
+    ],
+    "comment": "5"
+  },
+  {
+    "congress": 110,
+    "billNumber": 2705,
+    "billTypeDisplay": "H.R.",
+    "version": "pcs",
+    "category": "Arms Sales & Transfer",
+    "tags": [
+      "Naval vessels",
+      "vessel transfer",
+      "TECRO",
+      "TRA"
+    ]
+  },
+  {
+    "congress": 110,
+    "billNumber": 2764,
+    "billTypeDisplay": "H.R.",
+    "version": "rh",
+    "category": "appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comment": "$16,351,000, Bill version HR 2764 RH instead of HR 2764 EAS21S"
+  },
+  {
+    "congress": 110,
+    "billNumber": 3912,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Arms Sales & Transfer",
+    "tags": [
+      "Naval vessels",
+      "vessel transfer",
+      "TECRO",
+      "TRA"
+    ]
+  },
+  {
+    "congress": 110,
+    "billNumber": 4064,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "AIT",
+      "visa requirements waiver",
+      "special immigrant"
+    ],
+    "comment": "Relevance = 1"
+  },
+  {
+    "congress": 110,
+    "billNumber": 571,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/economy",
+    "tags": [
+      "Market economy country",
+      "special tariffs",
+      "jurisdiction of PROC"
+    ],
+    "comment": "Relevance = 1"
+  },
+  {
+    "congress": 110,
+    "billNumber": 5777,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/economy",
+    "tags": [
+      "Trade restriction in PROC",
+      "investment restriction in PROC",
+      "jurisdiction of PROC"
+    ],
+    "comment": "Relevance = 1"
+  },
+  {
+    "congress": 110,
+    "billNumber": 5916,
+    "billTypeDisplay": "H.R.",
+    "version": "rfs",
+    "category": "Arms sales/transfer",
+    "tags": [
+      "European Union",
+      "arms embargo",
+      "China",
+      "PROC",
+      "use of force",
+      "change in status of Taiwan"
+    ],
+    "comment": "Relevance = 2 An act"
+  },
+  {
+    "congress": 110,
+    "billNumber": 6180,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/economy",
+    "tags": [
+      "WTO",
+      "top trade partners of the U.S."
+    ],
+    "comment": "Relevance = 1"
+  },
+  {
+    "congress": 110,
+    "billNumber": 6497,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Compensation",
+      "slave labor",
+      "Japanese military",
+      "war industry",
+      "U.S. Armed Forces",
+      "U.S. civilian employee"
+    ],
+    "comment": "Relevance = 1"
+  },
+  {
+    "congress": 110,
+    "billNumber": 6646,
+    "billTypeDisplay": "H.R.",
+    "version": "rfs",
+    "category": "Arms sales/transfer",
+    "tags": [
+      "Arms sales",
+      "arms transfer",
+      "TRA",
+      "defense article",
+      "defensive service"
+    ],
+    "comment": "Relevance = 5 An act"
+  },
+  {
+    "congress": 110,
+    "billNumber": 7059,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Arms sales/transfer",
+    "tags": [
+      "Arms sales",
+      "defense article",
+      "defensive service",
+      "TRA"
+    ],
+    "comment": "Relevance = 5"
+  },
+  {
+    "congress": 110,
+    "billNumber": 676,
+    "billTypeDisplay": "H.Res.",
+    "version": "eh",
+    "category": "Taiwan Relations Act",
+    "tags": [
+      "Taiwan",
+      "the U.S.",
+      "peace",
+      "security",
+      "arms transfer"
+    ],
+    "comment": "Relevance = 5"
+  },
+  {
+    "congress": 110,
+    "billNumber": 843,
+    "billTypeDisplay": "H.Res.",
+    "version": "eh",
+    "category": "Other",
+    "tags": [
+      "Congressman Henry J. Hyde",
+      "TRA"
+    ],
+    "comment": "Relevance = 1"
+  },
+  {
+    "congress": 110,
+    "billNumber": 1565,
+    "billTypeDisplay": "S.",
+    "version": "rs",
+    "category": "Arms Sales & Transfer",
+    "tags": [
+      "Naval vessels",
+      "vessel transfer",
+      "TECRO",
+      "TRA"
+    ],
+    "comment": "3"
+  },
+  {
+    "congress": 110,
+    "billNumber": 2483,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "Arms Sales & Transfer",
+    "tags": [
+      "Naval vessels",
+      "vessel transfer",
+      "TECRO",
+      "TRA"
+    ],
+    "comment": "2"
+  },
+  {
+    "congress": 110,
+    "billNumber": 2616,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "Arms Sales & Transfer",
+    "tags": [
+      "Naval vessels",
+      "vessel transfer",
+      "TECRO",
+      "TRA"
+    ],
+    "comment": "2"
+  },
+  {
+    "congress": 110,
+    "billNumber": 2739,
+    "billTypeDisplay": "S.",
+    "version": "enr",
+    "category": "Arms Sales & Transfer",
+    "tags": [
+      "Naval vessels",
+      "vessel transfer",
+      "TECRO",
+      "TRA"
+    ],
+    "comment": "2"
+  },
+  {
+    "congress": 110,
+    "billNumber": 3001,
+    "billTypeDisplay": "S.",
+    "version": "enr",
+    "category": "Other",
+    "tags": [
+      "Nuclear (energy/power/weapon)"
+    ],
+    "comment": "1"
+  },
+  {
+    "congress": 110,
+    "billNumber": 3002,
+    "billTypeDisplay": "S.",
+    "version": "es",
+    "category": "Other",
+    "tags": [
+      "Nuclear (energy/power/weapon)"
+    ],
+    "comment": "1"
+  },
+  {
+    "congress": 110,
+    "billNumber": 3083,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Trade/Economy",
+    "tags": [
+      "trade"
+    ],
+    "comment": "1"
+  },
+  {
+    "congress": 110,
+    "billNumber": 3107,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Other",
+    "tags": [
+      "U.S. Armed Forces",
+      "U.S. civilian employee",
+      "prisoner of war during WWII",
+      "compensation",
+      "Japanese military",
+      "slave labor",
+      "war industry"
+    ],
+    "comment": "1"
+  },
+  {
+    "congress": 110,
+    "billNumber": 3288,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "appropriation",
+    "tags": [
+      "TRA",
+      "AIT"
+    ],
+    "comment": "$16,840,000; 1"
+  },
+  {
+    "congress": 110,
+    "billNumber": 48,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "is",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "Taiwan Travel Act",
+      "Taiwanese Right in U.S."
+    ],
+    "comment": "5"
+  },
+  {
+    "congress": 110,
+    "billNumber": 60,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "is",
+    "category": "Trade/Economy",
+    "tags": [
+      "free trade agreement"
+    ],
+    "comment": "5"
+  },
+  {
+    "congress": 111,
+    "billNumber": 18,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "International participation, U.S.-Taiwan Relations",
+    "tags": [
+      "TRA",
+      "One China Policy",
+      "Six Assurances",
+      "UN"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 200,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "TRA",
+      "Missiles",
+      "anti-secession law",
+      "Pentagon"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 266,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rfs",
+    "category": "International Participation",
+    "tags": [
+      "ICAO",
+      "TRA"
+    ],
+    "comments": "Related bill: 111 S.Con.Res. 63"
+  },
+  {
+    "congress": 111,
+    "billNumber": 276,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "U.S. Taiwan Relations, trade/economy",
+    "tags": [
+      "Trade",
+      "WTO"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 316,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "UN",
+      "APEC",
+      "WTO"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 55,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rfs",
+    "category": "U.S. Taiwan Relations",
+    "tags": [
+      "TRA",
+      "democracy",
+      "free market"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 1105,
+    "billTypeDisplay": "H.R.",
+    "category": "Appropriation",
+    "tags": [
+      "AIT",
+      "Democracy Fund"
+    ],
+    "comments": "AIT: $16,840,000, no version info on 03/11/09 public law version."
+  },
+  {
+    "congress": 111,
+    "billNumber": 2410,
+    "billTypeDisplay": "H.R.",
+    "version": "rfs",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "AIT: $21,174,000"
+  },
+  {
+    "congress": 111,
+    "billNumber": 2475,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "AIT: $17,463,080"
+  },
+  {
+    "congress": 111,
+    "billNumber": 2647,
+    "billTypeDisplay": "H.R.",
+    "version": "eas",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Air Force",
+      "TRA"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 3012,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "U.S. Taiwan Relations, trade/economy",
+    "tags": [
+      "Trade",
+      "Major U.S. trade partners"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 3081,
+    "billTypeDisplay": "H.R.",
+    "version": "pcs, rh, eh",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "$21,174,000"
+  },
+  {
+    "congress": 111,
+    "billNumber": 3082,
+    "billTypeDisplay": "H.R.",
+    "version": "as",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "$21,420,000, AIT is not mentioned on 12/22/2010 public law version, which is the latest one."
+  },
+  {
+    "congress": 111,
+    "billNumber": 3288,
+    "billTypeDisplay": "H.R.",
+    "version": "enr",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "$21,174,000"
+  },
+  {
+    "congress": 111,
+    "billNumber": 4102,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Taiwan’s Defense"
+  },
+  {
+    "congress": 111,
+    "billNumber": 4573,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Debt"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 4980,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "U.S. Taiwan Relations",
+    "tags": [
+      "TRA"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 5136,
+    "billTypeDisplay": "H.R.",
+    "version": "pcs",
+    "category": "Other",
+    "tags": [
+      "Religion",
+      "missionary"
+    ],
+    "comments": "Relevance is low. Only mentioned that a missionary, whom a military vessel was named after, served the aboriginals in Taiwan."
+  },
+  {
+    "congress": 111,
+    "billNumber": 5319,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Arms sales/transfer, U.S.-Taiwan relations",
+    "tags": [
+      "Arms sales",
+      "China",
+      "PLA"
+    ],
+    "comments": "Defensive arms valued a total of $6,400,000,000"
+  },
+  {
+    "congress": 111,
+    "billNumber": 5782,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "U.S. Taiwan Relations",
+    "tags": [
+      "TRA"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 6523,
+    "billTypeDisplay": "H.R.",
+    "category": "Other",
+    "tags": [
+      "Religion",
+      "missionary"
+    ],
+    "comments": "Version Public Law. Same content as that of H.R. 5136."
+  },
+  {
+    "congress": 111,
+    "billNumber": 1124,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "Trade"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 1331,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Human Trafficking"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 1352,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Taiwanese American Heritage Week"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 1738,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Natural Disasters"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 224,
+    "billTypeDisplay": "H.Res.",
+    "version": "eh",
+    "category": "Other",
+    "tags": [
+      "Education"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 725,
+    "billTypeDisplay": "H.Res.",
+    "version": "eh",
+    "category": "Other",
+    "tags": [
+      "Sport"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 733,
+    "billTypeDisplay": "H.Res.",
+    "version": "eh",
+    "category": "Other",
+    "tags": [
+      "Natural Disasters"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 784,
+    "billTypeDisplay": "H.Res.",
+    "version": "eh",
+    "category": "Other",
+    "tags": [
+      "Culture"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 816,
+    "billTypeDisplay": "H.Res.",
+    "version": "eh",
+    "category": "Other",
+    "tags": [
+      "Humanitarian Aid"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 927,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense"
+  },
+  {
+    "congress": 111,
+    "billNumber": 1390,
+    "billTypeDisplay": "S.",
+    "version": "es",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Air force",
+      "Taiwan Strait",
+      "PLA",
+      "China",
+      "TRA",
+      "security",
+      "peace"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 1391,
+    "billTypeDisplay": "S.",
+    "version": "es",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Air force",
+      "Taiwan Strait",
+      "PLA",
+      "China",
+      "TRA",
+      "security",
+      "peace"
+    ],
+    "comments": "The content of S. 1391 is the same as that of S. 1390."
+  },
+  {
+    "congress": 111,
+    "billNumber": 1434,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "Appropriation",
+    "tags": [
+      "AIT",
+      "Democracy Fund"
+    ],
+    "comments": "$21,174,000"
+  },
+  {
+    "congress": 111,
+    "billNumber": 2971,
+    "billTypeDisplay": "S.",
+    "version": "rs",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "$21,420,000"
+  },
+  {
+    "congress": 111,
+    "billNumber": 3240,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Arm sales/transfer",
+    "tags": [
+      "Arms sales",
+      "TRA",
+      "China"
+    ],
+    "comments": "$6,400,000,000"
+  },
+  {
+    "congress": 111,
+    "billNumber": 3429,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Trade/economy",
+    "tags": [
+      "Small business"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 3676,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "$21,420,000"
+  },
+  {
+    "congress": 111,
+    "billNumber": 3793,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "Other",
+    "tags": [
+      "China",
+      "foreign-held debt"
+    ]
+  },
+  {
+    "congress": 111,
+    "billNumber": 3847,
+    "billTypeDisplay": "S.",
+    "category": "Arm sales/transfer",
+    "tags": [
+      "Navy",
+      "TRA"
+    ],
+    "comments": "Public law version was reviewed"
+  },
+  {
+    "congress": 111,
+    "billNumber": 63,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "is",
+    "category": "International Participation",
+    "tags": [
+      "ICAO"
+    ],
+    "comments": "Related bill: 111 H.Con.Res. 266"
+  },
+  {
+    "congress": 111,
+    "billNumber": 544,
+    "billTypeDisplay": "S.Res.",
+    "version": "ats",
+    "category": "Trade/economy",
+    "tags": [
+      "Trade",
+      "beef"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 122,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "One China Policy",
+      "UN",
+      "Six Assurances"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 145,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rds",
+    "category": "Other",
+    "tags": [
+      "North Korea",
+      "Nuclear Weapons",
+      "China"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 39,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Democracy, Taiwan’s Defense",
+    "tags": [
+      "Human Rights",
+      "Missiles",
+      "anti-secession law",
+      "TRA",
+      "Arm Sales"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 77,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "UN",
+      "TRA",
+      "APEC",
+      "WHO"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 1,
+    "billTypeDisplay": "H.R.",
+    "version": "pp",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "H.R. 1 (112"
+  },
+  {
+    "congress": 112,
+    "billNumber": 1473,
+    "billTypeDisplay": "H.R.",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "$21,150,000, no version info on 04/15/11 public law version."
+  },
+  {
+    "congress": 112,
+    "billNumber": 2055,
+    "billTypeDisplay": "H.R.",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "$21,108,000, no version info on 12/23/11 public law version."
+  },
+  {
+    "congress": 112,
+    "billNumber": 2166,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other, Arms Sales",
+    "tags": [
+      "China",
+      "Arms Sales"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 2583,
+    "billTypeDisplay": "H.R.",
+    "version": "rh",
+    "category": "Appropriation, Arms sales",
+    "tags": [
+      "AIT",
+      "Air Force",
+      "F-16"
+    ],
+    "comments": "$21,150,000"
+  },
+  {
+    "congress": 112,
+    "billNumber": 2829,
+    "billTypeDisplay": "H.R.",
+    "version": "rh",
+    "category": "International Participation",
+    "tags": [
+      "UN"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 2918,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "U.S. Taiwan Relations, international participation, arm sales, trade",
+    "tags": [
+      "TRA",
+      "Six Assurances",
+      "high-level visit",
+      "visa waiver",
+      "AIT",
+      "WHO",
+      "ICAO",
+      "TPP"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 2992,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Arms sales, Taiwan’s Defense",
+    "tags": [
+      "F16-C/D",
+      "Air Force",
+      "PLA"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 3671,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "$21,108,000"
+  },
+  {
+    "congress": 112,
+    "billNumber": 3710,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Deficit Reduction",
+      "Job Creation",
+      "Energy Security Act"
+    ],
+    "comments": "Deficit Reduction, Job Creation, and Energy Security Act"
+  },
+  {
+    "congress": 112,
+    "billNumber": 4310,
+    "billTypeDisplay": "H.R.",
+    "version": "enr",
+    "category": "Other, Arms Sales, Taiwan’s Defense",
+    "tags": [
+      "Air Force"
+    ],
+    "comments": "Related Bill: H.R.396/ H.R.733/H.R.3088/H.R.3702/H.R.3863/H.R.3893/H.R.4018/H.R.4057/H.R.4117/H.R.4178/H.R.4309/H.R.4341/H.R.4401/H.R.5321/H.R.6229/H.R.6381/H.R.6622/H.R.6635/H.Res.656/H.Res.661/H.Res.829/H.Res.840/S.99/S.1409/S.2003/S.2060/S.2224/S.2276/S.2470/S.3180/S.3181/S.3207/S.3254/S.3315/S.3323/S.3354/S.3372/S.3526/S.3554/S.3560/S.3614/S.3646/S.3668"
+  },
+  {
+    "congress": 112,
+    "billNumber": 5857,
+    "billTypeDisplay": "H.R.",
+    "version": "rh",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "$21,108,000"
+  },
+  {
+    "congress": 112,
+    "billNumber": 5889,
+    "billTypeDisplay": "H.R.",
+    "version": "rfs",
+    "category": "other",
+    "tags": [
+      "Nuclear"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 5902,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "US-Taiwan Relation",
+    "tags": [
+      "Taiwan Relations Act",
+      "arm sales",
+      "trade",
+      "Six Assurances",
+      "WHO",
+      "AIT"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 6018,
+    "billTypeDisplay": "H.R.",
+    "version": "rfs",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "$21,108,000"
+  },
+  {
+    "congress": 112,
+    "billNumber": 6313,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "South China Sea dispute"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 6649,
+    "billTypeDisplay": "H.R.",
+    "version": "rds",
+    "category": "Arms Sales/Transfer",
+    "tags": [
+      "Navy",
+      "Naval Vessels",
+      "TECRO"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 139,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Humanitarian Aid"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 352,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "South China Sea",
+      "ASEAN allies",
+      "China"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 356,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "China",
+      "arms embargo",
+      "EU"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 365,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "“Asian Tiger” economy model"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 441,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "WWII",
+      "Israel",
+      "Iran",
+      "China",
+      "Taiwan",
+      "Security",
+      "Trade"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 616,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "WWII",
+      "China",
+      "Trade",
+      "TRA",
+      "WTO",
+      "Defense",
+      "Iran",
+      "Nuclear",
+      "Six Assurances",
+      "One China Principle",
+      "One China Policy",
+      "Space"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 814,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Arms Sales, Taiwan’s Defense",
+    "tags": [
+      "United Nations Arms Trade Treaty",
+      "Israel"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 1028,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Other",
+    "tags": [
+      "Foreign-Held Debt"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 1426,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "$23,320,000"
+  },
+  {
+    "congress": 112,
+    "billNumber": 1539,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Taiwan’s Defense, Arms Sales",
+    "tags": [
+      "Airpower",
+      "Taiwan Independence",
+      "PLA",
+      "DIA"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 1545,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "US-Taiwan Relations",
+    "tags": [
+      "visa waiver",
+      "tourism",
+      "students studying in US",
+      "Human Development index",
+      "census",
+      "Immigration and Nationality Act"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 1601,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "$21,108,000"
+  },
+  {
+    "congress": 112,
+    "billNumber": 2467,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Other",
+    "tags": [
+      "high income countries",
+      "international military education and training grants"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 3241,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "*$37,200,000*"
+  },
+  {
+    "congress": 112,
+    "billNumber": 981,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Other",
+    "tags": [
+      "high income countries",
+      "international millitary education and training grants"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 17,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "enr",
+    "category": "International Participation",
+    "tags": [
+      "ICAO"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 217,
+    "billTypeDisplay": "S.Res.",
+    "version": "ats",
+    "category": "Other",
+    "tags": [
+      "South China Sea"
+    ]
+  },
+  {
+    "congress": 112,
+    "billNumber": 542,
+    "billTypeDisplay": "S.Res.",
+    "version": "is",
+    "category": "Democracy",
+    "tags": [
+      "Election",
+      "TRA"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 23,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Taiwan’s defence",
+    "tags": [
+      "Arm sales"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 29,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "U.S.-Taiwan Relations, International Participation",
+    "tags": [
+      "Normal diplomatic relation",
+      "UN"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 46,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Democracy",
+    "tags": [
+      "Human Rights",
+      "Chen Shui-bien"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 55,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "UN",
+      "WTO",
+      "WHO",
+      "international organization",
+      "international financial institution"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 109,
+    "billTypeDisplay": "H.J.Res.",
+    "category": "Other",
+    "tags": [
+      "nuclear energy",
+      "AIT",
+      "TECRO"
+    ],
+    "comments": "There is only 1 version, but it’s not indicated on the copy."
+  },
+  {
+    "congress": 113,
+    "billNumber": 1073,
+    "billTypeDisplay": "H.R.",
+    "version": "rfs",
+    "category": "Other",
+    "tags": [
+      "nuclear weapons"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 1151,
+    "billTypeDisplay": "H.R.",
+    "version": "enr",
+    "category": "International Participation",
+    "tags": [
+      "ICAO"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 15,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "AIT",
+      "immigration"
+    ],
+    "comments": "Related to H.R. 1781"
+  },
+  {
+    "congress": 113,
+    "billNumber": 1781,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "AIT",
+      "immigration"
+    ],
+    "comments": "Related to H.R. 15"
+  },
+  {
+    "congress": 113,
+    "billNumber": 1960,
+    "billTypeDisplay": "H.R.",
+    "version": "pcs",
+    "category": "Arms sales/transfer, U.S.-Taiwan Relations",
+    "tags": [
+      "high-level visit",
+      "arms sales",
+      "TECRO"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 2,
+    "billTypeDisplay": "H.R.",
+    "version": "pcs",
+    "category": "Other",
+    "tags": [
+      "Immigration",
+      "training",
+      "employment"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 2848,
+    "billTypeDisplay": "H.R.",
+    "version": "rfs",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "$21,778,000"
+  },
+  {
+    "congress": 113,
+    "billNumber": 2855,
+    "billTypeDisplay": "H.R.",
+    "version": "rh",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "*$20,046,000*"
+  },
+  {
+    "congress": 113,
+    "billNumber": 3155,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "UN"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 3470,
+    "billTypeDisplay": "H.R.",
+    "version": "rfs",
+    "category": "Taiwan Relations Act",
+    "tags": [
+      "Arms transfer",
+      "peace",
+      "trade"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 3547,
+    "billTypeDisplay": "H.R.",
+    "version": "enr",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "$31,221,000"
+  },
+  {
+    "congress": 113,
+    "billNumber": 3979,
+    "billTypeDisplay": "H.R.",
+    "version": "eah",
+    "category": "U.S.-Taiwan Relations; Taiwan’s Defense; Other",
+    "tags": [
+      "TRA",
+      "PLA",
+      "security",
+      "self-defense",
+      "relief",
+      "PROC"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 419,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "U.S.-Taiwan Relations; International Participation; Democracy",
+    "tags": [
+      "TRA",
+      "arms sales",
+      "future of Taiwan",
+      "PROC",
+      "anti-secession law",
+      "self-defense",
+      "international space",
+      "WHO",
+      "ICAO",
+      "visa waiver program",
+      "democracy",
+      "human rights",
+      "TECRO",
+      "AIT",
+      "high-level visit",
+      "Taiwan Representative Office",
+      "Six Assurances",
+      "arms transfer",
+      "trade"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 4435,
+    "billTypeDisplay": "H.R.",
+    "version": "pcs",
+    "category": "Arms sales/transfer; Taiwan’s Defense",
+    "tags": [
+      "Arms sales",
+      "PLA",
+      "peace",
+      "TRA",
+      "defense",
+      "PROC",
+      "self-defense"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 4495,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Peace",
+      "PROC",
+      "forces balance",
+      "navy",
+      "maritime security",
+      "PLA Air Force",
+      "PLA Navy",
+      "PLA Second Artillery Corps",
+      "territorial security",
+      "armed forces",
+      "anti-ship cruise missile",
+      "anti-access",
+      "area-denial",
+      "TRA",
+      "self-defense",
+      "PLA",
+      "defense"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 4899,
+    "billTypeDisplay": "H.R.",
+    "version": "rfs",
+    "category": "Other",
+    "tags": [
+      "minority",
+      "U.S. citizen"
+    ],
+    "comments": "Same as H.R. 70"
+  },
+  {
+    "congress": 113,
+    "billNumber": 5013,
+    "billTypeDisplay": "H.R.",
+    "version": "rh",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "*$30,000,000*"
+  },
+  {
+    "congress": 113,
+    "billNumber": 70,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "minority",
+      "U.S. citizen"
+    ],
+    "comments": "Same as H.R. 4899"
+  },
+  {
+    "congress": 113,
+    "billNumber": 772,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "South China Sea",
+      "territorial disputes",
+      "9-dotted line"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 83,
+    "billTypeDisplay": "H.R.",
+    "version": "eah",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "*$30,000,000*"
+  },
+  {
+    "congress": 113,
+    "billNumber": 185,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "TRA",
+      "high-level visit",
+      "peace",
+      "security",
+      "democracy",
+      "Taiwan Travel Act"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 281,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "China",
+      "PROC",
+      "organ transplantation",
+      "Falun Gong"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 494,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "trade",
+      "TRA",
+      "peace",
+      "security"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 714,
+    "billTypeDisplay": "H.Res.",
+    "version": "eh",
+    "category": "Other",
+    "tags": [
+      "South China Sea",
+      "territorial disputes",
+      "the Philippines",
+      "Taiwanese fisherman",
+      "shooting incident"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 12,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "navy",
+      "naval vessel transfer",
+      "TECRO",
+      "TRA"
+    ],
+    "comments": "Same as S. 1683"
+  },
+  {
+    "congress": 113,
+    "billNumber": 1372,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "*$31,221,000*"
+  },
+  {
+    "congress": 113,
+    "billNumber": 1683,
+    "billTypeDisplay": "S.",
+    "version": "es",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "navy",
+      "naval vessel transfer",
+      "TECRO",
+      "TRA"
+    ],
+    "comments": "Same as S. 12"
+  },
+  {
+    "congress": 113,
+    "billNumber": 2410,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "Other",
+    "tags": [
+      "Humanitarian aid",
+      "PROC",
+      "Taiwan-U.S.-PROC triangular relationship"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 2499,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "$30,000,000"
+  },
+  {
+    "congress": 113,
+    "billNumber": 579,
+    "billTypeDisplay": "S.",
+    "version": "es",
+    "category": "International Participation",
+    "tags": [
+      "ICAO",
+      "observer status"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 744,
+    "billTypeDisplay": "S.",
+    "version": "pap",
+    "category": "Other",
+    "tags": [
+      "AIT",
+      "immigration",
+      "foreign surviving family",
+      "U.S. civil servant",
+      "government employee"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 7,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "is",
+    "category": "Arms sales/transfer",
+    "tags": [
+      "Arms sales",
+      "ally"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 31,
+    "billTypeDisplay": "S.J.Res.",
+    "version": "iia",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "nuclear energy",
+      "TECRO",
+      "cooperation"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 167,
+    "billTypeDisplay": "S.Res.",
+    "version": "ats",
+    "category": "Other",
+    "tags": [
+      "conservation",
+      "fishing resource sharing",
+      "East China Sea",
+      "Japan"
+    ]
+  },
+  {
+    "congress": 113,
+    "billNumber": 82,
+    "billTypeDisplay": "S.Res.",
+    "version": "is",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "U.S. Army Air Defense",
+      "missile defense system"
+    ]
+  },
+  {
+    "congress": 114,
+    "billNumber": 76,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "UN",
+      "Asian Development Bank",
+      "APRC",
+      "WHO",
+      "WTO….Taiwan Relations Act"
+    ]
+  },
+  {
+    "congress": 114,
+    "billNumber": 88,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rfs",
+    "category": "International Participation",
+    "tags": [
+      "Six Assurances",
+      "Taiwan Relations Act"
+    ]
+  },
+  {
+    "congress": 114,
+    "billNumber": 1056,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "prevention of nuclear terrorism (Non-Proliferation Treaty)"
+    ]
+  },
+  {
+    "congress": 114,
+    "billNumber": 1735,
+    "billTypeDisplay": "H.R.",
+    "version": "pap",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Taiwan Relations Act",
+      "Self-Defense",
+      "PROC",
+      "Taiwan Strait",
+      "Missiles",
+      "bilateral training"
+    ]
+  },
+  {
+    "congress": 114,
+    "billNumber": 1853,
+    "billTypeDisplay": "H.R.",
+    "version": "rfs",
+    "category": "International Participation",
+    "tags": [
+      "Interpol"
+    ]
+  },
+  {
+    "congress": 114,
+    "billNumber": 2029,
+    "billTypeDisplay": "H.R.",
+    "version": "enr",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "$30,000,000"
+  },
+  {
+    "congress": 114,
+    "billNumber": 2048,
+    "billTypeDisplay": "H.R.",
+    "version": "public law",
+    "category": "Other",
+    "tags": [
+      "nuclear weapons",
+      "Non-proliferation treaty (NPT)"
+    ]
+  },
+  {
+    "congress": 114,
+    "billNumber": 2772,
+    "billTypeDisplay": "H.R.",
+    "version": "rh",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "$30,000,000"
+  },
+  {
+    "congress": 114,
+    "billNumber": 3667,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "meaningful participation",
+      "UN Entities"
+    ]
+  },
+  {
+    "congress": 114,
+    "billNumber": 4154,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "navy",
+      "naval vessel transfer"
+    ]
+  },
+  {
+    "congress": 114,
+    "billNumber": 4909,
+    "billTypeDisplay": "H.R.",
+    "version": "pcs",
+    "category": "Other, Arms Sales, Taiwan’s Defense",
+    "tags": [
+      "RIMPAC",
+      "Taiwan Relations Act"
+    ],
+    "comments": "National Defense Authorization Act for Fiscal Year 2017"
+  },
+  {
+    "congress": 114,
+    "billNumber": 5890,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Arms Sales",
+    "tags": [
+      "Arms Export Control Act"
+    ],
+    "comments": "Asia-Pacific Maritime Security Initiative Act of 2016"
+  },
+  {
+    "congress": 114,
+    "billNumber": 5912,
+    "billTypeDisplay": "H.R.",
+    "version": "rh",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "$30,000,000, Department of State, Foreign Operations, and Related Programs Appropriations Act, 2017"
+  },
+  {
+    "congress": 114,
+    "billNumber": 6047,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "US-Taiwan Relations",
+    "tags": [
+      "high-level visits",
+      "Taiwan Travel Act"
+    ],
+    "comments": "Taiwan Travel Act"
+  },
+  {
+    "congress": 114,
+    "billNumber": 70,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Deficit Reduction",
+      "Job Creation",
+      "Energy Security"
+    ],
+    "comments": "Deficit Reduction, Job Creation, and Energy Security Act"
+  },
+  {
+    "congress": 114,
+    "billNumber": 641,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "education"
+    ]
+  },
+  {
+    "congress": 114,
+    "billNumber": 1123,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Other",
+    "tags": [
+      "nuclear weapons"
+    ],
+    "comments": "Related Bills: H.R.1056, H.R.2048, S.1318, S.1469 SAFETY OF MARITIME NAVIGATION AND NUCLEAR TERRORISM CONVENTIONS IMPLEMENTATION"
+  },
+  {
+    "congress": 114,
+    "billNumber": 1318,
+    "billTypeDisplay": "S.",
+    "version": "rs",
+    "category": "Other",
+    "tags": [
+      "nuclear weapons"
+    ],
+    "comments": "Nuclear Terrorism Conventions Implementation and Safety of Maritime Navigation Act of 2015"
+  },
+  {
+    "congress": 114,
+    "billNumber": 1356,
+    "billTypeDisplay": "S.",
+    "version": "public law",
+    "category": "Other",
+    "tags": [
+      "South China Sea"
+    ],
+    "comments": "National Defense Authorization Act for Fiscal Year 2016"
+  },
+  {
+    "congress": 114,
+    "billNumber": 1376,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "Other",
+    "tags": [
+      "South China Sea"
+    ],
+    "comments": "National Defense Authorization Act for Fiscal Year 2016"
+  },
+  {
+    "congress": 114,
+    "billNumber": 1635,
+    "billTypeDisplay": "S.",
+    "version": "public law",
+    "category": "Other",
+    "tags": [
+      "TRA",
+      "Six Assurances",
+      "trade"
+    ],
+    "comments": "Department of State Authorities Act, Fiscal Year 2017"
+  },
+  {
+    "congress": 114,
+    "billNumber": 1725,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "*$30,000,000*"
+  },
+  {
+    "congress": 114,
+    "billNumber": 2130,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comments": "*$30,000,000*"
+  },
+  {
+    "congress": 114,
+    "billNumber": 2426,
+    "billTypeDisplay": "S.",
+    "version": "enr",
+    "category": "International Participation",
+    "tags": [
+      "Interpol",
+      "observer status"
+    ]
+  },
+  {
+    "congress": 114,
+    "billNumber": 2650,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "sport"
+    ]
+  },
+  {
+    "congress": 114,
+    "billNumber": 2865,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "arms sales",
+      "Asia-Pacific",
+      "maritime",
+      "personnel training"
+    ]
+  },
+  {
+    "congress": 114,
+    "billNumber": 2943,
+    "billTypeDisplay": "S.",
+    "version": "public law",
+    "category": "U.S.-Taiwan Relations, Taiwan’s Defense",
+    "tags": [
+      "AIT",
+      "military exchange"
+    ],
+    "comments": "National Defense Authorization Act for Fiscal Year 2017"
+  },
+  {
+    "congress": 114,
+    "billNumber": 3117,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "Appropriation",
+    "tags": [
+      "AIT",
+      "Taiwan Relations Act"
+    ],
+    "comments": "*$31,963,000*"
+  },
+  {
+    "congress": 114,
+    "billNumber": 3397,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "high-level visits",
+      "Taiwan Travel Act",
+      "Taiwan Relations Act"
+    ]
+  },
+  {
+    "congress": 114,
+    "billNumber": 3509,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Other",
+    "tags": [
+      "South China Sea",
+      "China"
+    ]
+  },
+  {
+    "congress": 114,
+    "billNumber": 38,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "es",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "Six Assurances",
+      "China",
+      "Taiwan Relations Act"
+    ]
+  },
+  {
+    "congress": 114,
+    "billNumber": 183,
+    "billTypeDisplay": "S.Res.",
+    "version": "is",
+    "category": "Other",
+    "tags": [
+      "South China Sea"
+    ]
+  },
+  {
+    "congress": 42,
+    "billNumber": 4073,
+    "billTypeDisplay": "H.R.",
+    "version": "rth",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "Consolate",
+      "China"
+    ]
+  },
+  {
+    "congress": 55,
+    "billNumber": 11487,
+    "billTypeDisplay": "H.R.",
+    "version": "oph",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "Consolate"
+    ]
+  },
+  {
+    "congress": 55,
+    "billNumber": 6449,
+    "billTypeDisplay": "H.R.",
+    "version": "rth",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "Consolate"
+    ]
+  },
+  {
+    "congress": 56,
+    "billNumber": 13850,
+    "billTypeDisplay": "H.R.",
+    "category": "Other"
+  },
+  {
+    "congress": 56,
+    "billNumber": 14018,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 56,
+    "billNumber": 6765,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 56,
+    "billNumber": 7941,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 56,
+    "billNumber": 8303,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 56,
+    "billNumber": 930,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 56,
+    "billNumber": 1927,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 56,
+    "billNumber": 3140,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 57,
+    "billNumber": 11471,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 57,
+    "billNumber": 158,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 57,
+    "billNumber": 16604,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 57,
+    "billNumber": 168,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 57,
+    "billNumber": 5,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 57,
+    "billNumber": 491,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 58,
+    "billNumber": 11287,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 58,
+    "billNumber": 18468,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 60,
+    "billNumber": 315,
+    "billTypeDisplay": "H.Res."
+  },
+  {
+    "congress": 69,
+    "billNumber": 91,
+    "billTypeDisplay": "H.J.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Relief"
+    ]
+  },
+  {
+    "congress": 73,
+    "billNumber": 9410,
+    "billTypeDisplay": "H.R.",
+    "comment": "關鍵字搜尋錯誤(Tanana)"
+  },
+  {
+    "congress": 78,
+    "billNumber": 320,
+    "billTypeDisplay": "S.Res.",
+    "version": "is",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "WWII",
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 81,
+    "billNumber": 230,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 81,
+    "billNumber": 231,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 81,
+    "billNumber": 232,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 81,
+    "billNumber": 440,
+    "billTypeDisplay": "H.Res."
+  },
+  {
+    "congress": 81,
+    "billNumber": 452,
+    "billTypeDisplay": "H.Res."
+  },
+  {
+    "congress": 81,
+    "billNumber": 1063,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 81,
+    "billNumber": 3304,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 82,
+    "billNumber": 138,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 82,
+    "billNumber": 96,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 82,
+    "billNumber": 12,
+    "billTypeDisplay": "H.J.Res."
+  },
+  {
+    "congress": 82,
+    "billNumber": 136,
+    "billTypeDisplay": "H.J.Res."
+  },
+  {
+    "congress": 82,
+    "billNumber": 245,
+    "billTypeDisplay": "H.Res."
+  },
+  {
+    "congress": 82,
+    "billNumber": 246,
+    "billTypeDisplay": "H.Res."
+  },
+  {
+    "congress": 82,
+    "billNumber": 247,
+    "billTypeDisplay": "H.Res."
+  },
+  {
+    "congress": 82,
+    "billNumber": 438,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 82,
+    "billNumber": 30,
+    "billTypeDisplay": "S.Con.Res."
+  },
+  {
+    "congress": 82,
+    "billNumber": 7,
+    "billTypeDisplay": "S.Con.Res."
+  },
+  {
+    "congress": 82,
+    "billNumber": 9,
+    "billTypeDisplay": "S.Con.Res."
+  },
+  {
+    "congress": 82,
+    "billNumber": 15,
+    "billTypeDisplay": "S.J.Res."
+  },
+  {
+    "congress": 82,
+    "billNumber": 63,
+    "billTypeDisplay": "S.J.Res."
+  },
+  {
+    "congress": 82,
+    "billNumber": 132,
+    "billTypeDisplay": "S.Res."
+  },
+  {
+    "congress": 82,
+    "billNumber": 167,
+    "billTypeDisplay": "S.Res."
+  },
+  {
+    "congress": 82,
+    "billNumber": 170,
+    "billTypeDisplay": "S.Res."
+  },
+  {
+    "congress": 82,
+    "billNumber": 250,
+    "billTypeDisplay": "S.Res."
+  },
+  {
+    "congress": 83,
+    "billNumber": 114,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 83,
+    "billNumber": 162,
+    "billTypeDisplay": "H.J.Res."
+  },
+  {
+    "congress": 83,
+    "billNumber": 557,
+    "billTypeDisplay": "H.J.Res."
+  },
+  {
+    "congress": 83,
+    "billNumber": 558,
+    "billTypeDisplay": "H.J.Res."
+  },
+  {
+    "congress": 83,
+    "billNumber": 3066,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 83,
+    "billNumber": 6391,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 83,
+    "billNumber": 8300,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 83,
+    "billNumber": 620,
+    "billTypeDisplay": "H.Res."
+  },
+  {
+    "congress": 83,
+    "billNumber": 2128,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 83,
+    "billNumber": 29,
+    "billTypeDisplay": "S.Con.Res."
+  },
+  {
+    "congress": 83,
+    "billNumber": 171,
+    "billTypeDisplay": "S.J.Res."
+  },
+  {
+    "congress": 83,
+    "billNumber": 112,
+    "billTypeDisplay": "S.Res."
+  },
+  {
+    "congress": 84,
+    "billNumber": 159,
+    "billTypeDisplay": "H.J.Res."
+  },
+  {
+    "congress": 84,
+    "billNumber": 7224,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 84,
+    "billNumber": 104,
+    "billTypeDisplay": "H.Res."
+  },
+  {
+    "congress": 84,
+    "billNumber": 21,
+    "billTypeDisplay": "S.Con.Res."
+  },
+  {
+    "congress": 84,
+    "billNumber": 28,
+    "billTypeDisplay": "S.J.Res."
+  },
+  {
+    "congress": 84,
+    "billNumber": 141,
+    "billTypeDisplay": "S.Res."
+  },
+  {
+    "congress": 84,
+    "billNumber": 55,
+    "billTypeDisplay": "S.Res."
+  },
+  {
+    "congress": 85,
+    "billNumber": 665,
+    "billTypeDisplay": "H.J.Res."
+  },
+  {
+    "congress": 85,
+    "billNumber": 11894,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 85,
+    "billNumber": 5804,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 85,
+    "billNumber": 6952,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 85,
+    "billNumber": 3195,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 85,
+    "billNumber": 3506,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 86,
+    "billNumber": 191,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 86,
+    "billNumber": 200,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 86,
+    "billNumber": 122,
+    "billTypeDisplay": "H.J.Res."
+  },
+  {
+    "congress": 86,
+    "billNumber": 12738,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 86,
+    "billNumber": 13247,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 86,
+    "billNumber": 3366,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 86,
+    "billNumber": 8042,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 86,
+    "billNumber": 9465,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 86,
+    "billNumber": 3508,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 87,
+    "billNumber": 233,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 234,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 235,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 236,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 237,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 238,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 239,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 240,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 241,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 242,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 243,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 244,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 245,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 246,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 247,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 248,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 249,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 250,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 251,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 252,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 253,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 254,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 255,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 256,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 257,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 258,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 259,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 260,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 261,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 262,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 263,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 264,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 265,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 266,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 267,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 268,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 269,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 270,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 271,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 272,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 273,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 274,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 275,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 276,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 277,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 278,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 279,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 280,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 281,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 282,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 283,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 284,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 285,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 286,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 287,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 288,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 291,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 292,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 293,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 294,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 302,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 303,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 315,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 349,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 87,
+    "billNumber": 10823,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 87,
+    "billNumber": 10833,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 87,
+    "billNumber": 12154,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 87,
+    "billNumber": 1984,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 87,
+    "billNumber": 3894,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 87,
+    "billNumber": 3896,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 87,
+    "billNumber": 3905,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 87,
+    "billNumber": 3941,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 87,
+    "billNumber": 4625,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 87,
+    "billNumber": 4882,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 88,
+    "billNumber": 114,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 88,
+    "billNumber": 19,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 88,
+    "billNumber": 264,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 88,
+    "billNumber": 33,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 88,
+    "billNumber": 6,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 88,
+    "billNumber": 89,
+    "billTypeDisplay": "H.Con.Res."
+  },
+  {
+    "congress": 88,
+    "billNumber": 10300,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 88,
+    "billNumber": 11685,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 88,
+    "billNumber": 12342,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 88,
+    "billNumber": 1842,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 88,
+    "billNumber": 9750,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 88,
+    "billNumber": 1910,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 88,
+    "billNumber": 2467,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 88,
+    "billNumber": 3250,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 89,
+    "billNumber": 10775,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 89,
+    "billNumber": 11135,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 89,
+    "billNumber": 5252,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 89,
+    "billNumber": 8085,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 89,
+    "billNumber": 8439,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 90,
+    "billNumber": 13893,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 90,
+    "billNumber": 15263,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 90,
+    "billNumber": 15681,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 90,
+    "billNumber": 9796,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 91,
+    "billNumber": 11792,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Military Assistant"
+    ]
+  },
+  {
+    "congress": 91,
+    "billNumber": 12171,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Appropriation",
+    "tags": [
+      "Military Installations"
+    ],
+    "comment": "$154,000"
+  },
+  {
+    "congress": 91,
+    "billNumber": 13018,
+    "billTypeDisplay": "H.R.",
+    "version": "rs",
+    "category": "Appropriation",
+    "tags": [
+      "Military Installations"
+    ],
+    "comment": "$154,000"
+  },
+  {
+    "congress": 91,
+    "billNumber": 14580,
+    "billTypeDisplay": "H.R.",
+    "version": "rfs",
+    "category": "Other",
+    "tags": [
+      "Military Assistant"
+    ]
+  },
+  {
+    "congress": 91,
+    "billNumber": 15149,
+    "billTypeDisplay": "H.R.",
+    "version": "oph",
+    "category": "Other",
+    "tags": [
+      "Military Assistant"
+    ],
+    "comment": "Congress reiterates its opposition to the seating in the UN of the Communist China regime as the representative of China"
+  },
+  {
+    "congress": 91,
+    "billNumber": 15728,
+    "billTypeDisplay": "H.R.",
+    "version": "rs",
+    "category": "Arms Sales/Transfer",
+    "tags": [
+      "Navy"
+    ]
+  },
+  {
+    "congress": 91,
+    "billNumber": 17867,
+    "billTypeDisplay": "H.R.",
+    "version": "rh",
+    "category": "Other",
+    "tags": [
+      "Military Assistant"
+    ],
+    "comment": "Congress reiterates its opposition to the seating in the UN of the Communist China regime as the representative of China"
+  },
+  {
+    "congress": 91,
+    "billNumber": 1991,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "comment": "關鍵字搜尋錯誤 (January)"
+  },
+  {
+    "congress": 91,
+    "billNumber": 2347,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Other",
+    "tags": [
+      "Military Assistant"
+    ]
+  },
+  {
+    "congress": 91,
+    "billNumber": 779,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Appropriation",
+    "tags": [
+      "Military Installations"
+    ],
+    "comment": "$154,000"
+  },
+  {
+    "congress": 91,
+    "billNumber": 166,
+    "billTypeDisplay": "S.J.Res.",
+    "version": "is",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Vietnam War"
+    ]
+  },
+  {
+    "congress": 92,
+    "billNumber": 466,
+    "billTypeDisplay": "H.J.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Formosa Resolution"
+    ]
+  },
+  {
+    "congress": 92,
+    "billNumber": 809,
+    "billTypeDisplay": "H.J.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Formosa Resolution"
+    ]
+  },
+  {
+    "congress": 92,
+    "billNumber": 843,
+    "billTypeDisplay": "H.J.Res.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "Taiwanese Right in U.S."
+    ]
+  },
+  {
+    "congress": 92,
+    "billNumber": 11582,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Formosa Resolution"
+    ]
+  },
+  {
+    "congress": 92,
+    "billNumber": 11875,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Formosa Resolution"
+    ]
+  },
+  {
+    "congress": 92,
+    "billNumber": 13897,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Relief"
+    ]
+  },
+  {
+    "congress": 92,
+    "billNumber": 8866,
+    "billTypeDisplay": "H.R.",
+    "version": "ras",
+    "category": "Trade/Economy",
+    "tags": [
+      "Trade",
+      "Sugar"
+    ]
+  },
+  {
+    "congress": 92,
+    "billNumber": 9910,
+    "billTypeDisplay": "H.R.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Formosa Resolution"
+    ]
+  },
+  {
+    "congress": 92,
+    "billNumber": 287,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "Sovereignty"
+    ],
+    "comment": "美國開始對中共表達善意"
+  },
+  {
+    "congress": 92,
+    "billNumber": 296,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "Sovereignty"
+    ]
+  },
+  {
+    "congress": 92,
+    "billNumber": 364,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "Sovereignty"
+    ]
+  },
+  {
+    "congress": 92,
+    "billNumber": 403,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "Sovereignty"
+    ]
+  },
+  {
+    "congress": 92,
+    "billNumber": 415,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Postal Service"
+    ]
+  },
+  {
+    "congress": 92,
+    "billNumber": 557,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Military Assistance"
+    ]
+  },
+  {
+    "congress": 92,
+    "billNumber": 1657,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Other",
+    "tags": [
+      "Military Assistance"
+    ]
+  },
+  {
+    "congress": 92,
+    "billNumber": 2796,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Formosa Resolution"
+    ]
+  },
+  {
+    "congress": 92,
+    "billNumber": 3295,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Other",
+    "tags": [
+      "Relief"
+    ]
+  },
+  {
+    "congress": 92,
+    "billNumber": 48,
+    "billTypeDisplay": "S.J.Res.",
+    "version": "rs",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Formosa Resolution"
+    ]
+  },
+  {
+    "congress": 92,
+    "billNumber": 139,
+    "billTypeDisplay": "S.Res.",
+    "version": "is",
+    "category": "International Participation",
+    "tags": [
+      "UN"
+    ]
+  },
+  {
+    "congress": 92,
+    "billNumber": 18,
+    "billTypeDisplay": "S.Res.",
+    "version": "is",
+    "category": "International Participation",
+    "tags": [
+      "UN"
+    ],
+    "comment": "美國想當和事佬 中台歸一 想讓中共進UN"
+  },
+  {
+    "congress": 92,
+    "billNumber": 37,
+    "billTypeDisplay": "S.Res.",
+    "version": "is",
+    "category": "International Participation",
+    "tags": [
+      "UN",
+      "Sovereignty"
+    ]
+  },
+  {
+    "congress": 92,
+    "billNumber": 82,
+    "billTypeDisplay": "S.Res.",
+    "version": "is",
+    "category": "International Participation",
+    "tags": [
+      "UN"
+    ]
+  },
+  {
+    "congress": 93,
+    "billNumber": 263,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 93,
+    "billNumber": 267,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 93,
+    "billNumber": 268,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 93,
+    "billNumber": 276,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 93,
+    "billNumber": 329,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 93,
+    "billNumber": 434,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 93,
+    "billNumber": 607,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 93,
+    "billNumber": 12600,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "comment": "關鍵字搜尋錯誤（Jarman）"
+  },
+  {
+    "congress": 93,
+    "billNumber": 14747,
+    "billTypeDisplay": "H.R.",
+    "version": "fah",
+    "category": "Trade/Economy",
+    "tags": [
+      "Trade",
+      "Sugar"
+    ]
+  },
+  {
+    "congress": 93,
+    "billNumber": 16879,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "Trade",
+      "Sugar"
+    ]
+  },
+  {
+    "congress": 93,
+    "billNumber": 588,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "UN"
+    ]
+  },
+  {
+    "congress": 93,
+    "billNumber": 1287,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "Liaison Office"
+    ]
+  },
+  {
+    "congress": 93,
+    "billNumber": 3473,
+    "billTypeDisplay": "S.",
+    "version": "rfh",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Formosa Resolution"
+    ]
+  },
+  {
+    "congress": 93,
+    "billNumber": 649,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "comment": "關鍵字搜尋錯誤 （Japan）"
+  },
+  {
+    "congress": 93,
+    "billNumber": 52,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "is",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 93,
+    "billNumber": 68,
+    "billTypeDisplay": "S.Res.",
+    "version": "is",
+    "category": "International Participation",
+    "tags": [
+      "Sovereignty"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 20,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 360,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 378,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 379,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 380,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 381,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 398,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 419,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 420,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 421,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 426,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 451,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 474,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 487,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 488,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 491,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 495,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 14881,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "Trade",
+      "Mushroom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 14889,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "Trade",
+      "Mushroom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 15019,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "Trade",
+      "Mushroom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 15198,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "Trade",
+      "Mushroom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 15379,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "Trade",
+      "Mushroom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 15459,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "Trade",
+      "Mushroom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 3158,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "Trade",
+      "Sugar"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 4591,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Relief"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 5419,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "Vessel"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 9572,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Arms sales/transfer",
+    "tags": [
+      "Navy"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 3704,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Trade/Economy",
+    "tags": [
+      "Trade",
+      "Mushroom"
+    ]
+  },
+  {
+    "congress": 94,
+    "billNumber": 3734,
+    "billTypeDisplay": "S.",
+    "version": "oph",
+    "category": "Arms sales/transfer",
+    "tags": [
+      "Navy"
+    ]
+  },
+  {
+    "congress": 95,
+    "billNumber": 310,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Diplomatic Recognition"
+    ]
+  },
+  {
+    "congress": 95,
+    "billNumber": 32,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 95,
+    "billNumber": 332,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Diplomatic Recognition"
+    ]
+  },
+  {
+    "congress": 95,
+    "billNumber": 49,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 95,
+    "billNumber": 498,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 95,
+    "billNumber": 677,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Mutual Defense Treaty"
+    ]
+  },
+  {
+    "congress": 95,
+    "billNumber": 240,
+    "billTypeDisplay": "H.J.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Conservation"
+    ]
+  },
+  {
+    "congress": 95,
+    "billNumber": 13255,
+    "billTypeDisplay": "H.R.",
+    "version": "rth",
+    "category": "Arms sales/transfer",
+    "tags": [
+      "Navy"
+    ]
+  },
+  {
+    "congress": 95,
+    "billNumber": 3466,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Relief"
+    ]
+  },
+  {
+    "congress": 95,
+    "billNumber": 5747,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "Military Assistance"
+    ]
+  },
+  {
+    "congress": 95,
+    "billNumber": 1268,
+    "billTypeDisplay": "H.Res.",
+    "version": "rth",
+    "category": "Other",
+    "tags": [
+      "Sport"
+    ]
+  },
+  {
+    "congress": 95,
+    "billNumber": 1283,
+    "billTypeDisplay": "H.Res.",
+    "version": "rth",
+    "category": "Other",
+    "tags": [
+      "Sport"
+    ]
+  },
+  {
+    "congress": 95,
+    "billNumber": 1284,
+    "billTypeDisplay": "H.Res.",
+    "version": "rth",
+    "category": "Other",
+    "tags": [
+      "Sport"
+    ]
+  },
+  {
+    "congress": 95,
+    "billNumber": 1292,
+    "billTypeDisplay": "H.Res.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Mutual Defense Treaty"
+    ]
+  },
+  {
+    "congress": 95,
+    "billNumber": 1389,
+    "billTypeDisplay": "H.Res.",
+    "version": "rth",
+    "category": "Other",
+    "tags": [
+      "Sport"
+    ]
+  },
+  {
+    "congress": 95,
+    "billNumber": 1392,
+    "billTypeDisplay": "H.Res.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Mutual Defense Treaty"
+    ]
+  },
+  {
+    "congress": 95,
+    "billNumber": 1440,
+    "billTypeDisplay": "H.Res.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Mutual Defense Treaty"
+    ]
+  },
+  {
+    "congress": 95,
+    "billNumber": 457,
+    "billTypeDisplay": "S.Res.",
+    "version": "is",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "Chiang Ching-Kou"
+    ]
+  },
+  {
+    "congress": 95,
+    "billNumber": 519,
+    "billTypeDisplay": "S.Res.",
+    "version": "is",
+    "category": "Other",
+    "tags": [
+      "Sport"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 143,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rts",
+    "category": "Other",
+    "tags": [
+      "Conservation"
+    ],
+    "comment": "whale"
+  },
+  {
+    "congress": 96,
+    "billNumber": 268,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "International Participation",
+    "tags": [
+      "Olympics"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 275,
+    "billTypeDisplay": "H.Con.Res.",
+    "category": "International Participation",
+    "tags": [
+      "Olympics"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 31,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "International Participation",
+    "tags": [
+      "Sovereignty"
+    ],
+    "comment": "the United States looks forward to the time when the People's Republic of China and Taiwan recognize each other as sovereign nations."
+  },
+  {
+    "congress": 96,
+    "billNumber": 35,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 41,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "Sovereignty"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 87,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Other",
+    "tags": [
+      "Conservation"
+    ],
+    "comment": "whale"
+  },
+  {
+    "congress": 96,
+    "billNumber": 92,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Other",
+    "tags": [
+      "Conservation"
+    ],
+    "comment": "whale"
+  },
+  {
+    "congress": 96,
+    "billNumber": 167,
+    "billTypeDisplay": "H.J.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Diplomatic Recognition",
+      "Mutual Defense Treaty",
+      "Peace"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 193,
+    "billTypeDisplay": "H.J.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Mutual Defense Treaty",
+      "Peace"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 224,
+    "billTypeDisplay": "H.J.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Diplomatic Recognition",
+      "Mutual Defense Treaty",
+      "Peace"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 1614,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "U.S-Taiwan Relations",
+    "tags": [
+      "AIT"
+    ],
+    "comment": "確立運用AIT達到非正式關係模式"
+  },
+  {
+    "congress": 96,
+    "billNumber": 17,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "Trade",
+      "Sugar"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 1856,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "Trade",
+      "Trade Act"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 1858,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Security"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 1859,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Security"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 1925,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "Liaison Office"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 1972,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Security"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 1973,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Security"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 2479,
+    "billTypeDisplay": "H.R.",
+    "version": "oph",
+    "category": "Taiwan Relations Act, Taiwan’s Defense",
+    "tags": [
+      "TRA",
+      "AIT"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 2481,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "War Reserve Materiel"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 3173,
+    "billTypeDisplay": "H.R.",
+    "version": "rs",
+    "category": "Other",
+    "tags": [
+      "War Reserve Materiel"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 3363,
+    "billTypeDisplay": "H.R.",
+    "category": "Other",
+    "tags": [
+      "conservation"
+    ],
+    "comment": "whale"
+  },
+  {
+    "congress": 96,
+    "billNumber": 4392,
+    "billTypeDisplay": "H.R.",
+    "version": "oph",
+    "category": "appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comment": "$5954000"
+  },
+  {
+    "congress": 96,
+    "billNumber": 4473,
+    "billTypeDisplay": "H.R.",
+    "version": "rs",
+    "category": "International Participation",
+    "tags": [
+      "Asian Development Bank"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 606,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 96,
+    "billNumber": 7244,
+    "billTypeDisplay": "H.R.",
+    "version": "rh",
+    "category": "International Participation",
+    "tags": [
+      "International Monetary Fund",
+      "Bretton Woods Agreement"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 7583,
+    "billTypeDisplay": "H.R.",
+    "version": "rts",
+    "category": "Trade/Economy",
+    "tags": [
+      "United States Customs Service"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 7584,
+    "billTypeDisplay": "H.R.",
+    "version": "oph",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comment": "$6282000"
+  },
+  {
+    "congress": 96,
+    "billNumber": 7878,
+    "billTypeDisplay": "H.R.",
+    "version": "rth",
+    "category": "Arms sales/transfer",
+    "tags": [
+      "Naval Vessels"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 108,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Mutual Defense Treaty",
+      "PROC",
+      "Future of Taiwan"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 148,
+    "billTypeDisplay": "H.Res.",
+    "version": "rh",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Peace",
+      "Future of Taiwan"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 551,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "democracy",
+    "tags": [
+      "human rights"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 603,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "democracy",
+    "tags": [
+      "human rights"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 616,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "democracy",
+    "tags": [
+      "Kaohsiung Incident"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 708,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "democracy",
+    "tags": [
+      "Kaohsiung Incident"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 17,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Trade/Economy",
+    "tags": [
+      "Trade",
+      "Sugar"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 2271,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "International Participation",
+    "tags": [
+      "International Monetary Fund",
+      "Bretton Woods Agreement"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 2445,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comment": "$6582000"
+  },
+  {
+    "congress": 96,
+    "billNumber": 245,
+    "billTypeDisplay": "S.",
+    "version": "ras",
+    "category": "U.S-Taiwan Relations",
+    "tags": [
+      "AIT"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 2727,
+    "billTypeDisplay": "S.",
+    "version": "rs",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comment": "$6532000"
+  },
+  {
+    "congress": 96,
+    "billNumber": 46,
+    "billTypeDisplay": "S."
+  },
+  {
+    "congress": 96,
+    "billNumber": 584,
+    "billTypeDisplay": "S.",
+    "version": "rs",
+    "category": "Other",
+    "tags": [
+      "War Reserve Materiel"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 586,
+    "billTypeDisplay": "S.",
+    "version": "ras",
+    "category": "Other",
+    "tags": [
+      "Conservation"
+    ],
+    "comment": "whale"
+  },
+  {
+    "congress": 96,
+    "billNumber": 662,
+    "billTypeDisplay": "S.",
+    "category": "International Participation",
+    "tags": [
+      "Asian Development Bank"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 8,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "U.S-Taiwan Relations",
+    "tags": [
+      "Liaison Office"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 14,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "is",
+    "category": "Other",
+    "tags": [
+      "Conservation"
+    ],
+    "comment": "whale"
+  },
+  {
+    "congress": 96,
+    "billNumber": 17,
+    "billTypeDisplay": "S.J.Res.",
+    "version": "is",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Mutual Defense Treaty",
+      "Peace"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 29,
+    "billTypeDisplay": "S.J.Res."
+  },
+  {
+    "congress": 96,
+    "billNumber": 31,
+    "billTypeDisplay": "S.J.Res.",
+    "version": "is",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Mutual Defense Treaty",
+      "Peace"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 35,
+    "billTypeDisplay": "S.J.Res."
+  },
+  {
+    "congress": 96,
+    "billNumber": 44,
+    "billTypeDisplay": "S.J.Res.",
+    "version": "is",
+    "category": "U.S-Taiwan Relations",
+    "tags": [
+      "AIT"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 10,
+    "billTypeDisplay": "S.Res."
+  },
+  {
+    "congress": 96,
+    "billNumber": 11,
+    "billTypeDisplay": "S.Res.",
+    "version": "is",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom",
+      "Mutual Defense Treaty",
+      "PROC"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 12,
+    "billTypeDisplay": "S.Res.",
+    "version": "is",
+    "category": "Taiwan’s Defense",
+    "tags": [
+      "Freedom",
+      "Mutual Defense Treaty",
+      "Future of Taiwan",
+      "PROC"
+    ]
+  },
+  {
+    "congress": 96,
+    "billNumber": 13,
+    "billTypeDisplay": "S.Res."
+  },
+  {
+    "congress": 96,
+    "billNumber": 564,
+    "billTypeDisplay": "S.Res.",
+    "version": "is",
+    "category": "Other",
+    "tags": [
+      "TRA"
+    ],
+    "comment": "printing"
+  },
+  {
+    "congress": 97,
+    "billNumber": 18,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Other",
+    "tags": [
+      "conservation"
+    ],
+    "comment": "whale"
+  },
+  {
+    "congress": 97,
+    "billNumber": 428,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Democracy, Other",
+    "tags": [
+      "human rights",
+      "religion"
+    ]
+  },
+  {
+    "congress": 97,
+    "billNumber": 61,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rth",
+    "category": "Trade/Economy",
+    "tags": [
+      "trade",
+      "nonrubber footwear"
+    ]
+  },
+  {
+    "congress": 97,
+    "billNumber": 3400,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comment": "$275,000"
+  },
+  {
+    "congress": 97,
+    "billNumber": 3512,
+    "billTypeDisplay": "H.R.",
+    "version": "oph",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comment": "$275,000"
+  },
+  {
+    "congress": 97,
+    "billNumber": 3816,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 97,
+    "billNumber": 4169,
+    "billTypeDisplay": "H.R.",
+    "version": "rs",
+    "category": "Appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comment": "$7,884,000"
+  },
+  {
+    "congress": 97,
+    "billNumber": 4529,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Arms sales/transfer",
+    "tags": [
+      "TRA"
+    ]
+  },
+  {
+    "congress": 97,
+    "billNumber": 5579,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 97,
+    "billNumber": 6433,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 97,
+    "billNumber": 6436,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 97,
+    "billNumber": 6647,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "conservation"
+    ],
+    "comment": "international fishery agreement, AIT"
+  },
+  {
+    "congress": 97,
+    "billNumber": 6754,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "Taiwanese American Citizen Right"
+    ]
+  },
+  {
+    "congress": 97,
+    "billNumber": 6863,
+    "billTypeDisplay": "H.R.",
+    "version": "oph",
+    "category": "appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comment": "$244,000"
+  },
+  {
+    "congress": 97,
+    "billNumber": 6957,
+    "billTypeDisplay": "H.R.",
+    "version": "rds",
+    "category": "appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comment": "$8,744,000"
+  },
+  {
+    "congress": 97,
+    "billNumber": 591,
+    "billTypeDisplay": "H.Res.",
+    "version": "rth",
+    "category": "democracy",
+    "tags": [
+      "martial law",
+      "human rights"
+    ]
+  },
+  {
+    "congress": 97,
+    "billNumber": 1196,
+    "billTypeDisplay": "S.",
+    "tags": [
+      "immigrants"
+    ]
+  },
+  {
+    "congress": 97,
+    "billNumber": 1698,
+    "billTypeDisplay": "S.",
+    "version": "rs",
+    "category": "International Participation",
+    "tags": [
+      "Taiwanese American Citizen Right"
+    ]
+  },
+  {
+    "congress": 97,
+    "billNumber": 1935,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Other",
+    "tags": [
+      "immigrants"
+    ]
+  },
+  {
+    "congress": 97,
+    "billNumber": 2356,
+    "billTypeDisplay": "S.",
+    "version": "rts",
+    "category": "Trade/Economy",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 97,
+    "billNumber": 2956,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comment": "$8,744,000"
+  },
+  {
+    "congress": 97,
+    "billNumber": 14,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "is",
+    "category": "Trade/Economy",
+    "tags": [
+      "trade",
+      "nonrubber footwear"
+    ]
+  },
+  {
+    "congress": 98,
+    "billNumber": 120,
+    "billTypeDisplay": "H.Con.Res.",
+    "tags": [
+      "Asian Development Bank"
+    ]
+  },
+  {
+    "congress": 98,
+    "billNumber": 129,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "democracy",
+    "tags": [
+      "martial law"
+    ]
+  },
+  {
+    "congress": 98,
+    "billNumber": 15,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "conservation"
+    ],
+    "comment": "whale"
+  },
+  {
+    "congress": 98,
+    "billNumber": 344,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ash",
+    "category": "Democracy",
+    "tags": [
+      "democracy",
+      "human rights",
+      "martial law",
+      "election"
+    ]
+  },
+  {
+    "congress": 98,
+    "billNumber": 372,
+    "billTypeDisplay": "H.Con.Res.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 98,
+    "billNumber": 368,
+    "billTypeDisplay": "H.J.Res.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 98,
+    "billNumber": 1052,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 98,
+    "billNumber": 2728,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "immigrants"
+    ]
+  },
+  {
+    "congress": 98,
+    "billNumber": 2819,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 98,
+    "billNumber": 2915,
+    "billTypeDisplay": "H.R.",
+    "version": "rds",
+    "category": "appropriation",
+    "tags": [
+      "TRA"
+    ],
+    "comment": "＊＊＊"
+  },
+  {
+    "congress": 98,
+    "billNumber": 3134,
+    "billTypeDisplay": "H.R.",
+    "version": "oph",
+    "category": "appropriation",
+    "tags": [
+      "AIT",
+      "TRA"
+    ],
+    "comment": "$9,475,000"
+  },
+  {
+    "congress": 98,
+    "billNumber": 3222,
+    "billTypeDisplay": "H.R.",
+    "version": "oph",
+    "category": "appropriation",
+    "tags": [
+      "AIT",
+      "TRA"
+    ],
+    "comment": "$9,475,000"
+  },
+  {
+    "congress": 98,
+    "billNumber": 3398,
+    "billTypeDisplay": "H.R.",
+    "version": "rs",
+    "category": "Trade/Economy",
+    "tags": [
+      "Copyright protection of computer software"
+    ]
+  },
+  {
+    "congress": 98,
+    "billNumber": 3959,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 98,
+    "billNumber": 4170,
+    "billTypeDisplay": "H.R.",
+    "version": "pcs",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "AIT"
+    ]
+  },
+  {
+    "congress": 98,
+    "billNumber": 5712,
+    "billTypeDisplay": "H.R.",
+    "version": "oph",
+    "category": "appropriation",
+    "tags": [
+      "AIT",
+      "TRA"
+    ],
+    "comment": "$9,800,000"
+  },
+  {
+    "congress": 98,
+    "billNumber": 112,
+    "billTypeDisplay": "H.Res.",
+    "version": "ih",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "TRA",
+      "Shanghai Communique",
+      "Future of Taiwan",
+      "PROC"
+    ]
+  },
+  {
+    "congress": 98,
+    "billNumber": 1253,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Trade/Economy",
+    "tags": [
+      "trade",
+      "Technology"
+    ]
+  },
+  {
+    "congress": 98,
+    "billNumber": 1721,
+    "billTypeDisplay": "S.",
+    "version": "rs",
+    "category": "appropriation",
+    "tags": [
+      "AIT",
+      "TRA"
+    ],
+    "comment": "$9,380,000"
+  },
+  {
+    "congress": 98,
+    "billNumber": 117,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "is",
+    "category": "Trade/Economy",
+    "tags": [
+      "Copyright protection of computer software"
+    ]
+  },
+  {
+    "congress": 98,
+    "billNumber": 38,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "is",
+    "category": "democracy",
+    "tags": [
+      "martial law"
+    ]
+  },
+  {
+    "congress": 98,
+    "billNumber": 137,
+    "billTypeDisplay": "S.Res.",
+    "version": "is",
+    "category": "International Participation",
+    "tags": [
+      "Asian Development Bank",
+      "PROC"
+    ]
+  },
+  {
+    "congress": 98,
+    "billNumber": 74,
+    "billTypeDisplay": "S.Res.",
+    "version": "is",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "TRA",
+      "Shanghai Communique",
+      "Future of Taiwan",
+      "PROC"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 110,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "rfs",
+    "category": "democracy",
+    "tags": [
+      "Henry Liu"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 23,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "conservation"
+    ],
+    "comment": "whales"
+  },
+  {
+    "congress": 99,
+    "billNumber": 233,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Democracy",
+    "tags": [
+      "Human Rights",
+      "Martial Law",
+      "Democracy"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 253,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "Olympics"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 258,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "conservation"
+    ],
+    "comment": "whales"
+  },
+  {
+    "congress": 99,
+    "billNumber": 49,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "democracy",
+    "tags": [
+      "Henry Liu"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 465,
+    "billTypeDisplay": "H.J.Res.",
+    "version": "oph",
+    "category": "International Participation",
+    "tags": [
+      "Asian Development Bank",
+      "PROC"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 592,
+    "billTypeDisplay": "H.J.Res.",
+    "version": "ih",
+    "category": "Arms sales/transfer",
+    "tags": [
+      "China",
+      "Defense article",
+      "Defense service"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 738,
+    "billTypeDisplay": "H.J.Res.",
+    "version": "oph",
+    "category": "appropriation",
+    "tags": [
+      "TRA",
+      "AIT"
+    ],
+    "comment": "$9,379,000"
+  },
+  {
+    "congress": 99,
+    "billNumber": 2068,
+    "billTypeDisplay": "H.R.",
+    "version": "oph",
+    "category": "Democracy",
+    "tags": [
+      "TRA",
+      "Human Rights",
+      "Martial Law",
+      "Democracy"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 2100,
+    "billTypeDisplay": "H.R.",
+    "version": "pcs",
+    "category": "Taiwan Relations Act",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 2341,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "import",
+      "Martial Arts Uniforms"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 2965,
+    "billTypeDisplay": "H.R.",
+    "version": "oph",
+    "category": "appropriation",
+    "tags": [
+      "TRA",
+      "AIT"
+    ],
+    "comment": "$9,800,000"
+  },
+  {
+    "congress": 99,
+    "billNumber": 3228,
+    "billTypeDisplay": "H.R.",
+    "version": "rh",
+    "category": "International Participation",
+    "tags": [
+      "Asian Development Bank"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 3321,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "Immigration and Nationality Act"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 3976,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "U.S.-Taiwan Relations",
+    "tags": [
+      "Immigration and Nationality Act"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 5161,
+    "billTypeDisplay": "H.R.",
+    "version": "ras",
+    "category": "appropriation",
+    "tags": [
+      "TRA",
+      "AIT"
+    ],
+    "comment": "$9,379,000"
+  },
+  {
+    "congress": 99,
+    "billNumber": 5591,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "Steel Import Stabilization Act"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 5724,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "Steel Import Stabilization Act"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 112,
+    "billTypeDisplay": "H.Res.",
+    "version": "rth",
+    "category": "Other",
+    "tags": [
+      "Minority",
+      "Minority Student Intern Program"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 1003,
+    "billTypeDisplay": "S.",
+    "version": "rs",
+    "category": "Democracy",
+    "tags": [
+      "TRA",
+      "Human Rights",
+      "Martial Law",
+      "Democracy"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 1822,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Trade/Economy",
+    "tags": [
+      "Copyright Act"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 1860,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Trade/Economy",
+    "tags": [
+      "Trade Act"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 1867,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Trade/Economy",
+    "tags": [
+      "Generalized System of Preferences"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 2638,
+    "billTypeDisplay": "S.",
+    "version": "oph",
+    "category": "Arms sales/transfer",
+    "tags": [
+      "Navy"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 2830,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Trade/Economy",
+    "tags": [
+      "Steel Import Stabilization Act"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 10,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "is",
+    "category": "Democracy",
+    "tags": [
+      "Henry Liu"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 121,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "is",
+    "category": "Democracy",
+    "tags": [
+      "TRA",
+      "Human Rights",
+      "Martial Law",
+      "Democracy"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 70,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "is",
+    "category": "Democracy",
+    "tags": [
+      "Lee Ya-p'ing"
+    ]
+  },
+  {
+    "congress": 99,
+    "billNumber": 448,
+    "billTypeDisplay": "S.Res.",
+    "tags": [
+      "trade"
+    ]
+  },
+  {
+    "congress": 100,
+    "billNumber": 124,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Democracy",
+    "tags": [
+      "TRA",
+      "Human Rights",
+      "Martial Law",
+      "Democracy"
+    ]
+  },
+  {
+    "congress": 100,
+    "billNumber": 18,
+    "billTypeDisplay": "H.Con.Res.",
+    "version": "ih",
+    "category": "Other",
+    "tags": [
+      "conservation"
+    ],
+    "comment": "whales"
+  },
+  {
+    "congress": 100,
+    "billNumber": 395,
+    "billTypeDisplay": "H.J.Res.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 100,
+    "billNumber": 1102,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "Steel Import Stabilization Act"
+    ]
+  },
+  {
+    "congress": 100,
+    "billNumber": 1306,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Taiwan Relations Act",
+    "tags": [
+      "Trade",
+      "Pilot Program"
+    ]
+  },
+  {
+    "congress": 100,
+    "billNumber": 1308,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Taiwan Relations Act",
+    "tags": [
+      "Trade",
+      "Pilot Program"
+    ]
+  },
+  {
+    "congress": 100,
+    "billNumber": 1777,
+    "billTypeDisplay": "H.R.",
+    "category": "appropriation"
+  },
+  {
+    "congress": 100,
+    "billNumber": 2150,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Taiwan Relations Act",
+    "tags": [
+      "Trade",
+      "Pilot Program"
+    ]
+  },
+  {
+    "congress": 100,
+    "billNumber": 2265,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "International Participation",
+    "tags": [
+      "Immigration and Nationality Act"
+    ]
+  },
+  {
+    "congress": 100,
+    "billNumber": 2763,
+    "billTypeDisplay": "H.R.",
+    "version": "oph",
+    "category": "appropriation",
+    "tags": [
+      "TRA",
+      "AIT"
+    ],
+    "comment": "$9,379,000"
+  },
+  {
+    "congress": 100,
+    "billNumber": 3,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "Export",
+      "AIT"
+    ]
+  },
+  {
+    "congress": 100,
+    "billNumber": 3186,
+    "billTypeDisplay": "H.R.",
+    "version": "rh",
+    "category": "International Participation",
+    "tags": [
+      "Asian Development Bank"
+    ]
+  },
+  {
+    "congress": 100,
+    "billNumber": 4471,
+    "billTypeDisplay": "H.R.",
+    "version": "rth",
+    "category": "Democracy",
+    "tags": [
+      "TRA",
+      "Human Rights",
+      "Martial Law",
+      "Democracy"
+    ]
+  },
+  {
+    "congress": 100,
+    "billNumber": 4637,
+    "billTypeDisplay": "H.R.",
+    "version": "oph",
+    "category": "International Participation",
+    "tags": [
+      "Asian Development Bank"
+    ],
+    "comment": "Taipei, China"
+  },
+  {
+    "congress": 100,
+    "billNumber": 4782,
+    "billTypeDisplay": "H.R.",
+    "version": "oph",
+    "category": "appropriation",
+    "tags": [
+      "TRA",
+      "AIT"
+    ],
+    "comment": "$10,890,000"
+  },
+  {
+    "congress": 100,
+    "billNumber": 4848,
+    "billTypeDisplay": "H.R."
+  },
+  {
+    "congress": 100,
+    "billNumber": 5563,
+    "billTypeDisplay": "H.R.",
+    "version": "ih",
+    "category": "Trade/Economy",
+    "tags": [
+      "United States-Taiwan Free Trade Area"
+    ]
+  },
+  {
+    "congress": 100,
+    "billNumber": 1274,
+    "billTypeDisplay": "S.",
+    "version": "rs",
+    "category": "International Participation",
+    "tags": [
+      "Asian Development Bank"
+    ]
+  },
+  {
+    "congress": 100,
+    "billNumber": 1394,
+    "billTypeDisplay": "S.",
+    "version": "pcs",
+    "category": "appropriation",
+    "tags": [
+      "AIT"
+    ],
+    "comment": "$17,839,000"
+  },
+  {
+    "congress": 100,
+    "billNumber": 1406,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "appropriation",
+    "tags": [
+      "AIT"
+    ]
+  },
+  {
+    "congress": 100,
+    "billNumber": 1409,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Trade/Economy",
+    "tags": [
+      "Trade"
+    ]
+  },
+  {
+    "congress": 100,
+    "billNumber": 1420,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Trade/Economy, Appropriation",
+    "tags": [
+      "Trade",
+      "AIT"
+    ]
+  },
+  {
+    "congress": 100,
+    "billNumber": 1924,
+    "billTypeDisplay": "S.",
+    "version": "rs",
+    "category": "International Participation",
+    "tags": [
+      "Asian Development Bank"
+    ],
+    "comment": "Taipei, China"
+  },
+  {
+    "congress": 100,
+    "billNumber": 2558,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Trade/Economy, Appropriation",
+    "tags": [
+      "Export",
+      "AIT"
+    ]
+  },
+  {
+    "congress": 100,
+    "billNumber": 30,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Other",
+    "tags": [
+      "Currency Exchange Rates"
+    ]
+  },
+  {
+    "congress": 100,
+    "billNumber": 441,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Trade/Economy",
+    "tags": [
+      "Steel Import Stabilization Act"
+    ]
+  },
+  {
+    "congress": 100,
+    "billNumber": 481,
+    "billTypeDisplay": "S.",
+    "version": "is",
+    "category": "Trade/Economy",
+    "tags": [
+      "Trade Act"
+    ]
+  },
+  {
+    "congress": 100,
+    "billNumber": 490,
+    "billTypeDisplay": "S.",
+    "version": "ras",
+    "category": "Other",
+    "tags": [
+      "Currency Exchange Rates"
+    ]
+  },
+  {
+    "congress": 100,
+    "billNumber": 46,
+    "billTypeDisplay": "S.Con.Res.",
+    "version": "is",
+    "category": "Democracy",
+    "tags": [
+      "TRA",
+      "Human Rights",
+      "Martial Law",
+      "Democracy"
+    ]
+  }
+]

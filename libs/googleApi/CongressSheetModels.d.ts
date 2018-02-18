@@ -12,3 +12,15 @@ export interface BillRow {
   insight?: string,
   comment?: string
 }
+
+export interface TagRow {
+  tag?: string
+  type?: string
+}
+
+export interface VersionRow {
+  version?: string
+  abbr?: string
+  description?: string
+  chambers?: string
+}

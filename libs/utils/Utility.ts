@@ -16,7 +16,7 @@ export default class Utility {
     let dateTimeStr = dateStr.split('-')
     let timeStr = (dateTimeStr.length > 1) ? dateTimeStr[1] : '0:00am'
     dateStr = dateTimeStr[0] + ' ' + timeStr + ' -0500'
-    return Utility.parseDateTimeStringOfFormat(dateStr, 'MM/DD/yyyy h:mma Z')
+    return Utility.parseDateTimeStringOfFormat(dateStr, 'MM/DD/YYYY h:mma Z')
   }
 
   public static parseDateTimeStringOfFormat (dateStr: string, format: string = 'YYYY-MM-DD'): Date {
@@ -70,7 +70,7 @@ export default class Utility {
               } else {
                 task.reject(`can not connect url = ${task.params.url}.
                               Error = ${error}
-                              ResponseCode = ${response.statusCode} Body = ${body}`)
+                              ResponseCode = ${response && response.statusCode} Body = ${body}`)
               }
             })
           } else {
@@ -87,5 +87,11 @@ export default class Utility {
 
   public static async sleep (ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  public static stringToArray<T> (str: string, postConvert: (x: string) => T = _.identity): T[] {
+    let arr = _.filter(str.trim().split(','), x => x)
+    let rtn = _.map(arr, x => postConvert(x.trim()))
+    return rtn
   }
 }

@@ -7,7 +7,8 @@
     "IDENTITY_POOL_ID": "us-east-1:e84af633-3267-4c1e-9031-9507c1207dc2"
   },
   "s3": {
-    "VOLUNTEER_BILLS_BUCKET_NAME": "volunteer.bills"
+    "VOLUNTEER_BILLS_FULLTEXT_BUCKET_NAME": "volunteer.bills.fulltext",
+    "VOLUNTEER_BILLS_STATICINFO_BUCKET_NAME": "volunteer.bills.staticinfo"
   },
   "dynamodb": {
     "VOLUNTEER_USERS_TABLE_NAME": "volunteer.users",
@@ -16,8 +17,11 @@
     "VOLUNTEER_BILLACTIONS_TABLE_NAME": "volunteer.billActions",
     "VOLUNTEER_BILLVERSIONS_TABLE_NAME": "volunteer.billVersions",
     "VOLUNTEER_BILLCATEGORIES_TABLE_NAME": "volunteer.billCategories",
+    "VOLUNTEER_PERSON_TABLE_NAME": "volunteer.persons",
     "VOLUNTEER_ROLES_TABLE_NAME": "volunteer.roles",
     "VOLUNTEER_PERSONS_DYNAMODB_TABLE": "volunteer.persons",
+    "VOLUNTEER_TAGS_TABLE_NAME": "volunteer.tags",
+    "VOLUNTEER_TAGS_META_TABLE_NAME": "volunteer.tags.meta",
     "VOLUNTEER_TASKS_TABLE_NAME": "volunteer.tasks",
     "VOLUNTEER_SUBMISSIONS_TABLE_NAME": "volunteer.submissions",
     "VOLUNTEER_BILLDOWNLOADTASK_TABLE_NAME": "volunteer.billDownloadTask",

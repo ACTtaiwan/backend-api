@@ -45,7 +45,7 @@ class Directory {
   }
 
   get _billsBucketName () {
-    return AwsConfig.s3.VOLUNTEER_BILLS_BUCKET_NAME
+    return AwsConfig.s3.VOLUNTEER_BILLS_FULLTEXT_BUCKET_NAME
   }
 
   getBill (options) {

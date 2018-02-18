@@ -125,4 +125,30 @@ export default class GoogleSheetAgent {
       (data.values) ? _.map(data.values, (row: any[]) => convert(row)) : []
     )
   }
+
+  public getTagSheet (): Promise<models.TagRow[]> {
+    const convert = (row: any[]): models.TagRow => {
+      const tag: models.TagRow = {}
+      row[0] && (tag.tag = row[0])
+      row[1] && (tag.type = row[1])
+      return tag
+    }
+    return this.queryRange('tags!3:99999').then(data =>
+      (data.values) ? _.map(data.values, (row: any[]) => convert(row)) : []
+    )
+  }
+
+  public getVersionSheet (): Promise<models.VersionRow[]> {
+    const convert = (row: any[]): models.VersionRow => {
+      const ver: models.VersionRow = {}
+      row[0] && (ver.version = row[0])
+      row[1] && (ver.abbr = row[1])
+      row[2] && (ver.description = row[2])
+      row[3] && (ver.chambers = row[3])
+      return ver
+    }
+    return this.queryRange('versions!3:99999').then(data =>
+      (data.values) ? _.map(data.values, (row: any[]) => convert(row)) : []
+    )
+  }
 }

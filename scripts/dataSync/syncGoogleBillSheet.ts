@@ -1,12 +1,13 @@
-import * as awsConfig from '../config/aws.json'
-import GoogleSheetAgent from '../libs/googleApi/GoogleSheetAgent'
-import * as dbLib from '../libs/utils/DynamoDBManager'
+import * as awsConfig from '../../config/aws.json'
+import GoogleSheetAgent from '../../libs/googleApi/GoogleSheetAgent'
+import * as dbLib from '../../libs/dbLib/DbLib'
 import * as fs from 'fs'
 import * as _ from 'lodash'
-import { BillRow } from '../libs/googleApi/CongressSheetModels';
+import { BillRow } from '../../libs/googleApi/CongressSheetModels';
 import { v4 as uuid } from 'uuid';
+import { TagManager } from '../../libs/dataManager/TagManager';
 
-export class GoogleSheetSync {
+export class GoogleBillSheetSync {
   private readonly db = dbLib.DynamoDBManager.instance()
 
   private readonly tblName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLS_TABLE_NAME
@@ -31,7 +32,7 @@ export class GoogleSheetSync {
   public async syncDb () {
     await this.init()
     const rows: BillRow[] = await this.sheet.getBillSheet()
-    const billsToDelete = await this.tbl.getAllBills('id', 'congress', 'billType', 'billNumber')
+    const billsToDelete = await this.tbl.getAllBills('id', 'congress', 'billType', 'billNumber', 'tags')
     const billsToUpdate: [BillRow, dbLib.BillEntity][] = []
     const billsToAdd: BillRow[] = []
     _.each(rows, async row => {
@@ -64,7 +65,7 @@ export class GoogleSheetSync {
     // add bills
     if (billsToAdd.length > 0) {
       console.log('Adding bills...')
-      this.addBills(billsToAdd)
+      await this.addBills(billsToAdd)
     }
 
     // delete bills
@@ -90,7 +91,7 @@ export class GoogleSheetSync {
 
   public addBill (billRow: BillRow) {
     const typeToAdd = _.find(this.types, t => t.display === billRow.billTypeDisplay)
-    const entity: dbLib.BillEntity = {
+    const entity = <dbLib.BillEntity> {
       id: <string> uuid(),
       congress: billRow.congress,
       billType: typeToAdd,
@@ -122,7 +123,8 @@ export class GoogleSheetSync {
       const billId = billIdx[i]
       const row = billIdRowMap[billId]
       const bill = billIdEntityMap[billId]
-      await this.updateBill(row, bill)
+      // await this.updateBill(row, bill)
+      await this.updateTag(row, bill)
     }
   }
 
@@ -148,26 +150,12 @@ export class GoogleSheetSync {
       }
     }
 
-    updateLiteralField('title', false)
+    updateLiteralField('title')
     updateLiteralField('title_zh')
     updateLiteralField('relevence')
     updateLiteralField('china')
     updateLiteralField('insight')
     updateLiteralField('comment')
-
-    if (row.tags && row.tags.length > 0) {
-      if (!bill.tags) {
-        console.log(`${this.displayBill(bill)} -> tags: invalid (empty to assign)`)
-        update.tags = row.tags
-      } else {
-        const notEqual = (row.tags.length !== bill.tags.length) || !_.isEqual(row.tags.sort(), bill.tags.sort())
-        if (notEqual) {
-          console.log(`${this.displayBill(bill)} -> tags: invalid (existing to update)`)
-          // update.tags = _.uniq(_.concat(bill.tags, row.tags)) // merge
-          update.tags = row.tags // overwrite
-        }
-      }
-    }
 
     if (row.categories && row.categories.length > 0) {
       const catsFound = this.findCategories(row)
@@ -190,6 +178,37 @@ export class GoogleSheetSync {
       return this.tbl.updateBill(bill.id, update)
     } else {
       return Promise.resolve()
+    }
+  }
+
+  public async updateTag (row: BillRow, bill: dbLib.BillEntity) {
+    let tagMngr = new TagManager()
+    if (row && row.tags && row.tags.length > 0) {
+      let rowTags: string[] = _.chain(row.tags).filter(x => x).map(x => x.toLowerCase()).value()
+      let existingTags: string[] = (bill && bill.tags && _.keys(bill.tags)) || []
+      let interTags = _.intersection(rowTags, existingTags)
+
+      // add tags
+      let addTags = _.difference(rowTags, interTags)
+      if (addTags.length > 0) {
+        console.log(`${this.displayBill(bill)} -> addTags = ${JSON.stringify(addTags)}`)
+        for (let i = 0; i < addTags.length; ++i) {
+          let tag = addTags[i]
+          console.log(`${this.displayBill(bill)} -> add tag: ${tag}`)
+          await tagMngr.addTagToBill(tag, bill.id)
+        }
+      }
+
+      // delete tags
+      let delTags = _.difference(existingTags, interTags)
+      if (delTags.length > 0) {
+        console.log(`${this.displayBill(bill)} -> delTags = ${JSON.stringify(delTags)}`)
+        for (let i = 0; i < delTags.length; ++i) {
+          let tag = delTags[i]
+          console.log(`${this.displayBill(bill)} -> delete tag: ${tag}`)
+          await tagMngr.removeTagFromBill(tag, bill.id)
+        }
+      }
     }
   }
 
@@ -238,7 +257,7 @@ export class GoogleSheetSync {
   }
 }
 
-let sync = new GoogleSheetSync()
+let sync = new GoogleBillSheetSync()
 // sync.removeJustAddedBills()
 // sync.test()
 sync.syncDb()
