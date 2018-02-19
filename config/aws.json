@@ -8,7 +8,8 @@
   },
   "s3": {
     "VOLUNTEER_BILLS_FULLTEXT_BUCKET_NAME": "volunteer.bills.fulltext",
-    "VOLUNTEER_BILLS_STATICINFO_BUCKET_NAME": "volunteer.bills.staticinfo"
+    "VOLUNTEER_BILLS_STATICINFO_BUCKET_NAME": "volunteer.bills.staticinfo",
+    "TAIWANWATCH_PERSONS_BUCKET_NAME": "taiwanwatch-persons"
   },
   "dynamodb": {
     "VOLUNTEER_USERS_TABLE_NAME": "volunteer.users",
@@ -25,6 +26,7 @@
     "VOLUNTEER_TASKS_TABLE_NAME": "volunteer.tasks",
     "VOLUNTEER_SUBMISSIONS_TABLE_NAME": "volunteer.submissions",
     "VOLUNTEER_BILLDOWNLOADTASK_TABLE_NAME": "volunteer.billDownloadTask",
-    "CONGRESSGOV_SYNC_BILL_TABLE_NAME": "congressgov.sync.bill"
+    "CONGRESSGOV_SYNC_BILL_TABLE_NAME": "congressgov.sync.bill",
+    "BULK_PEOPLE_TABLE_NAME": "bulk.people"
   }
 }

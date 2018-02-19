@@ -1,4 +1,4 @@
-import * as dbLib from '../../libs/dbLib/DbLib'
+import * as dbLib from '../../libs/dbLib'
 import * as awsConfig from '../../config/aws.json'
 import * as aws from 'aws-sdk'
 import { CongressGovDataProvider } from '../../libs/congressGov/CongressGovDataProvider'
@@ -68,12 +68,22 @@ const tblSync = <dbLib.CongressGovSyncBillTable> dbLib.DynamoDBManager.instance(
 //   console.log(JSON.stringify(url, null, 2))
 // })
 
-const tblName = (<any> awsConfig).dynamodb.VOLUNTEER_ROLES_TABLE_NAME
-const tbl = <dbLib.RoleTable> dbLib.DynamoDBManager.instance().getTable(tblName)
+const tblRoleName = (<any> awsConfig).dynamodb.VOLUNTEER_ROLES_TABLE_NAME
+const tblRole = <dbLib.RoleTable> dbLib.DynamoDBManager.instance().getTable(tblRoleName)
 
 let f = async () => {
-  let roles = await tbl.getRolesByCongress(115)
+  let roles = await tblRole.getRolesByCongress(115)
   console.log(JSON.stringify(roles, null, 2))
 }
 
 f()
+
+// const tblPplName = (<any> awsConfig).dynamodb.VOLUNTEER_PERSON_TABLE_NAME
+// const tblPpl = <dbLib.PersonTable> dbLib.DynamoDBManager.instance().getTable(tblPplName)
+
+// let f = async () => {
+//   let roles = await tblRole.getRolesByBioGuideId('N000147')
+//   console.log(JSON.stringify(roles, null, 2))
+// }
+
+// f()

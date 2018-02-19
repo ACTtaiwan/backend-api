@@ -1,5 +1,5 @@
 import * as awsConfig from '../../config/aws.json'
-import * as dbLib from '../../libs/dbLib/DbLib'
+import * as dbLib from '../../libs/dbLib'
 import { CongressGovHelper } from '../../libs/congressGov/CongressGovHelper'
 import { CongressGovSponsorParser } from '../../libs/congressGov/CongressGovSponsorParser'
 import * as models from '../../libs/congressGov/CongressGovModels'

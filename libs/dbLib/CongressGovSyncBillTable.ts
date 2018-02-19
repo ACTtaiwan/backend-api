@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk'
 import * as awsConfig from '../../config/aws.json'
-import { Table, TableEntity } from './DbLib'
+import { Table, TableEntity } from './'
 
 // CongressGovSyncBillTable
 

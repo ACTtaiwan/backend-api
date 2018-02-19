@@ -1,7 +1,7 @@
-import * as dbLib from '../../libs/dbLib/DbLib'
+import * as dbLib from '../../libs/dbLib'
 import * as awsConfig from '../../config/aws.json'
 
-let f = async() => {
+let f = async () => {
   const db = dbLib.DynamoDBManager.instance()
   const tblName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLS_TABLE_NAME
   const tbl = <dbLib.BillTable> db.getTable(tblName)

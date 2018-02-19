@@ -1,6 +1,6 @@
 import * as awsConfig from '../../config/aws.json'
 import { GoogleSheetAgent } from '../../libs/googleApi/GoogleSheetAgent'
-import * as dbLib from '../../libs/dbLib/DbLib'
+import * as dbLib from '../../libs/dbLib'
 import * as fs from 'fs'
 import * as _ from 'lodash'
 import { BillRow, CategoryRow } from '../../libs/googleApi/CongressSheetModels';

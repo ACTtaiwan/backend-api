@@ -1,7 +1,8 @@
 import * as aws from 'aws-sdk'
 import * as awsConfig from '../../config/aws.json'
 import * as models from '../congressGov/CongressGovModels'
-import {TableEntity, BillCategoryEntity, BillTypeEntity, BillVersionEntity, RoleEntity, Table, ScanInput, QueryInput} from './DbLib'
+import {TableEntity, BillCategoryEntity, BillTypeEntity, BillVersionEntity,
+  RoleTable, RoleEntity, Table, ScanInput, QueryInput, DynamoDBManager} from './'
 import { BillTextContentType } from '../s3Lib';
 import * as _ from 'lodash'
 
@@ -19,7 +20,8 @@ export interface BillTextDocument extends BillVersionEntity {
 
 export interface CosponsorEntity {
   dateCosponsored?: number
-  role: RoleEntity
+  role?: RoleEntity // [@nonDBStored]
+  roleId?: string
 }
 
 export interface BillEntity extends TableEntity {
@@ -36,7 +38,8 @@ export interface BillEntity extends TableEntity {
   currentChamber?: models.ChamberType
 
   // sponsor & co-sponsor
-  sponsor?: RoleEntity
+  sponsor?: RoleEntity // [@nonDBStored]
+  sponsorRoleId?: string
   cosponsors?: CosponsorEntity[]
 
   // Taiwan Watch fields
@@ -65,11 +68,14 @@ export interface BillScanOutput {
   lastKey?: string
 }
 
-export class BillTable extends Table {
+export type BillEntityHydrateField = 'sponsor' | 'cosponsors'
+
+export class BillTable extends Table<BillEntityHydrateField> {
   public readonly tableName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLS_TABLE_NAME
 
   constructor (db: aws.DynamoDB.DocumentClient) {
     super(db)
+    this.hydrateFields = ['sponsor', 'cosponsors']
   }
 
   public get tableDefinition (): [aws.DynamoDB.KeySchema, aws.DynamoDB.AttributeDefinitions] {
@@ -120,24 +126,13 @@ export class BillTable extends Table {
   }
 
   public getBillById (id: string, ...attrNamesToGet: (keyof BillEntity)[]): Promise<BillEntity> {
-    return super.getItem<BillEntity>('id', id, attrNamesToGet).then(data =>
-      (data && data.Item) ? <BillEntity> data.Item : null)
+    return super.getItem<BillEntity>('id', id, this.applyHydrateFieldsForAttrNames(attrNamesToGet)).then(
+      async data => (data && data.Item) ? (await this.applyHydrateFields([<BillEntity> data.Item]))[0] : null)
   }
 
   public getBillsById (idx: string[], ...attrNamesToGet: (keyof BillEntity)[]): Promise<BillEntity[]> {
-    const batchSize = 70
-    const promises: Promise<BillEntity[]>[] = []
-    while (!_.isEmpty(idx)) {
-      const batchIdx = idx.splice(0, batchSize)
-      if (batchIdx.length === 0) {
-        promises.push(Promise.resolve([]))
-      } else {
-        const promise = super.getItems<BillEntity>('id', batchIdx, attrNamesToGet).then(data =>
-          (data && data.Responses && data.Responses[this.tableName]) ? <BillEntity[]> data.Responses[this.tableName] : null)
-        promises.push(promise)
-      }
-    }
-    return Promise.all(promises).then((res: BillEntity[][]) => _.flatten(res))
+    return super.getItems<BillEntity>('id', idx, this.applyHydrateFieldsForAttrNames(attrNamesToGet)).then(
+      data => this.applyHydrateFields(data))
   }
 
   public getBill (congress: number, billTypeCode: models.BillTypeCode, billNumber: number, ...attrNamesToGet: (keyof BillEntity)[])
@@ -161,8 +156,10 @@ export class BillTable extends Table {
       ':v_billNumber': billNumber,
       ':v_billType_subKeyValue': billType[1]
     }
+    attrNamesToGet && (attrNamesToGet = this.applyHydrateFieldsForAttrNames(attrNamesToGet))
     return super.scanItems<BillEntity>({filterExp, expAttrNames, expAttrVals, attrNamesToGet, flushOut: true}).then(out =>
-      (out && out.results && out.results[0]) ? <BillEntity> out.results[0] : null)
+      (out && out.results && out.results[0]) ? <BillEntity> out.results[0] : null).then(
+      async data => data ? await (this.applyHydrateFields([data]))[0] : null)
   }
 
   public getAllBillsBySingleKeyFilterPaging (
@@ -175,40 +172,52 @@ export class BillTable extends Table {
     const expAttrVals: aws.DynamoDB.DocumentClient.ExpressionAttributeValueMap = {
       ':v_val': val,
     }
+    attrNamesToGet && (attrNamesToGet = this.applyHydrateFieldsForAttrNames(attrNamesToGet))
     const input: ScanInput<BillEntity> = { filterExp, expAttrNames, expAttrVals, attrNamesToGet, flushOut }
     if (lastKey) {
       input.lastKey = { 'id': lastKey }
     }
-    return super.scanItems<BillEntity>(input).then(out => <BillScanOutput> {
-      results: out.results,
+    return super.scanItems<BillEntity>(input).then(async out => <BillScanOutput> {
+      results: await this.applyHydrateFields(out.results),
       lastKey: out.lastKey && out.lastKey['id']
     })
   }
 
   public getAllBillsBySingleKeyFilter (key: keyof BillEntity, val: any, attrNamesToGet?: (keyof BillEntity)[]): Promise<BillEntity[]> {
-    return this.getAllBillsBySingleKeyFilterPaging(key, val, attrNamesToGet).then(out => out.results)
+    return this.getAllBillsBySingleKeyFilterPaging(key, val, this.applyHydrateFieldsForAttrNames(attrNamesToGet)).then(out => out.results)
   }
 
   public getAllBillsHavingAttributes (keys: (keyof BillEntity)[], ...attrNamesToGet: (keyof BillEntity)[]): Promise<BillEntity[]> {
-    return super.getItemsHavingAttributes<BillEntity>(keys, ...attrNamesToGet)
+    return super.getItemsHavingAttributes<BillEntity>(keys, ...this.applyHydrateFieldsForAttrNames(attrNamesToGet)).then(
+      data => this.applyHydrateFields(data))
   }
 
   public getAllBillsNotHavingAttributes (keys: (keyof BillEntity)[], ...attrNamesToGet: (keyof BillEntity)[]): Promise<BillEntity[]> {
-    return super.getItemsNotHavingAttributes<BillEntity>(keys, ...attrNamesToGet)
+    return super.getItemsNotHavingAttributes<BillEntity>(keys, ...this.applyHydrateFieldsForAttrNames(attrNamesToGet)).then(
+      data => this.applyHydrateFields(data))
   }
 
   public getAllBillsPaging (
     attrNamesToGet?: (keyof BillEntity)[], flushOut: boolean = true, lastKey?: string
   ): Promise<BillScanOutput> {
-    return super.getAllItems<BillEntity>(attrNamesToGet, flushOut, lastKey ? { 'id': lastKey } : undefined).then(out =>
+    attrNamesToGet && (attrNamesToGet = this.applyHydrateFieldsForAttrNames(attrNamesToGet))
+    return super.getAllItems<BillEntity>(attrNamesToGet, flushOut, lastKey ? { 'id': lastKey } : undefined).then(async out =>
       <BillScanOutput> {
-        results: out.results,
+        results: await this.applyHydrateFields(out.results),
         lastKey: out.lastKey && out.lastKey['id']
       })
   }
 
+  public async forEachBatchOfAllBills (
+    callback: (batchBills: BillEntity[], lastKey?: string) => Promise<boolean | void>,
+    attrNamesToGet?: (keyof BillEntity)[]
+  ) {
+    super.forEachBatch('id', callback, this.applyHydrateFieldsForAttrNames(attrNamesToGet))
+  }
+
   public getAllBills (...attrNamesToGet: (keyof BillEntity)[]): Promise<BillEntity[]> {
-    return super.getAllItems<BillEntity>(attrNamesToGet).then(out => out.results)
+    return super.getAllItems<BillEntity>(this.applyHydrateFieldsForAttrNames(attrNamesToGet)).then(
+      out => this.applyHydrateFields(out.results))
   }
 
   public queryBillsByCongress (congress: number, attrNamesToGet?: (keyof BillEntity)[]): Promise<BillScanOutput> {
@@ -218,10 +227,10 @@ export class BillTable extends Table {
       expAttrNames: {'#k_congress': 'congress'},
       expAttrVals: {':v_congress': congress},
       flushOut: true,
-      attrNamesToGet
+      attrNamesToGet: this.applyHydrateFieldsForAttrNames(attrNamesToGet)
     }
-    return super.queryItem<BillEntity>(input).then(out => <BillScanOutput> {
-      results: out.results
+    return super.queryItem<BillEntity>(input).then(async out => <BillScanOutput> {
+      results: await this.applyHydrateFields(out.results)
     })
   }
 
@@ -291,5 +300,59 @@ export class BillTable extends Table {
     return new Promise((resolve, reject) => {
       this.docClient.update(params, (err, data) => err ? reject(err) : resolve(data))
     })
+  }
+
+  public applyHydrateFieldsForAttrNames (attrNames: (keyof BillEntity)[]): (keyof BillEntity)[] {
+    if (!attrNames) {
+      return attrNames
+    }
+
+    if (_.includes<keyof BillEntity>(attrNames, 'sponsor')) {
+      attrNames.push('sponsorRoleId')
+    }
+    return _.uniq(attrNames)
+  }
+
+  public async applyHydrateFields (bills: BillEntity[]): Promise<BillEntity[]> {
+    if (!this.hasHydrateFields) {
+      return bills
+    }
+
+    let tblRoleName = (<any> awsConfig).dynamodb.VOLUNTEER_ROLES_TABLE_NAME
+    let tblRole = DynamoDBManager.instance().getTable<RoleTable>(tblRoleName)
+
+    let hydrateSponsor = _.includes<BillEntityHydrateField>(this.hydrateFields, 'sponsor')
+    let hydrateCosponsor = _.includes<BillEntityHydrateField>(this.hydrateFields, 'cosponsors')
+
+    let roleIdx: string[] = []
+
+    if (hydrateSponsor) {
+      roleIdx = roleIdx.concat(_.uniq(_.filter(_.map(bills, x => x.sponsorRoleId), _.identity)))
+    }
+
+    if (hydrateCosponsor) {
+      _.each(bills, b => {
+        if (b.cosponsors && b.cosponsors.length > 0) {
+          roleIdx = roleIdx.concat(_.uniq(_.filter(_.map(b.cosponsors, x => x.roleId), _.identity)))
+        }
+      })
+    }
+
+    console.log(`[BillTable::applyHydrateFields()] roleIdx = ${JSON.stringify(roleIdx, null, 2)}`)
+
+    if (roleIdx.length > 0) {
+      let rolesMap = _.keyBy(await tblRole.getRolesById(roleIdx), 'id')
+      _.each(bills, b => {
+        if (hydrateSponsor) {
+          b.sponsor = rolesMap[b.sponsorRoleId]
+        }
+        if (hydrateCosponsor) {
+          _.each(b.cosponsors, co => co.role = rolesMap[co.roleId])
+        }
+      })
+    }
+
+    console.log(`[BillTable::applyHydrateFields()] post-hydrated: ${JSON.stringify(bills, null, 2)}`)
+    return bills
   }
 }

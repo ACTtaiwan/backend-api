@@ -3,7 +3,7 @@ import * as awsConfig from '../../config/aws.json'
 import * as models from '../congressGov/CongressGovModels'
 import * as _ from 'lodash'
 
-import {TableEntity, Table, QueryInput, ScanInput, ScanOutput, DynamoDBManager} from './DbLib'
+import {TableEntity, Table, QueryInput, ScanInput, ScanOutput, DynamoDBManager} from './'
 
 // TagMetaTable
 

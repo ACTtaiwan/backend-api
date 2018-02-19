@@ -1,7 +1,7 @@
 import { CongressGovAllInfoParser } from '../../libs/congressGov/CongressGovAllInfoParser'
 import { CongressGovHelper } from '../../libs/congressGov/CongressGovHelper';
 import { CongressGovSummary } from '../../libs/congressGov/CongressGovModels';
-import * as dbLib from '../../libs/dbLib/DbLib'
+import * as dbLib from '../../libs/dbLib'
 import * as s3Lib from '../../libs/s3Lib'
 import * as awsConfig from '../../config/aws.json'
 import * as _ from 'lodash'

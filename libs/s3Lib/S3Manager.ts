@@ -21,7 +21,8 @@ export class S3Manager {
     this.s3 = new aws.S3()
     const buckets = [
       new BillStaticInfoBucket(this.s3),
-      new BillTextBucket(this.s3)
+      new BillTextBucket(this.s3),
+      new PersonBucket(this.s3)
     ]
     this.buckets = _.keyBy(buckets, x => x.bucketName)
   }
@@ -136,6 +137,8 @@ export class BillStaticInfoBucket extends S3Bucket {
   }
 }
 
+// BillTextBucket
+
 export type BillTextContentType = 'xml' | 'txt' | 'pdf'
 
 export interface BillTextBucketListResult {
@@ -219,5 +222,27 @@ export class BillTextBucket extends S3Bucket {
         return 'application/pdf'
     }
     return ''
+  }
+}
+
+// PersonBucket
+
+export type ProfilePictureResolution = '50px' | '100px' | '200px' | 'origin'
+
+export class PersonBucket extends S3Bucket {
+  public readonly bucketName = (<any> awsConfig).s3.TAIWANWATCH_PERSONS_BUCKET_NAME
+
+  private readonly mimeType = 'image/jpeg'
+  private readonly fileSuffix = '.jpg'
+
+  public putProfilePicture (prefix: string, content: aws.S3.Body, res: ProfilePictureResolution)
+  : Promise<string> {
+    const s3BucketKey = this.s3BucketKey(prefix, res)
+    return super.putObject(content, s3BucketKey, this.mimeType).then(() =>
+      S3BucketHelper.generateFullUrl(this.bucketName, s3BucketKey))
+  }
+
+  public s3BucketKey (prefix: string, res: ProfilePictureResolution): string {
+    return `photos/${prefix}@${res}${this.fileSuffix}`
   }
 }

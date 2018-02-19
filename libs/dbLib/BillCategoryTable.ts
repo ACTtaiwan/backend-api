@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk'
 import * as awsConfig from '../../config/aws.json'
-import {TableEntity, Table} from './DbLib'
+import {TableEntity, Table} from './'
 import * as _ from 'lodash'
 
 // CategoryTable
@@ -38,9 +38,8 @@ export class BillCategoryTable extends Table {
   }
 
   public getCategoriesById (idx: string[], ...attrNamesToGet: (keyof BillCategoryEntity)[]): Promise<BillCategoryEntity[]> {
-    return super.getItems<BillCategoryEntity>('id', idx, attrNamesToGet).then(data =>
-      (data && data.Responses && data.Responses[this.tableName]) ?
-        _.map(data.Responses[this.tableName], (r: any) => this.convertAttrMapToBillCategoryEntity(r)) : null)
+    return super.getItems<BillCategoryEntity>('id', idx, attrNamesToGet).then(results =>
+        _.map(results, (r: any) => this.convertAttrMapToBillCategoryEntity(r)))
   }
 
   public setBillIdArrayToCategory (catId: string, billIdx: string[]): Promise<aws.DynamoDB.UpdateItemOutput> {

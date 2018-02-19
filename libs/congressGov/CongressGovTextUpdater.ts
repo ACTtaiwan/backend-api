@@ -3,7 +3,6 @@ import * as models from './CongressGovModels'
 import Utility from '../utils/Utility'
 import * as aws from 'aws-sdk'
 import * as s3Lib from '../s3Lib';
-import * as dbLib from '../dbLib/DbLib';
 import * as awsConfig from '../../config/aws.json'
 import { CongressGovHelper } from './CongressGovHelper';
 import * as _ from 'lodash'

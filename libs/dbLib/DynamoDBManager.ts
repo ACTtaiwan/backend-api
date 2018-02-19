@@ -3,7 +3,7 @@ import * as awsConfig from '../../config/aws.json'
 import * as models from '../congressGov/CongressGovModels'
 import * as _ from 'lodash'
 import { CongressGovSyncBillTable, BillTable, TagTable, TagMetaTable,
-  RoleTable, PersonTable, BillTypeTable, BillCategoryTable, BillVersionTable } from './DbLib'
+  RoleTable, PersonTable, BillTypeTable, BillCategoryTable, BillVersionTable, BulkPeopleTable } from './'
 
 export class DynamoDBManager {
   private static _instance: DynamoDBManager
@@ -22,7 +22,7 @@ export class DynamoDBManager {
     aws.config.update({region: (<any> awsConfig).metadata.REGION })
     this.dynamoDb = new aws.DynamoDB()
     this.dynamoDbDocClient = new aws.DynamoDB.DocumentClient()
-    const tables = [
+    const tables = <Table[]> [
       new CongressGovSyncBillTable(this.dynamoDbDocClient),
       new BillTable(this.dynamoDbDocClient),
       new BillTypeTable(this.dynamoDbDocClient),
@@ -31,7 +31,8 @@ export class DynamoDBManager {
       new PersonTable(this.dynamoDbDocClient),
       new RoleTable(this.dynamoDbDocClient, this.dynamoDb),
       new TagTable(this.dynamoDbDocClient, this.dynamoDb),
-      new TagMetaTable(this.dynamoDbDocClient)
+      new TagMetaTable(this.dynamoDbDocClient),
+      new BulkPeopleTable(this.dynamoDbDocClient)
     ]
     this.tables = _.keyBy(tables, x => x.tableName)
   }
@@ -86,8 +87,8 @@ export class DynamoDBManager {
     )
   }
 
-  public getTable (tableName: string): Table {
-    return this.tables[tableName]
+  public getTable<T extends Table> (tableName: string): T {
+    return <T> this.tables[tableName]
   }
 }
 
@@ -105,7 +106,7 @@ export interface ScanInput<T> {
 
 export interface ScanOutput<T> {
   results: T[],
-  lastKey?: aws.DynamoDB.Key
+  lastKey?: aws.DynamoDB.DocumentClient.Key
 }
 
 export interface QueryInput<T> extends ScanInput<T> {
@@ -113,16 +114,30 @@ export interface QueryInput<T> extends ScanInput<T> {
   indexName?: aws.DynamoDB.DocumentClient.IndexName
 }
 
-export abstract class Table {
+export abstract class Table<HydrateField = string> {
   public abstract get tableName (): string
   public abstract get tableDefinition (): [aws.DynamoDB.KeySchema, aws.DynamoDB.AttributeDefinitions]
 
   protected docClient: aws.DynamoDB.DocumentClient
   protected db: aws.DynamoDB
 
+  private _hydrateFields: HydrateField[] = []
+
   constructor (docClient: aws.DynamoDB.DocumentClient, db?: aws.DynamoDB) {
     this.docClient = docClient
     this.db = db
+  }
+
+  public set hydrateFields (v: HydrateField[]) {
+    this._hydrateFields = (v && _.uniq(v)) || []
+  }
+
+  public get hydrateFields () {
+    return this._hydrateFields
+  }
+
+  public get hasHydrateFields () {
+    return this._hydrateFields && this._hydrateFields.length > 0
   }
 
   protected getItem<T extends TableEntity> (
@@ -166,7 +181,35 @@ export abstract class Table {
     })
   }
 
-  protected getItems<T extends TableEntity> (
+  public async forEachBatch<T extends TableEntity> (
+    keyName: string,
+    callback: (batch: T[], lastKey?: string) => Promise<boolean | void>,
+    attrNamesToGet?: (keyof T)[]
+  ) {
+    let lastKey: string
+    while (true) {
+      let awsKey: aws.DynamoDB.DocumentClient.Key
+      if (lastKey) {
+        awsKey = {}
+        awsKey[keyName] = lastKey
+      }
+      let out = await this.getAllItems<T>(attrNamesToGet, false, awsKey)
+      if (out) {
+        lastKey = out.lastKey && out.lastKey[keyName]
+        let goNext: boolean | void = await callback(out.results, lastKey)
+        if (typeof goNext === 'boolean') {
+          goNext = <boolean> goNext
+        } else {
+          goNext = true
+        }
+        if (!lastKey || !goNext) {
+          break
+        }
+      }
+    }
+  }
+
+  protected getItemsBatch <T extends TableEntity> (
     keyName: string, keyValues: string[], attrNamesToGet?: (keyof T)[]
   ): Promise<aws.DynamoDB.DocumentClient.BatchGetItemOutput> {
     const keys: aws.DynamoDB.DocumentClient.Key[] = _.map(keyValues, keyValue => {
@@ -189,6 +232,24 @@ export abstract class Table {
     return new Promise((resolve, reject) => {
       this.docClient.batchGet(params, (err, data) => err ? reject(err) : resolve(data))
     })
+  }
+
+  protected getItems <T extends TableEntity> (
+    keyName: string, keyValues: string[], attrNamesToGet?: (keyof T)[]
+  ): Promise<T[]> {
+    const batchSize = 70
+    const promises: Promise<T[]>[] = []
+    while (!_.isEmpty(keyValues)) {
+      const batchIdx = keyValues.splice(0, batchSize)
+      if (batchIdx.length === 0) {
+        promises.push(Promise.resolve([]))
+      } else {
+        const promise = this.getItemsBatch<T>(keyName, batchIdx, attrNamesToGet).then(data =>
+          (data && data.Responses && data.Responses[this.tableName]) ? <T[]> data.Responses[this.tableName] : null)
+        promises.push(promise)
+      }
+    }
+    return Promise.all(promises).then((res: T[][]) => _.flatten(res))
   }
 
   protected async getAllItems<T extends TableEntity> (

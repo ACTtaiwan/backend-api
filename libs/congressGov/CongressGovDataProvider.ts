@@ -1,4 +1,4 @@
-import * as dbLib from '../dbLib/DbLib'
+import * as dbLib from '../dbLib'
 import * as cheerio from 'cheerio'
 import Utility from '../utils/Utility'
 import * as awsConfig from '../../config/aws.json'

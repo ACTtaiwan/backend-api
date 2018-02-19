@@ -7,11 +7,5 @@ export * from './BillTypeTable'
 export * from './BillVersionTable'
 export * from './BillCategoryTable'
 export * from './TagTable'
-
-import { BillEntity } from './BillTable'
-
-export class DbHelper {
-  public static displayBill (bill: BillEntity) {
-    return `${bill.congress}-${bill.billType.code}-${bill.billNumber} (${bill.id})`
-  }
-}
+export * from './BulkPeopleTable'
+export * from './DbHelper'

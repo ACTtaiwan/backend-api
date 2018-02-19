@@ -1,6 +1,6 @@
 import { CongressGovTextUpdater } from '../../libs/congressGov/CongressGovTextUpdater'
 import { CongressGovHelper } from '../../libs/congressGov/CongressGovHelper';
-import * as dbLib from '../../libs/dbLib/DbLib'
+import * as dbLib from '../../libs/dbLib'
 import * as s3Lib from '../../libs/s3Lib'
 import * as awsConfig from '../../config/aws.json'
 import * as _ from 'lodash'

@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk'
 import * as awsConfig from '../../config/aws.json'
-import { PersonEntity, TableEntity, Table } from './DbLib'
+import { PersonEntity, TableEntity, Table, BillEntity, DynamoDBManager, PersonTable, QueryInput } from './'
 import * as _ from 'lodash'
 
 // RoleTable
@@ -9,7 +9,8 @@ export type SponsorType = 'sponsor' | 'cosponsor'
 
 export interface RoleEntity extends TableEntity {
   id: string
-  person: PersonEntity
+  person?: PersonEntity // [@nonDBStored]
+  personId?: string
 
   createdAt?: number // UTC time
   lastUpdatedAt?: number // UTC time
@@ -41,11 +42,14 @@ export interface RoleEntity extends TableEntity {
   billIdCosponsored?: string[]
 }
 
-export class RoleTable extends Table {
+export type RoleEntityHydrateField = 'person' | 'billSponsored' | 'billCosponsored'
+
+export class RoleTable extends Table<RoleEntityHydrateField> {
   public readonly tableName = (<any> awsConfig).dynamodb.VOLUNTEER_ROLES_TABLE_NAME
 
   constructor (docClient: aws.DynamoDB.DocumentClient, db: aws.DynamoDB) {
     super(docClient, db)
+    this.hydrateFields = ['person']
   }
 
   public get tableDefinition (): [aws.DynamoDB.KeySchema, aws.DynamoDB.AttributeDefinitions] {
@@ -59,9 +63,14 @@ export class RoleTable extends Table {
   }
 
   public getRolesById (idx: string[], ...attrNamesToGet: (keyof RoleEntity)[]): Promise<RoleEntity[]> {
-    return super.getItems<RoleEntity>('id', idx, attrNamesToGet).then(data =>
-      (data && data.Responses && data.Responses[this.tableName]) ?
-        _.map(data.Responses[this.tableName], (r: any) => this.convertAttrMapToBillRoleEntity(r)) : null)
+    return super.getItems<RoleEntity>('id', idx, attrNamesToGet).then(items => this.applyHydrateFields(items))
+  }
+
+  public async forEachBatchOfAllRoles (
+      callback: (batchRoles: RoleEntity[], lastKey?: string) => Promise<boolean | void>,
+      attrNamesToGet?: (keyof RoleEntity)[]
+  ) {
+    super.forEachBatch('id', callback, attrNamesToGet)
   }
 
   public getRolesByCongress (congress: number, ...attrNamesToGet: (keyof RoleEntity)[]): Promise<RoleEntity[]> {
@@ -70,13 +79,35 @@ export class RoleTable extends Table {
       ':v_congress': congress,
     }
     return super.scanItems<RoleEntity>({filterExp, expAttrVals, attrNamesToGet, flushOut: true}).then(out =>
-      _.map(out.results, (r: any) => this.convertAttrMapToBillRoleEntity(r)))
+      _.map(out.results, (r: any) => this.convertAttrMapToBillRoleEntity(r))).then(items => this.applyHydrateFields(items))
+  }
+
+  public getRolesByBioGuideId (bioGuideId: string, attrNamesToGet?: (keyof RoleEntity)[]): Promise<RoleEntity[]> {
+    let tblPplName = (<any> awsConfig).dynamodb.VOLUNTEER_PERSON_TABLE_NAME
+    let tblPpl = DynamoDBManager.instance().getTable<PersonTable>(tblPplName)
+    return tblPpl.getPersonByBioGuideId(bioGuideId).then(person =>
+      person ? this.getRolesByPersonId(person.id).then(roles => this.hasHydrateFields ? this.applyHydrateFields(roles) : roles) : null)
+  }
+
+  public getRolesByPersonId (personId: string, attrNamesToGet?: (keyof RoleEntity)[]): Promise<RoleEntity[]> {
+    let input: QueryInput<RoleEntity> = {
+      indexName: 'personId-index',
+      keyExp: `#k_key = :v_key`,
+      expAttrNames: {'#k_key': 'personId'},
+      expAttrVals: {':v_key': personId},
+      flushOut: true,
+      attrNamesToGet
+    }
+    return super.queryItem<RoleEntity>(input).then(out =>
+      out.results ? _.map(out.results, (r: any) => this.convertAttrMapToBillRoleEntity(r)) : null
+    )
   }
 
   public getRolesHavingSponsoredBills (type: SponsorType): Promise<RoleEntity[]> {
     let attrName: (keyof RoleEntity) = (type === 'sponsor') ? 'billIdSponsored' : 'billIdCosponsored'
     return super.getItemsHavingAttributes<RoleEntity>([attrName]).then(out =>
-      _.map(out, (r: any) => this.convertAttrMapToBillRoleEntity(r)))
+      _.map(out, (r: any) => this.convertAttrMapToBillRoleEntity(r))).then(items =>
+      this.hydrateFields ? this.applyHydrateFields(items) : items)
   }
 
   public setBillIdArrayToRole (id: string, billIdx: string[], type: SponsorType): Promise<aws.DynamoDB.UpdateItemOutput> {
@@ -127,6 +158,31 @@ export class RoleTable extends Table {
       (type === 'sponsor') ? attrName = ['billIdSponsored'] : attrName['billIdCosponsored']
     }
     return super.deleteAttributesFromItem<RoleEntity>('id', id, attrName)
+  }
+
+  public deleteAttributesFromRole (id: string, ...attrName: (keyof RoleEntity)[])
+  : Promise<aws.DynamoDB.DocumentClient.UpdateItemOutput> {
+    return super.deleteAttributesFromItem<RoleEntity>('id', id, attrName)
+  }
+
+  public updateRole (id: string, updateRole: RoleEntity)
+  : Promise<aws.DynamoDB.DocumentClient.UpdateItemOutput> {
+    return super.updateItem<RoleEntity>('id', id, updateRole)
+  }
+
+  public async applyHydrateFields (roles: RoleEntity[]): Promise<RoleEntity[]> {
+    if (!this.hasHydrateFields) {
+      return roles
+    }
+
+    let tblPplName = (<any> awsConfig).dynamodb.VOLUNTEER_PERSON_TABLE_NAME
+    let tblPpl = DynamoDBManager.instance().getTable<PersonTable>(tblPplName)
+    if (_.includes<RoleEntityHydrateField>(this.hydrateFields, 'person')) {
+      let pplIdx = _.uniq(_.filter(_.map(roles, x => x.personId), _.identity))
+      let pplItems = _.keyBy(await tblPpl.getPersonsById(pplIdx), 'id')
+      _.each(roles, r => r.personId && (r.person = pplItems[r.personId]))
+    }
+    return roles
   }
 
   private convertAttrMapToBillRoleEntity (item: aws.DynamoDB.AttributeMap): RoleEntity {

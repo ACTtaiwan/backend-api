@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk'
 import * as awsConfig from '../../config/aws.json'
-import { Table, TableEntity, BillScanOutput, QueryInput } from './DbLib'
+import { Table, TableEntity, BillScanOutput, QueryInput } from './'
 import { ChamberType } from '../congressGov/CongressGovModels';
 
 // BillTypeTable
