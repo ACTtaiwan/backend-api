@@ -62,31 +62,21 @@ export class RoleTable extends Table<RoleEntityHydrateField> {
     return [keySchema, attrDef]
   }
 
+  public getRoleById (id: string, ...attrNamesToGet: (keyof RoleEntity)[]): Promise<RoleEntity> {
+    return super.getItem<RoleEntity>('id', id, this.applyHydrateFieldsForAttrNames(attrNamesToGet)).then(
+      async data => (data && data.Item) ? (await this.applyHydrateFields([<RoleEntity> data.Item]))[0] : null)
+  }
+
   public getRolesById (idx: string[], ...attrNamesToGet: (keyof RoleEntity)[]): Promise<RoleEntity[]> {
-    return super.getItems<RoleEntity>('id', idx, attrNamesToGet).then(items => this.applyHydrateFields(items))
+    return super.getItems<RoleEntity>('id', idx, this.applyHydrateFieldsForAttrNames(attrNamesToGet)).then(
+      items => this.applyHydrateFields(items))
   }
 
   public async forEachBatchOfAllRoles (
       callback: (batchRoles: RoleEntity[], lastKey?: string) => Promise<boolean | void>,
       attrNamesToGet?: (keyof RoleEntity)[]
-  ) {
-    super.forEachBatch('id', callback, attrNamesToGet)
-  }
-
-  public getRolesByCongress (congress: number, ...attrNamesToGet: (keyof RoleEntity)[]): Promise<RoleEntity[]> {
-    const filterExp = `contains( congressNumbers, :v_congress )`
-    const expAttrVals: aws.DynamoDB.DocumentClient.ExpressionAttributeValueMap = {
-      ':v_congress': congress,
-    }
-    return super.scanItems<RoleEntity>({filterExp, expAttrVals, attrNamesToGet, flushOut: true}).then(out =>
-      _.map(out.results, (r: any) => this.convertAttrMapToBillRoleEntity(r))).then(items => this.applyHydrateFields(items))
-  }
-
-  public getRolesByBioGuideId (bioGuideId: string, attrNamesToGet?: (keyof RoleEntity)[]): Promise<RoleEntity[]> {
-    let tblPplName = (<any> awsConfig).dynamodb.VOLUNTEER_PERSON_TABLE_NAME
-    let tblPpl = DynamoDBManager.instance().getTable<PersonTable>(tblPplName)
-    return tblPpl.getPersonByBioGuideId(bioGuideId).then(person =>
-      person ? this.getRolesByPersonId(person.id).then(roles => this.hasHydrateFields ? this.applyHydrateFields(roles) : roles) : null)
+  ): Promise<void> {
+    return super.forEachBatch('id', callback, attrNamesToGet)
   }
 
   public getRolesByPersonId (personId: string, attrNamesToGet?: (keyof RoleEntity)[]): Promise<RoleEntity[]> {
@@ -96,21 +86,39 @@ export class RoleTable extends Table<RoleEntityHydrateField> {
       expAttrNames: {'#k_key': 'personId'},
       expAttrVals: {':v_key': personId},
       flushOut: true,
-      attrNamesToGet
+      attrNamesToGet: this.applyHydrateFieldsForAttrNames(attrNamesToGet)
     }
     return super.queryItem<RoleEntity>(input).then(out =>
       out.results ? _.map(out.results, (r: any) => this.convertAttrMapToBillRoleEntity(r)) : null
-    )
+    ).then(data => this.applyHydrateFields(data))
+  }
+
+  public getRolesByState (state: string, attrNamesToGet?: (keyof RoleEntity)[], congress?: number): Promise<RoleEntity[]> {
+    let input: QueryInput<RoleEntity> = {
+      indexName: 'state-index',
+      keyExp: `#k_key = :v_key`,
+      expAttrNames: {'#k_key': 'state'},
+      expAttrVals: {':v_key': state},
+      flushOut: true,
+      attrNamesToGet
+    }
+    if (congress) {
+      input.filterExp = `contains( congressNumbers, :v_congress )`
+      input.expAttrVals[':v_congress'] = congress
+    }
+    return super.queryItem<RoleEntity>(input).then(out =>
+      out.results ? _.map(out.results, (r: any) => this.convertAttrMapToBillRoleEntity(r)) : null
+    ).then(data => this.applyHydrateFields(data))
   }
 
   public getRolesHavingSponsoredBills (type: SponsorType): Promise<RoleEntity[]> {
     let attrName: (keyof RoleEntity) = (type === 'sponsor') ? 'billIdSponsored' : 'billIdCosponsored'
     return super.getItemsHavingAttributes<RoleEntity>([attrName]).then(out =>
-      _.map(out, (r: any) => this.convertAttrMapToBillRoleEntity(r))).then(items =>
-      this.hydrateFields ? this.applyHydrateFields(items) : items)
+      _.map(out, (r: any) => this.convertAttrMapToBillRoleEntity(r))).then(items => this.applyHydrateFields(items))
   }
 
   public setBillIdArrayToRole (id: string, billIdx: string[], type: SponsorType): Promise<aws.DynamoDB.UpdateItemOutput> {
+    billIdx = _.uniq(billIdx)
     const params: aws.DynamoDB.UpdateItemInput = {
       TableName: this.tableName,
       Key: { 'id': {'S': id} },
@@ -170,8 +178,19 @@ export class RoleTable extends Table<RoleEntityHydrateField> {
     return super.updateItem<RoleEntity>('id', id, updateRole)
   }
 
+  public applyHydrateFieldsForAttrNames (attrNames: (keyof RoleEntity)[]): (keyof RoleEntity)[] {
+    if (!attrNames) {
+      return attrNames
+    }
+
+    if (_.includes<keyof RoleEntity>(attrNames, 'person')) {
+      attrNames.push('personId')
+    }
+    return _.uniq(attrNames)
+  }
+
   public async applyHydrateFields (roles: RoleEntity[]): Promise<RoleEntity[]> {
-    if (!this.hasHydrateFields) {
+    if (!this.useHydrateFields) {
       return roles
     }
 
@@ -181,6 +200,7 @@ export class RoleTable extends Table<RoleEntityHydrateField> {
       let pplIdx = _.uniq(_.filter(_.map(roles, x => x.personId), _.identity))
       let pplItems = _.keyBy(await tblPpl.getPersonsById(pplIdx), 'id')
       _.each(roles, r => r.personId && (r.person = pplItems[r.personId]))
+      // console.log(`[RoleTable::applyHydrateFields()] Hydrated person idx = ${JSON.stringify(pplIdx, null, 2)}`)
     }
     return roles
   }

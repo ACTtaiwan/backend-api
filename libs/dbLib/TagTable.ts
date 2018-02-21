@@ -113,6 +113,7 @@ export class TagTable extends Table {
   }
 
   public setBillIdArrayToTag (tag: string, billIdx: string[]): Promise<aws.DynamoDB.UpdateItemOutput> {
+    billIdx = _.uniq(billIdx)
     const params: aws.DynamoDB.UpdateItemInput = {
       TableName: this.tableName,
       Key: { 'tag': {'S': tag} },

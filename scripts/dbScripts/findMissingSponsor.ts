@@ -3,7 +3,7 @@ import * as awsConfig from '../../config/aws.json'
 import * as _ from 'lodash'
 import { CongressGovHelper } from '../../libs/congressGov/CongressGovHelper';
 
-let f = async() => {
+let f = async () => {
   const db = dbLib.DynamoDBManager.instance()
   const tblName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLS_TABLE_NAME
   const tbl = <dbLib.BillTable> db.getTable(tblName)
@@ -43,7 +43,7 @@ let f = async() => {
     })
     if (msg) {
       const display = dbLib.DbHelper.displayBill(bill)
-      console.log(`${display}: \n${msg}`)  
+      console.log(`${display}: \n${msg}`)
     }
   }
 }

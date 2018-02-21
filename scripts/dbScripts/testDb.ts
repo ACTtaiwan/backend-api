@@ -72,7 +72,7 @@ const tblRoleName = (<any> awsConfig).dynamodb.VOLUNTEER_ROLES_TABLE_NAME
 const tblRole = <dbLib.RoleTable> dbLib.DynamoDBManager.instance().getTable(tblRoleName)
 
 let f = async () => {
-  let roles = await tblRole.getRolesByCongress(115)
+  let roles = await tblRole.getRolesByState('WA', null, 115)
   console.log(JSON.stringify(roles, null, 2))
 }
 
@@ -84,6 +84,18 @@ f()
 // let f = async () => {
 //   let roles = await tblRole.getRolesByBioGuideId('N000147')
 //   console.log(JSON.stringify(roles, null, 2))
+// }
+
+// f()
+
+// const tblCngrName = (<any> awsConfig).dynamodb.VOLUNTEER_CONGRESS_TABLE_NAME
+// const tblCngr = <dbLib.CongressTable> dbLib.DynamoDBManager.instance().getTable(tblCngrName)
+
+// let f = async () => {
+//   await tblCngr.setRoleIdArrayToCongress(115, ['abc', 'def'])
+//   await tblCngr.setRoleIdArrayToCongress(114, ['xxx', 'yyy'])
+//   let out = await tblCngr.getCongressEntities([114, 115])
+//   console.log(JSON.stringify(out, null, 2))
 // }
 
 // f()

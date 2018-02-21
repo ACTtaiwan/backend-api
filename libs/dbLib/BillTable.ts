@@ -314,7 +314,7 @@ export class BillTable extends Table<BillEntityHydrateField> {
   }
 
   public async applyHydrateFields (bills: BillEntity[]): Promise<BillEntity[]> {
-    if (!this.hasHydrateFields) {
+    if (!this.useHydrateFields) {
       return bills
     }
 
@@ -327,17 +327,18 @@ export class BillTable extends Table<BillEntityHydrateField> {
     let roleIdx: string[] = []
 
     if (hydrateSponsor) {
-      roleIdx = roleIdx.concat(_.uniq(_.filter(_.map(bills, x => x.sponsorRoleId), _.identity)))
+      roleIdx = roleIdx.concat(_.filter(_.map(bills, x => x.sponsorRoleId), _.identity))
     }
 
     if (hydrateCosponsor) {
       _.each(bills, b => {
         if (b.cosponsors && b.cosponsors.length > 0) {
-          roleIdx = roleIdx.concat(_.uniq(_.filter(_.map(b.cosponsors, x => x.roleId), _.identity)))
+          roleIdx = roleIdx.concat(_.filter(_.map(b.cosponsors, x => x.roleId), _.identity))
         }
       })
     }
 
+    roleIdx = _.uniq(roleIdx)
     console.log(`[BillTable::applyHydrateFields()] roleIdx = ${JSON.stringify(roleIdx, null, 2)}`)
 
     if (roleIdx.length > 0) {

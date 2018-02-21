@@ -2,7 +2,7 @@ import * as aws from 'aws-sdk'
 import * as awsConfig from '../../config/aws.json'
 import * as models from '../congressGov/CongressGovModels'
 import * as _ from 'lodash'
-import { CongressGovSyncBillTable, BillTable, TagTable, TagMetaTable,
+import { CongressGovSyncBillTable, BillTable, TagTable, TagMetaTable, CongressTable,
   RoleTable, PersonTable, BillTypeTable, BillCategoryTable, BillVersionTable, BulkPeopleTable } from './'
 
 export class DynamoDBManager {
@@ -32,7 +32,8 @@ export class DynamoDBManager {
       new RoleTable(this.dynamoDbDocClient, this.dynamoDb),
       new TagTable(this.dynamoDbDocClient, this.dynamoDb),
       new TagMetaTable(this.dynamoDbDocClient),
-      new BulkPeopleTable(this.dynamoDbDocClient)
+      new BulkPeopleTable(this.dynamoDbDocClient),
+      new CongressTable(this.dynamoDbDocClient, this.dynamoDb)
     ]
     this.tables = _.keyBy(tables, x => x.tableName)
   }
@@ -122,6 +123,7 @@ export abstract class Table<HydrateField = string> {
   protected db: aws.DynamoDB
 
   private _hydrateFields: HydrateField[] = []
+  private _useHydrateFields: boolean = true
 
   constructor (docClient: aws.DynamoDB.DocumentClient, db?: aws.DynamoDB) {
     this.docClient = docClient
@@ -140,8 +142,23 @@ export abstract class Table<HydrateField = string> {
     return this._hydrateFields && this._hydrateFields.length > 0
   }
 
-  protected getItem<T extends TableEntity> (
-    keyName: string, keyValue: string, attrNamesToGet?: (keyof T)[]
+  public set useHydrateFields (flag: boolean) {
+    this._useHydrateFields = flag
+  }
+
+  public get useHydrateFields () {
+    return this._useHydrateFields && this.hasHydrateFields
+  }
+
+  public describe (): Promise<aws.DynamoDB.DescribeTableOutput> {
+    let db = this.db || new aws.DynamoDB()
+    return new Promise((resolve, reject) => {
+      db.describeTable({TableName: this.tableName}, (err, data) => err ? reject(err) : resolve(data))
+    })
+  }
+
+  protected getItem<T extends TableEntity, KeyType = string> (
+    keyName: string, keyValue: KeyType, attrNamesToGet?: (keyof T)[]
   ): Promise<aws.DynamoDB.DocumentClient.GetItemOutput> {
     let key: aws.DynamoDB.DocumentClient.Key = {}
     key[ keyName ] = keyValue
@@ -185,7 +202,7 @@ export abstract class Table<HydrateField = string> {
     keyName: string,
     callback: (batch: T[], lastKey?: string) => Promise<boolean | void>,
     attrNamesToGet?: (keyof T)[]
-  ) {
+  ): Promise<void> {
     let lastKey: string
     while (true) {
       let awsKey: aws.DynamoDB.DocumentClient.Key
@@ -207,10 +224,11 @@ export abstract class Table<HydrateField = string> {
         }
       }
     }
+    return Promise.resolve()
   }
 
-  protected getItemsBatch <T extends TableEntity> (
-    keyName: string, keyValues: string[], attrNamesToGet?: (keyof T)[]
+  protected getItemsBatch <T extends TableEntity, KeyType = string> (
+    keyName: string, keyValues: KeyType[], attrNamesToGet?: (keyof T)[]
   ): Promise<aws.DynamoDB.DocumentClient.BatchGetItemOutput> {
     const keys: aws.DynamoDB.DocumentClient.Key[] = _.map(keyValues, keyValue => {
       let key: aws.DynamoDB.DocumentClient.Key = {}
@@ -234,17 +252,18 @@ export abstract class Table<HydrateField = string> {
     })
   }
 
-  protected getItems <T extends TableEntity> (
-    keyName: string, keyValues: string[], attrNamesToGet?: (keyof T)[]
+  protected getItems <T extends TableEntity, KeyType = string> (
+    keyName: string, keyValues: KeyType[], attrNamesToGet?: (keyof T)[]
   ): Promise<T[]> {
     const batchSize = 70
+    const copyKeyValues = _.clone(keyValues)
     const promises: Promise<T[]>[] = []
-    while (!_.isEmpty(keyValues)) {
-      const batchIdx = keyValues.splice(0, batchSize)
+    while (!_.isEmpty(copyKeyValues)) {
+      const batchIdx = copyKeyValues.splice(0, batchSize)
       if (batchIdx.length === 0) {
         promises.push(Promise.resolve([]))
       } else {
-        const promise = this.getItemsBatch<T>(keyName, batchIdx, attrNamesToGet).then(data =>
+        const promise = this.getItemsBatch<T, KeyType>(keyName, batchIdx, attrNamesToGet).then(data =>
           (data && data.Responses && data.Responses[this.tableName]) ? <T[]> data.Responses[this.tableName] : null)
         promises.push(promise)
       }
@@ -477,7 +496,7 @@ export abstract class Table<HydrateField = string> {
     })
   }
 
-  protected deleteAttributesFromItem<T extends TableEntity> (keyName: string, keyValue: string, attrName: (keyof T)[])
+  protected deleteAttributesFromItem<T extends TableEntity, KeyType = string> (keyName: string, keyValue: KeyType, attrName: (keyof T)[])
   : Promise<aws.DynamoDB.DocumentClient.UpdateItemOutput> {
     const exp = `REMOVE ${attrName.join(', ')}`
     let key: aws.DynamoDB.DocumentClient.Key = {}

@@ -1,6 +1,7 @@
 import * as dbLib from '../../libs/dbLib'
 import * as awsConfig from '../../config/aws.json'
 import * as _ from 'lodash'
+import { CongressGovHelper } from '../congressGov/CongressGovHelper';
 
 export class RoleManager {
   private readonly db = dbLib.DynamoDBManager.instance()
@@ -11,10 +12,16 @@ export class RoleManager {
   private readonly tblRoleName = (<any> awsConfig).dynamodb.VOLUNTEER_ROLES_TABLE_NAME
   public  readonly tblRole = <dbLib.RoleTable> this.db.getTable(this.tblRoleName)
 
+  private readonly tblPplName = (<any> awsConfig).dynamodb.VOLUNTEER_PERSON_TABLE_NAME
+  private readonly tblPpl = <dbLib.PersonTable> this.db.getTable(this.tblPplName)
+
+  private readonly tblCngrName = (<any> awsConfig).dynamodb.VOLUNTEER_CONGRESS_TABLE_NAME
+  public  readonly tblCngr = <dbLib.CongressTable> this.db.getTable(this.tblCngrName)
+
   private _tblRoleSponsors: {[roldId: string]: dbLib.RoleEntity}
   private _tblRoleCosponsors: {[roleId: string]: dbLib.RoleEntity}
 
-  public async rebuildIndex (cleanup: boolean = false) {
+  public async rebuildBillIndex (cleanup: boolean = false) {
     if (cleanup) {
       await this.resetBillsForRoleTable()
     }
@@ -40,6 +47,70 @@ export class RoleManager {
 
     console.log(`\n---------------------------------- Clean up Co-Sponsors -------------------------------\n`)
     clean(_.values(await this.getRolesCosponsored()))
+  }
+
+  public async rebuildCongressIndex (cleanup: boolean = false): Promise<void> {
+    if (cleanup) {
+      console.log(`\n---------------------------------- Clean up role id on congress table ----------------------------------\n`)
+      for (let c = 1; c <= CongressGovHelper.CURRENT_CONGRESS; ++c) {
+        await this.tblCngr.removeAllRolesFromCongress(c)
+      }
+    }
+
+    console.log(`\n---------------------------------- Rebuilding congress <--> roleId[] map ----------------------------------\n`)
+    let cngrRoleMap: {[congress: number]: string[]} = {}
+    await this.tblRole.forEachBatchOfAllRoles(async roles => {
+      console.log(`[RoleManager::rebuildCongressIndex()] Batch role size = ${roles.length}`)
+      _.each(roles, r => {
+        if (r.congressNumbers && r.congressNumbers.length > 0) {
+          _.each(r.congressNumbers, c => cngrRoleMap[c] ? cngrRoleMap[c].push(r.id) : cngrRoleMap[c] = [r.id])
+        }
+      })
+    }, ['id', 'congressNumbers'])
+
+    console.log(`\n---------------------------------- Writing role id on congress table ----------------------------------\n`)
+    _.each(cngrRoleMap, (val, key) => cngrRoleMap[key] = _.uniq(val))
+    for (let key of _.keys(cngrRoleMap)) {
+      let congress = parseInt(key)
+      let roleIdx = cngrRoleMap[congress]
+      console.log(`[RoleManager::rebuildCongressIndex()] congress = ${congress} roles = ${roleIdx.length}`)
+      await this.tblCngr.addRoleIdArrayToCongress(congress, roleIdx)
+    }
+  }
+
+  public getRolesById (id: string[], ...attrNamesToGet: (keyof dbLib.RoleEntity)[] ): Promise<dbLib.RoleEntity[]> {
+    if (id) {
+      if (id.length === 1) {
+        return this.tblRole.getRoleById(id[0], ...attrNamesToGet).then(role => [role])
+      } else {
+        return this.tblRole.getRolesById(id, ...attrNamesToGet)
+      }
+    }
+    return Promise.resolve([])
+  }
+
+  public getRolesByCongress (congress: number, ...attrNamesToGet: (keyof dbLib.RoleEntity)[]): Promise<dbLib.RoleEntity[]> {
+    return this.tblCngr.getRoleIdxByCongress(congress).then(
+      roleIdx => this.getRolesById(roleIdx, ...attrNamesToGet))
+  }
+
+  public getRolesByState (state: string, congress?: number, attrNamesToGet?: (keyof dbLib.RoleEntity)[]): Promise<dbLib.RoleEntity[]> {
+    return this.tblRole.getRolesByState(state, attrNamesToGet, congress)
+  }
+
+  public getRolesByBioGuideId (bioGuideId: string): Promise<dbLib.RoleEntity[]> {
+    return this.tblPpl.getPersonByBioGuideId(bioGuideId).then(person => {
+      if (person) {
+        let backupHydrate = this.tblRole.useHydrateFields
+        this.tblRole.useHydrateFields = false // don't hydrate person field
+        return this.tblRole.getRolesByPersonId(person.id).then(roles => {
+          _.each(roles, r => r.person = person)
+          this.tblRole.useHydrateFields = backupHydrate
+          return roles
+        })
+      }
+      return null
+    })
   }
 
   private async syncSponsors (billsWithSponsors: dbLib.BillEntity[]) {

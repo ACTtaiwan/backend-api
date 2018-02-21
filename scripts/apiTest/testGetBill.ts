@@ -21,7 +21,12 @@ let test2 = async () => {
   let billApi = new api.BillApi()
   let out = await billApi.getBillById({
     // id: ['cbb2f2e2-db6a-433f-b5a2-50ad5b3a81e2', '573ce7bd-3765-4df8-be4b-3307c9ef9958']
-    id: ['cbb2f2e2-db6a-433f-b5a2-50ad5b3a81e2']
+    id: ['12bd743c-83f4-4e7c-9558-c54081a3ca01',
+         '70ff97c5-de57-410b-83c8-30be19b650df',
+         'dc48f5ca-2622-4d1e-af31-51015aae7eb5',
+         '3db6e363-cabd-4802-8955-63e786b6fc30',
+         '8dd53af3-97a0-442a-9365-7bdd36bfe32d'],
+    attrNamesToGet: ['congress', 'cosponsors']
   })
   console.log(JSON.stringify(out, null, 2))
 }

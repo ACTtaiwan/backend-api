@@ -5,6 +5,7 @@ import { CongressGovSponsorParser } from '../../libs/congressGov/CongressGovSpon
 import * as models from '../../libs/congressGov/CongressGovModels'
 import * as _ from 'lodash'
 import { CongressGovAllInfoParser } from '../../libs/congressGov/CongressGovAllInfoParser';
+import { RoleManager } from '../../libs/dataManager/RoleManager';
 
 /**
  *  sync for sponsors & co-sponsors
@@ -15,8 +16,7 @@ export class SponsorSync {
   private readonly tblName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLS_TABLE_NAME
   public  readonly tblBill = <dbLib.BillTable> this.db.getTable(this.tblName)
 
-  private readonly tblRoleName = (<any> awsConfig).dynamodb.VOLUNTEER_ROLES_TABLE_NAME
-  public  readonly tblRole = <dbLib.RoleTable> this.db.getTable(this.tblRoleName)
+  private readonly roleManager = new RoleManager()
 
   private readonly congressGovSponsorParser = new CongressGovSponsorParser()
   private readonly congressGovAllInfoParser = new CongressGovAllInfoParser()
@@ -118,7 +118,7 @@ export class SponsorSync {
   }
 
   private async buildRoleMapOfCongress (congress: number): Promise<{[bioGuideId: string]: dbLib.RoleEntity[]}> {
-    let roles = await this.tblRole.getRolesByCongress(congress)
+    let roles = await this.roleManager.getRolesByCongress(congress)
     let roleMap: {[bioGuideId: string]: dbLib.RoleEntity[]} = {}
     _.each(roles, role => {
       if (role.person && role.person.bioGuideId) {

@@ -181,15 +181,15 @@ functions:
                 id: true
           cors: true
   
-  billMgmt-sponsors:
-    handler: functions/private/billManagement/sponsors.main
+  billMgmt-roles:
+    handler: functions/private/billManagement/roleHandler.main
     events:
       - http:
-          path: billManagement/sponsors
+          path: billManagement/roles
           method: get
           cors: true
       - http:
-          path: billManagement/sponsors/{id}
+          path: billManagement/roles/{id}
           method: get
           request:
             parameters:
@@ -197,18 +197,59 @@ functions:
                 id: true
           cors: true
       - http:
-          path: billManagement/sponsors
-          method: post
+          path: billManagement/roles/state/{state}
+          method: get
+          request:
+            parameters:
+              paths:
+                state: true
           cors: true
-
-  billMgmt-cosponsors:
-    handler: functions/private/billManagement/cosponsors.main
-    events:
       - http:
-          path: billManagement/cosponsors
-          method: post
+          path: billManagement/roles/congress/{congress}
+          method: get
+          request:
+            parameters:
+              paths:
+                congress: true
           cors: true
-          authorizer: aws_iam
+      - http:
+          path: billManagement/roles/congress/{congress}/state/{state}
+          method: get
+          request:
+            parameters:
+              paths:
+                congress: true
+                state: true
+          cors: true
+              
+  # billMgmt-sponsors:
+  #   handler: functions/private/billManagement/sponsors.main
+  #   events:
+  #     - http:
+  #         path: billManagement/sponsors
+  #         method: get
+  #         cors: true
+  #     - http:
+  #         path: billManagement/sponsors/{id}
+  #         method: get
+  #         request:
+  #           parameters:
+  #             paths:
+  #               id: true
+  #         cors: true
+  #     - http:
+  #         path: billManagement/sponsors
+  #         method: post
+  #         cors: true
+
+  # billMgmt-cosponsors:
+  #   handler: functions/private/billManagement/cosponsors.main
+  #   events:
+  #     - http:
+  #         path: billManagement/cosponsors
+  #         method: post
+  #         cors: true
+  #         authorizer: aws_iam
 
   billMgmt-addBillCategory:
     handler: functions/private/billManagement/addBillCategory.main
