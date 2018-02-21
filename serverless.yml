@@ -221,7 +221,16 @@ functions:
                 congress: true
                 state: true
           cors: true
-              
+      - http:
+          path: billManagement/roles/state/{state}/congress/{congress}
+          method: get
+          request:
+            parameters:
+              paths:
+                congress: true
+                state: true
+          cors: true
+                
   # billMgmt-sponsors:
   #   handler: functions/private/billManagement/sponsors.main
   #   events:
