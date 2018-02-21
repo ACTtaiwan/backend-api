@@ -25,8 +25,15 @@ let test = async () => {
   // // 2 state + 1 congress
   // let out = await api.RoleHandler.dispatchEvent('GET', {states: 'WA,TX', congress: '115'})
 
-  // 1 state + 2 congress
-  let out = await api.RoleHandler.dispatchEvent('GET', {states: 'WA', congress: '115,114'})
+  // // 1 state + 2 congress
+  // let out = await api.RoleHandler.dispatchEvent('GET', {states: 'WA', congress: '115,114'})
+
+  // // 1 personId
+  // let out = await api.RoleHandler.dispatchEvent('GET', {personId: '2cc2d8d2-7c2d-49bc-b8af-f11b04b7cfa9'})
+
+  // N personId
+  let out = await api.RoleHandler.dispatchEvent('GET',
+    {personId: '2cc2d8d2-7c2d-49bc-b8af-f11b04b7cfa9,be4b569c-148e-4f09-a9f3-18e413d7e577'})
   console.log(JSON.stringify(out.length, null, 2))
 }
 test()

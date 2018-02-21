@@ -89,6 +89,22 @@ export class RoleManager {
     return Promise.resolve([])
   }
 
+  public getRolesByPersonId (personId: string[], ...attrNamesToGet: (keyof dbLib.RoleEntity)[] ): Promise<dbLib.RoleEntity[]> {
+    if (personId) {
+      if (personId.length === 1) {
+        return this.tblRole.getRolesByPersonId(personId[0])
+      } else {
+        let promises: Promise<dbLib.RoleEntity[]>[] = []
+        _.each(personId, pid => promises.push(this.tblRole.getRolesByPersonId(pid)))
+        return Promise.all(promises).then(results => {
+          let roles = _.keyBy(_.flatten(results), 'id')
+          return _.values(roles)
+        })
+      }
+    }
+    return Promise.resolve([])
+  }
+
   public getRolesByCongress (congress: number, ...attrNamesToGet: (keyof dbLib.RoleEntity)[]): Promise<dbLib.RoleEntity[]> {
     return this.tblCngr.getRoleIdxByCongress(congress).then(
       roleIdx => this.getRolesById(roleIdx, ...attrNamesToGet))

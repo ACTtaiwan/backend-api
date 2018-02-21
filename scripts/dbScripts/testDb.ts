@@ -71,12 +71,26 @@ const tblSync = <dbLib.CongressGovSyncBillTable> dbLib.DynamoDBManager.instance(
 const tblRoleName = (<any> awsConfig).dynamodb.VOLUNTEER_ROLES_TABLE_NAME
 const tblRole = <dbLib.RoleTable> dbLib.DynamoDBManager.instance().getTable(tblRoleName)
 
-let f = async () => {
-  let roles = await tblRole.getRolesByState('WA', null, 115)
-  console.log(JSON.stringify(roles, null, 2))
-}
+// let f = async () => {
+//   let roles = await tblRole.getRolesByState('WA', null, 115)
+//   console.log(JSON.stringify(roles, null, 2))
+// }
 
-f()
+// f()
+
+let allStates = async () => {
+  let states: string[] = []
+  await tblRole.forEachBatchOfAllRoles(async roles => {
+    console.log(`batch role size = ${roles.length}`)
+    _.each(roles, r => {
+      if (r.state && !_.includes(states, r.state)) {
+        states.push(r.state)
+      }
+    })
+  }, ['id', 'state'])
+  console.log(`allStates = ${JSON.stringify(states.sort(), null, 2)}`)
+}
+allStates()
 
 // const tblPplName = (<any> awsConfig).dynamodb.VOLUNTEER_PERSON_TABLE_NAME
 // const tblPpl = <dbLib.PersonTable> dbLib.DynamoDBManager.instance().getTable(tblPplName)

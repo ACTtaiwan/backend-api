@@ -197,6 +197,14 @@ functions:
                 id: true
           cors: true
       - http:
+          path: billManagement/roles/person/{personId}
+          method: get
+          request:
+            parameters:
+              paths:
+                personId: true
+          cors: true  
+      - http:
           path: billManagement/roles/state/{state}
           method: get
           request:
