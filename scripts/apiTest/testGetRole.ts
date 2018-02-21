@@ -27,7 +27,6 @@ let test = async () => {
 
   // 1 state + 2 congress
   let out = await api.RoleHandler.dispatchEvent('GET', {states: 'WA', congress: '115,114'})
-
   console.log(JSON.stringify(out.length, null, 2))
 }
 test()
