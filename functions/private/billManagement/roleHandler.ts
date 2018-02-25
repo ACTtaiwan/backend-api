@@ -10,12 +10,12 @@ export class RoleApi {
 
   public getRoleById (id: string[]): Promise<dbLib.RoleEntity[]> {
     console.log(`[RoleApi::getRoleById()] id = ${JSON.stringify(id, null, 2)}`)
-    return this.roleMngr.getRolesById(id)
+    return this.roleMngr.getRolesById(id).then(roles => this.sortAndFilter(roles))
   }
 
   public getRoleByPersonId (personId: string[]): Promise<dbLib.RoleEntity[]> {
     console.log(`[RoleApi::getRoleByPersonId()] personId = ${JSON.stringify(personId, null, 2)}`)
-    return this.roleMngr.getRolesByPersonId(personId)
+    return this.roleMngr.getRolesByPersonId(personId).then(roles => this.sortAndFilter(roles))
   }
 
   public getRoleByStates (states: string[]): Promise<dbLib.RoleEntity[]> {
@@ -24,7 +24,7 @@ export class RoleApi {
     _.each(states, st => promises.push(this.roleMngr.getRolesByState(st)))
     return Promise.all(promises).then(results => {
       let roles = _.keyBy(_.flatten(results), 'id')
-      return _.values(roles)
+      return this.sortAndFilter(_.values(roles))
     })
   }
 
@@ -32,7 +32,9 @@ export class RoleApi {
     console.log(`[RoleApi::getRoleByCongress()] congress = ${JSON.stringify(congress, null, 2)}`)
     let promises: Promise<dbLib.RoleEntity[]>[] = []
     _.each(congress, cngr => promises.push(this.roleMngr.getRolesByCongress(cngr)))
-    return Promise.all(promises).then(results => _.flatten(results))
+    return Promise.all(promises)
+      .then(results => _.flatten(results))
+      .then(roles => this.sortAndFilter(roles))
   }
 
   public getRoleByStatesAndCongress (states: string[], congress: number[]): Promise<dbLib.RoleEntity[]> {
@@ -41,13 +43,24 @@ export class RoleApi {
     if (states.length === 1 && congress.length ===  1) {
       console.log(`[RoleApi::getRoleByStatesAndCongress()] state.length == 1 && congress.length == 1`)
       return this.roleMngr.getRolesByState(states[0], congress[0])
+          .then(roles => this.sortAndFilter(roles))
     } else if (congress.length < states.length) {
       console.log(`[RoleApi::getRoleByStatesAndCongress()] congress.length (${congress.length}) < states.length (${states.length})`)
-      return this.getRoleByCongress(congress).then(roles => _.filter(roles, r => _.includes(states, r.state)))
+      return this.getRoleByCongress(congress)
+        .then(roles => _.filter(roles, r => _.includes(states, r.state)))
+        .then(roles => this.sortAndFilter(roles))
     } else {
       console.log(`[RoleApi::getRoleByStatesAndCongress()] congress.length (${congress.length}) >= states.length (${states.length})`)
-      return this.getRoleByStates(states).then(roles => _.filter(roles, r => _.intersection(congress, r.congressNumbers).length > 0))
+      return this.getRoleByStates(states)
+        .then(roles => _.filter(roles, r => _.intersection(congress, r.congressNumbers).length > 0))
+        .then(roles => this.sortAndFilter(roles))
     }
+  }
+
+  private sortAndFilter (roles: dbLib.RoleEntity[]): dbLib.RoleEntity[] {
+    return _.orderBy(roles,
+      ['state', (role: dbLib.RoleEntity) => role.district || 0, (role: dbLib.RoleEntity) => role.senatorClass],
+      ['asec', 'asec', 'asec'])
   }
 }
 

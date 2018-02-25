@@ -64,11 +64,13 @@ export class RoleTable extends Table<RoleEntityHydrateField> {
 
   public getRoleById (id: string, ...attrNamesToGet: (keyof RoleEntity)[]): Promise<RoleEntity> {
     return super.getItem<RoleEntity>('id', id, this.applyHydrateFieldsForAttrNames(attrNamesToGet)).then(
-      async data => (data && data.Item) ? (await this.applyHydrateFields([<RoleEntity> data.Item]))[0] : null)
+      data => (data && data.Item) ? this.convertAttrMapToBillRoleEntity(data.Item) : null).then(
+      async data => data ? (await this.applyHydrateFields([data]))[0] : null)
   }
 
   public getRolesById (idx: string[], ...attrNamesToGet: (keyof RoleEntity)[]): Promise<RoleEntity[]> {
     return super.getItems<RoleEntity>('id', idx, this.applyHydrateFieldsForAttrNames(attrNamesToGet)).then(
+      items => _.map(items, (r: any) => this.convertAttrMapToBillRoleEntity(r))).then(
       items => this.applyHydrateFields(items))
   }
 
