@@ -91,18 +91,29 @@ export class TagTable extends Table {
     )
   }
 
+  public getTags (tags: string[], ...attrNamesToGet: (keyof TagEntity)[]): Promise<TagEntity[]> {
+    return super.getItems<TagEntity>('tag', tags, attrNamesToGet).then(
+      data => _.map(data, (r: any) => this.convertAttrMapToTagEntity(r)))
+  }
+
   public getAllTags (...attrNamesToGet: (keyof TagEntity)[]): Promise<TagEntity[]> {
     return super.getAllItems<TagEntity>(attrNamesToGet).then(out =>
       _.map(out.results, (r: any) => this.convertAttrMapToTagEntity(r)) || []
     )
   }
 
-  public queryTags (q: string, maxSearchItems?: number, op: 'contains' | 'begins_with' = 'begins_with'): Promise<TagEntity[]> {
+  public queryTags (
+    q: string,
+    attrNamesToGet?: (keyof TagEntity)[],
+    maxSearchItems?: number,
+    op: 'contains' | 'begins_with' = 'begins_with'
+  ): Promise<TagEntity[]> {
     let input: ScanInput<TagEntity> = {
       filterExp: `${op} (tag, :v_q)`,
       expAttrVals: {':v_q': q},
       flushOut: true,
-      maxItems: maxSearchItems
+      maxItems: maxSearchItems,
+      attrNamesToGet
     }
     return super.scanItems<TagEntity>(input).then(out =>
        _.map(out.results, (r: any) => this.convertAttrMapToTagEntity(r)) || [])

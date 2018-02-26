@@ -297,4 +297,4 @@ export class GoogleBillSheetSync {
 let sync = new GoogleBillSheetSync()
 // sync.removeJustAddedBills()
 // sync.test()
-sync.syncDb({syncBasicInfo: false, syncTags: false, syncCategories: true})
+sync.syncDb({syncBasicInfo: false, syncTags: true, syncCategories: false})

@@ -142,16 +142,18 @@ export class TagManager {
     })
   }
 
-  public searchTagStartWith (q: string): Promise<dbLib.TagEntity[]> {
-    return this.tblTag.queryTags(q, this.defaultMaxSearchItems)
+  public searchTagStartWith (q: string, attrNamesToGet?: (keyof dbLib.TagEntity)[]): Promise<dbLib.TagEntity[]> {
+    return this.tblTag.queryTags(q, attrNamesToGet, this.defaultMaxSearchItems, 'begins_with')
   }
 
-  public searchTagContains (q: string): Promise<dbLib.TagEntity[]> {
-    return this.tblTag.queryTags(q, this.defaultMaxSearchItems, 'contains')
+  public searchTagContains (q: string, attrNamesToGet?: (keyof dbLib.TagEntity)[]): Promise<dbLib.TagEntity[]> {
+    return this.tblTag.queryTags(q, attrNamesToGet, this.defaultMaxSearchItems, 'contains')
   }
 
-  public getTag (tag: string): Promise<dbLib.TagEntity> {
-    return this.tblTag.getTag(tag)
+  public getTags (tags: string | string[]): Promise<dbLib.TagEntity[]> {
+    return tags instanceof Array ?
+      this.tblTag.getTags(tags) :
+      this.tblTag.getTag(tags).then(out => (out && [out]) || [])
   }
 
   public getTagsOfBill (billId: string): Promise<{[tag: string]: {[userId: string]: number}}> {

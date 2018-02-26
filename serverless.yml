@@ -238,7 +238,31 @@ functions:
                 congress: true
                 state: true
           cors: true
-                
+
+  billMgmt-tags:
+    handler: functions/private/billManagement/tagHandler.main
+    events:
+      - http:
+          path: billManagement/tags
+          method: get
+          cors: true
+      - http:
+          path: billManagement/tags/{tag}
+          method: get
+          request:
+            parameters:
+              paths:
+                tag: true
+          cors: true
+      - http:
+          path: billManagement/tags/search/{q}
+          method: get
+          request:
+            parameters:
+              paths:
+                q: true
+          cors: true
+
   # billMgmt-sponsors:
   #   handler: functions/private/billManagement/sponsors.main
   #   events:
