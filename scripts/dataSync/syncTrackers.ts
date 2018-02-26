@@ -62,8 +62,3 @@ export class TrackerSync {
     return undefined
   }
 }
-
-let sync = new TrackerSync()
-sync.syncTrackersForAllBills(CongressGovHelper.CURRENT_CONGRESS)
-// syncTrackersForBill(114, 'hconres', 88)
-// sync.printBillsHavingNoTrackers()

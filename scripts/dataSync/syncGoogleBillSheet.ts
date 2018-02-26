@@ -28,6 +28,7 @@ export class GoogleBillSheetSync {
 
   private readonly sheet = new GoogleSheetAgent()
   private readonly categoryManager = new CategoryManager()
+  private readonly tagMngr = new TagManager()
 
   private types: dbLib.BillTypeEntity[]
   private cats: dbLib.BillCategoryEntity[]
@@ -110,14 +111,21 @@ export class GoogleBillSheetSync {
     }
 
     // extension fields
-    const optionals = _.pick(billRow, 'title_zh', 'tags', 'relevence', 'china', 'insight', 'comment')
+    const optionals = _.pick(billRow, 'title_zh', 'relevence', 'china', 'insight', 'comment')
     _.assign(entity, optionals)
 
     // categories
     const catsFound = await this.findCategories(billRow.categories)
     entity.categories = catsFound
 
-    return this.tbl.putBill(entity)
+    return this.tbl.putBill(entity).then(async () => {
+      if (billRow.tags) {
+        for (let i = 0; i < billRow.tags.length; ++ i) {
+          const tag = billRow.tags[i]
+          await this.tagMngr.addTagToBill(tag, entity.id)
+        }
+      }
+    })
   }
 
   public async batchUpdate (billsToUpdate: [BillRow, dbLib.BillEntity][], options: GoogleBillSheetSyncOption) {
@@ -177,7 +185,6 @@ export class GoogleBillSheetSync {
   }
 
   public async updateTag (row: BillRow, bill: dbLib.BillEntity) {
-    let tagMngr = new TagManager()
     if (row && row.tags && row.tags.length > 0) {
       let rowTags: string[] = _.chain(row.tags).filter(x => x).map(x => x.toLowerCase()).value()
       let existingTags: string[] = (bill && bill.tags && _.keys(bill.tags)) || []
@@ -190,7 +197,7 @@ export class GoogleBillSheetSync {
         for (let i = 0; i < addTags.length; ++i) {
           let tag = addTags[i]
           console.log(`${this.displayBill(bill)} -> add tag: ${tag}`)
-          await tagMngr.addTagToBill(tag, bill.id)
+          await this.tagMngr.addTagToBill(tag, bill.id)
         }
       }
 
@@ -201,7 +208,7 @@ export class GoogleBillSheetSync {
         for (let i = 0; i < delTags.length; ++i) {
           let tag = delTags[i]
           console.log(`${this.displayBill(bill)} -> delete tag: ${tag}`)
-          await tagMngr.removeTagFromBill(tag, bill.id)
+          await this.tagMngr.removeTagFromBill(tag, bill.id)
         }
       }
     }

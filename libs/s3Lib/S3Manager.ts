@@ -60,6 +60,16 @@ export abstract class S3Bucket {
     })
   }
 
+  protected getObject (s3BucketKey: string): Promise<aws.S3.GetObjectOutput> {
+    let params: aws.S3.GetObjectRequest = {
+      Bucket: this.bucketName,
+      Key: s3BucketKey
+    }
+    return new Promise((resolve, reject) => {
+      this.s3.getObject(params, (err, data) => err ? reject(err) : resolve(data))
+    })
+  }
+
   protected putObject (content: aws.S3.Body, s3BucketKey: string, contentType: aws.S3.ContentType): Promise<aws.S3.PutObjectOutput> {
     let params: aws.S3.PutObjectRequest = {
       Body: content,
@@ -67,7 +77,7 @@ export abstract class S3Bucket {
       Key: s3BucketKey,
       ContentType: contentType,
       ACL: 'public-read'
-    };
+    }
     return new Promise((resolve, reject) => {
       this.s3.putObject(params, (err, data) => err ? reject(err) : resolve(data))
     })
@@ -77,7 +87,7 @@ export abstract class S3Bucket {
     let params: aws.S3.DeleteObjectRequest = {
       Bucket: this.bucketName,
       Key: s3BucketKey
-    };
+    }
     return new Promise((resolve, reject) => {
       this.s3.deleteObject(params, (err, data) => err ? reject(err) : resolve(data))
     })
@@ -122,7 +132,13 @@ export class BillStaticInfoBucket extends S3Bucket {
       S3BucketHelper.generateFullUrl(this.bucketName, s3BucketKey))
   }
 
-  public deleteInfo (congress: number, billType: models.BillTypeCode, billNumber: number)
+  public getEntity (congress: number, billType: models.BillTypeCode, billNumber: number)
+  : Promise<BillStaticInfo> {
+    const s3BucketKey = this.s3BucketKey(congress, billType, billNumber)
+    return super.getObject(s3BucketKey).then(out => (out && out.Body) ? JSON.parse(out.Body.toString()) : null)
+  }
+
+  public deleteEntity (congress: number, billType: models.BillTypeCode, billNumber: number)
   : Promise<aws.S3.DeleteObjectOutput> {
     const s3BucketKey = this.s3BucketKey(congress, billType, billNumber)
     return super.deleteObject(s3BucketKey)

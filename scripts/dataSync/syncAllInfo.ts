@@ -31,7 +31,7 @@ export class AllInfoSync {
     const maxCongress = Math.min(maxUpdateCongress || currentCongress,
                                  currentCongress)
 
-    console.log(`minCongress = ${minCongress} \t maxCongress = ${maxCongress}`)
+    console.log(`[AllInfoSync] minCongress = ${minCongress} \t maxCongress = ${maxCongress}`)
 
     let bills = await this.tbl.getAllBills('id', 'congress', 'billType', 'billNumber', ...attrNames)
     bills = _.filter(bills, x => x.congress >= minCongress && x.congress <= maxCongress)
@@ -41,7 +41,7 @@ export class AllInfoSync {
     const keys = _.keys(this.congressBillsMap)
     for (let c = 0; c < keys.length; ++c) {
       let congress = parseInt(keys[c])
-      console.log(`Updating congress = ${congress}`)
+      console.log(`[AllInfoSync] Updating congress = ${congress}`)
       await this.batchSyncForCongress(congress, currentCongress, attrNames)
       console.log('\n\n\n')
     }
@@ -55,7 +55,7 @@ export class AllInfoSync {
       const path = CongressGovHelper.generateCongressGovBillPath(bill.congress, bill.billType.code, bill.billNumber)
       const billDisplay = dbLib.DbHelper.displayBill(bill)
 
-      console.log(`\n${billDisplay} -- Updating all info --\n`)
+      console.log(`\n[AllInfoSync::batchSyncForCongress()] ${billDisplay} -- Updating all info (${i} / ${bills.length}) --\n`)
 
       const allInfo = await this.congressGovAllInfoParser.getAllInfo(path)
       if (allInfo) {
@@ -124,16 +124,22 @@ export class AllInfoSync {
           }
         }
 
+        // s3Entity
         if (hasAttr('s3Entity')) {
           if (allInfo.summaryLatest || allInfo.summaryAll) {
             const staticInfo = <s3Lib.BillStaticInfo> {
               summaryLatest: allInfo.summaryLatest || {},
               summaryAll: allInfo.summaryAll || []
             }
-            const url = this.bckt.s3FullUrl(bill.congress, bill.billType.code, bill.billNumber)
-            console.log(`Putting S3 object = ${url}`)
-            await this.bckt.putEntity(staticInfo, bill.congress, bill.billType.code, bill.billNumber)
-            updateBill.s3Entity = url
+            let obj = await this.bckt.getEntity(bill.congress, bill.billType.code, bill.billNumber)
+            !obj && console.log(`[AllInfoSync::batchSyncForCongress()] Did not find exisitng S3 object.`)
+            obj && _.isEqual(obj, staticInfo) && console.log(`[AllInfoSync::batchSyncForCongress()] Found S3 same value. Not updating.`)
+            if (!obj || !_.isEqual(obj, staticInfo)) {
+              const url = this.bckt.s3FullUrl(bill.congress, bill.billType.code, bill.billNumber)
+              console.log(`[AllInfoSync::batchSyncForCongress()] Putting S3 object = ${url}`)
+              await this.bckt.putEntity(staticInfo, bill.congress, bill.billType.code, bill.billNumber)
+              updateBill.s3Entity = url
+            }
           } else if (bill.s3Entity) {
             removeAttrs.push('s3Entity')
           }
@@ -141,7 +147,7 @@ export class AllInfoSync {
 
         if (!_.isEmpty(updateBill)) {
           try {
-            console.log(`Writing to database. Main object. Size = ${JSON.stringify(updateBill).length}`)
+            console.log(`[AllInfoSync::batchSyncForCongress()] Writing to database. Object size = ${JSON.stringify(updateBill).length}`)
             await this.tbl.updateBill(bill.id, updateBill)
           } catch (error) {
             let e = (error as aws.AWSError)
@@ -150,15 +156,12 @@ export class AllInfoSync {
         }
 
         if (removeAttrs.length > 0) {
-          console.log(`Removing attributes = ${JSON.stringify(removeAttrs)}`)
+          console.log(`[AllInfoSync::batchSyncForCongress()] Removing attributes = ${JSON.stringify(removeAttrs)}`)
           await this.tbl.deleteAttributesFromBill(bill.id, ...removeAttrs)
         }
       } else {
-        console.log(`parsing failed\n`)
+        console.log(`[AllInfoSync::batchSyncForCongress()] parsing failed\n`)
       }
     }
   }
 }
-
-let sync = new AllInfoSync()
-sync.syncAllInfoForAllBills(CongressGovHelper.CURRENT_CONGRESS, null, null, ['s3Entity'])

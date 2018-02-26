@@ -13,7 +13,7 @@ let f = async () => {
   }, 115, 'hr', 535)
 
   // console.log(url)
-  await bckt.deleteInfo(115, 'hr', 535)
+  await bckt.deleteEntity(115, 'hr', 535)
 }
 
 // f()

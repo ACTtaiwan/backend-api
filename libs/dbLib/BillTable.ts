@@ -351,9 +351,9 @@ export class BillTable extends Table<BillEntityHydrateField> {
           _.each(b.cosponsors, co => co.role = rolesMap[co.roleId])
         }
       })
+      console.log(`[BillTable::applyHydrateFields()] post-hydrated: ${JSON.stringify(bills, null, 2)}`)
     }
 
-    console.log(`[BillTable::applyHydrateFields()] post-hydrated: ${JSON.stringify(bills, null, 2)}`)
     return bills
   }
 }
