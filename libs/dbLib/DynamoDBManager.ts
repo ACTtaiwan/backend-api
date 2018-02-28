@@ -227,9 +227,9 @@ export abstract class Table<HydrateField = string> {
     return Promise.resolve()
   }
 
-  protected getItemsBatch <T extends TableEntity, KeyType = string> (
+  protected async getItemsBatch <T extends TableEntity, KeyType = string> (
     keyName: string, keyValues: KeyType[], attrNamesToGet?: (keyof T)[]
-  ): Promise<aws.DynamoDB.DocumentClient.BatchGetItemOutput> {
+  ): Promise<T[]> {
     const keys: aws.DynamoDB.DocumentClient.Key[] = _.map(keyValues, keyValue => {
       let key: aws.DynamoDB.DocumentClient.Key = {}
       key[ keyName ] = keyValue
@@ -247,9 +247,19 @@ export abstract class Table<HydrateField = string> {
       RequestItems: itemsMap
     }
 
-    return new Promise((resolve, reject) => {
-      this.docClient.batchGet(params, (err, data) => err ? reject(err) : resolve(data))
-    })
+    let items: T[] = []
+    while (true) {
+      const batch = await this.docClient.batchGet(params).promise()
+      if (batch && batch.Responses && batch.Responses[this.tableName]) {
+        items = items.concat(<T[]> batch.Responses[this.tableName])
+      }
+      if (batch.UnprocessedKeys && !_.isEmpty(batch.UnprocessedKeys[this.tableName])) {
+        params.RequestItems[this.tableName].Keys = batch.UnprocessedKeys[this.tableName].Keys
+      } else {
+        break
+      }
+    }
+    return items
   }
 
   protected getItems <T extends TableEntity, KeyType = string> (
@@ -263,8 +273,7 @@ export abstract class Table<HydrateField = string> {
       if (batchIdx.length === 0) {
         promises.push(Promise.resolve([]))
       } else {
-        const promise = this.getItemsBatch<T, KeyType>(keyName, batchIdx, attrNamesToGet).then(data =>
-          (data && data.Responses && data.Responses[this.tableName]) ? <T[]> data.Responses[this.tableName] : null)
+        const promise = this.getItemsBatch<T, KeyType>(keyName, batchIdx, attrNamesToGet)
         promises.push(promise)
       }
     }

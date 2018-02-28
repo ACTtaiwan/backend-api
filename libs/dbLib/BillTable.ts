@@ -339,7 +339,7 @@ export class BillTable extends Table<BillEntityHydrateField> {
     }
 
     roleIdx = _.uniq(roleIdx)
-    console.log(`[BillTable::applyHydrateFields()] roleIdx = ${JSON.stringify(roleIdx, null, 2)}`)
+    // console.log(`[BillTable::applyHydrateFields()] roleIdx = ${JSON.stringify(roleIdx, null, 2)}`)
 
     if (roleIdx.length > 0) {
       let rolesMap = _.keyBy(await tblRole.getRolesById(roleIdx), 'id')
@@ -351,7 +351,7 @@ export class BillTable extends Table<BillEntityHydrateField> {
           _.each(b.cosponsors, co => co.role = rolesMap[co.roleId])
         }
       })
-      console.log(`[BillTable::applyHydrateFields()] post-hydrated: ${JSON.stringify(bills, null, 2)}`)
+      // console.log(`[BillTable::applyHydrateFields()] post-hydrated: ${JSON.stringify(bills, null, 2)}`)
     }
 
     return bills

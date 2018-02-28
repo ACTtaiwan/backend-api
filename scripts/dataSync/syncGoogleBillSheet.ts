@@ -35,8 +35,11 @@ export class GoogleBillSheetSync {
   private catRows: CategoryRow[]
 
   public async syncDb (options: GoogleBillSheetSyncOption = new GoogleBillSheetSyncOption()) {
+    const fetchFields: (keyof dbLib.BillEntity)[] = ['id', 'congress', 'billType', 'billNumber']
+    options.syncTags && (fetchFields.push('tags'))
+    options.syncCategories && (fetchFields.push('categories'))
     const rows: BillRow[] = await this.sheet.getBillSheet()
-    const billsToDelete = await this.tbl.getAllBills('id', 'congress', 'billType', 'billNumber', 'tags')
+    const billsToDelete = await this.tbl.getAllBills(...fetchFields)
     const billsToUpdate: [BillRow, dbLib.BillEntity][] = []
     const billsToAdd: BillRow[] = []
     _.each(rows, async row => {
@@ -228,8 +231,12 @@ export class GoogleBillSheetSync {
         if (notEqual) {
           console.log(`${this.displayBill(bill)} -> categories: invalid (existing to update)`)
           update.categories = catsFound // overwrite
+        } else {
+          console.log(`${this.displayBill(bill)} -> categories not changed. Not updating.`)
         }
       }
+    } else {
+      console.log(`${this.displayBill(bill)} -> categories not listed in sheet row: ${JSON.stringify(row)}`)
     }
 
     if (!_.isEmpty(update)) {
@@ -297,4 +304,4 @@ export class GoogleBillSheetSync {
 let sync = new GoogleBillSheetSync()
 // sync.removeJustAddedBills()
 // sync.test()
-sync.syncDb({syncBasicInfo: false, syncTags: true, syncCategories: false})
+sync.syncDb({syncBasicInfo: false, syncTags: false, syncCategories: true})
