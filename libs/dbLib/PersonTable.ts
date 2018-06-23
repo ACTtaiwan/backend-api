@@ -74,6 +74,13 @@ export class PersonTable extends Table {
     return super.getAllItems<PersonEntity>(attrNamesToGet).then(out => out.results)
   }
 
+  public async forEachBatchOfAllPersons (
+    callback: (batchRoles: PersonEntity[], lastKey?: string) => Promise<boolean | void>,
+    attrNamesToGet?: (keyof PersonEntity)[]
+  ): Promise<void> {
+    return super.forEachBatch('id', callback, attrNamesToGet)
+  }
+
   public getPersonByBioGuideId (bioGuideId: string, attrNamesToGet?: (keyof PersonEntity)[]): Promise<PersonEntity> {
     let input: QueryInput<PersonEntity> = {
       indexName: 'bioGuideId-index',
