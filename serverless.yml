@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: taiwanwatch-volunteer-site-api # NOTE: update this with your service name
+service: backend-api # NOTE: update this with your service name
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -89,91 +89,31 @@ functions:
   #     domain api call
   # - authorizer: authenticate using the AWS IAM role
 
-  users-logon:
-    handler: functions/public/auth/logon.main
-    events:
-      - http:
-          path: users/logon
-          method: post
-          cors: true
-
-  dashboard-userRecord:
-    handler: functions/private/dashboard/userRecord.main
-    events:
-      - http:
-          path: dashboard/userRecord
-          method: get
-          cors: true
-          authorizer: aws_iam
-
-  billDownload-uploadUrl:
-    handler: functions/private/billDownload/uploadUrl.main
-    events:
-      - http:
-          path: billDownload/uploadUrl
-          method: post
-          cors: true
-          authorizer: aws_iam
-
   billMgmt-bills:
     handler: functions/private/billManagement/billHandler.main
     events:
       - http:
-          path: billManagement/bills
+          path: congressional/bills
           method: get
           cors: true
       - http:
-          path: billManagement/bills/{id}
+          path: congressional/bills/{id}
           method: get
           request:
             parameters:
               paths:
                 id: true
           cors: true
-      # - http:
-      #     path: billManagement/bills
-      #     method: post
-      #     cors: true
-      #     authorizer: aws_iam
-      # - http:
-      #     path: billManagement/bills
-      #     method: put
-      #     cors: true
-      #     authorizer: aws_iam
-
-  billMgmt-billTypes:
-    handler: functions/private/billManagement/billTypes.main
-    events:
-      - http:
-          path: billManagement/billTypes
-          method: get
-          cors: true
-  
-  billMgmt-billActions:
-    handler: functions/private/billManagement/billActions.main
-    events:
-      - http:
-          path: billManagement/billActions
-          method: get
-          cors: true
-
-  billMgmt-billVersions:
-    handler: functions/private/billManagement/billVersions.main
-    events:
-      - http:
-          path: billManagement/billVersions
-          method: get
-          cors: true
 
   billMgmt-billCategories:
     handler: functions/private/billManagement/billCategoryHandler.main
     events:
       - http:
-          path: billManagement/billCategories
+          path: congressional/billCategories
           method: get
           cors: true
       - http:
-          path: billManagement/billCategories/{id}
+          path: congressional/billCategories/{id}
           method: get
           request:
             parameters:
@@ -185,11 +125,11 @@ functions:
     handler: functions/private/billManagement/roleHandler.main
     events:
       - http:
-          path: billManagement/roles
+          path: congressional/roles
           method: get
           cors: true
       - http:
-          path: billManagement/roles/{id}
+          path: congressional/roles/{id}
           method: get
           request:
             parameters:
@@ -197,7 +137,7 @@ functions:
                 id: true
           cors: true
       - http:
-          path: billManagement/roles/person/{personId}
+          path: congressional/roles/person/{personId}
           method: get
           request:
             parameters:
@@ -205,7 +145,7 @@ functions:
                 personId: true
           cors: true  
       - http:
-          path: billManagement/roles/state/{state}
+          path: congressional/roles/state/{state}
           method: get
           request:
             parameters:
@@ -213,7 +153,7 @@ functions:
                 state: true
           cors: true
       - http:
-          path: billManagement/roles/congress/{congress}
+          path: congressional/roles/congress/{congress}
           method: get
           request:
             parameters:
@@ -221,7 +161,7 @@ functions:
                 congress: true
           cors: true
       - http:
-          path: billManagement/roles/congress/{congress}/state/{state}
+          path: congressional/roles/congress/{congress}/state/{state}
           method: get
           request:
             parameters:
@@ -230,7 +170,7 @@ functions:
                 state: true
           cors: true
       - http:
-          path: billManagement/roles/state/{state}/congress/{congress}
+          path: congressional/roles/state/{state}/congress/{congress}
           method: get
           request:
             parameters:
@@ -243,11 +183,11 @@ functions:
     handler: functions/private/billManagement/tagHandler.main
     events:
       - http:
-          path: billManagement/tags
+          path: congressional/tags
           method: get
           cors: true
       - http:
-          path: billManagement/tags/{tag}
+          path: congressional/tags/{tag}
           method: get
           request:
             parameters:
@@ -255,60 +195,13 @@ functions:
                 tag: true
           cors: true
       - http:
-          path: billManagement/tags/search/{q}
+          path: congressional/tags/search/{q}
           method: get
           request:
             parameters:
               paths:
                 q: true
           cors: true
-
-  # billMgmt-sponsors:
-  #   handler: functions/private/billManagement/sponsors.main
-  #   events:
-  #     - http:
-  #         path: billManagement/sponsors
-  #         method: get
-  #         cors: true
-  #     - http:
-  #         path: billManagement/sponsors/{id}
-  #         method: get
-  #         request:
-  #           parameters:
-  #             paths:
-  #               id: true
-  #         cors: true
-  #     - http:
-  #         path: billManagement/sponsors
-  #         method: post
-  #         cors: true
-
-  # billMgmt-cosponsors:
-  #   handler: functions/private/billManagement/cosponsors.main
-  #   events:
-  #     - http:
-  #         path: billManagement/cosponsors
-  #         method: post
-  #         cors: true
-  #         authorizer: aws_iam
-
-  billMgmt-addBillCategory:
-    handler: functions/private/billManagement/addBillCategory.main
-    events:
-      - http:
-          path: billManagement/addBillCategory
-          method: put
-          cors: true
-          authorizer: aws_iam
-  
-  billMgmt-removeBillCategory:
-    handler: functions/private/billManagement/removeBillCategory.main
-    events:
-      - http:
-          path: billManagement/removeBillCategory
-          method: delete
-          cors: true
-          authorizer: aws_iam
 
   congGov-parse:
     handler: functions/private/congressGovAgent/congressGovHandler.main
@@ -344,26 +237,10 @@ functions:
           cors: true
           authorizer: aws_iam
 
-  dynamodbSync-bill:
-    handler: functions/events/bills/dynamodbSync.main
-    events:
-      - stream:
-        arn: arn:aws:dynamodb:us-east-1:537713963720:table/volunteer.bills/stream/2017-12-23T09:01:21.034
-        batchSize: 1
-        startingPosition: TRIM_HORIZON
-        enabled: true
-
   cronjobs:
     handler: functions/events/cronjobs/dailySync.main
     events:
       - schedule: cron(0 12 * * ? *) # Run at 12:00 pm (UTC) every day
-      
-  # upload-billsBucket:
-  #   handler: functions/events/bills/pdfUpload.main
-  #   events:
-  #     - s3:
-  #         bucket: ${self:provider.environment.VOLUNTEER_BILLS_S3_BUCKET}
-  #         event: s3:ObjectCreated:*
 
   googleApi:
     handler: functions/private/googleApi/googleApiHandler.main
@@ -373,198 +250,3 @@ functions:
           method: get
           cors: true
           authorizer: aws_iam
-
-#    The following are a few example events you can configure
-#    NOTE: Please make sure to change your handler code to work with those events
-#    Check the event documentation for details
-#    events:
-#      - http:
-#          path: users/create
-#          method: get
-#      - s3: ${env:BUCKET}
-#      - schedule: rate(10 minutes)
-#      - sns: greeter-topic
-#      - stream: arn:aws:dynamodb:region:XXXXXX:table/foo/stream/1970-01-01T00:00:00.000
-#      - alexaSkill
-#      - iot:
-#          sql: "SELECT * FROM 'some_topic'"
-#      - cloudwatchEvent:
-#          event:
-#            source:
-#              - "aws.ec2"
-#            detail-type:
-#              - "EC2 Instance State-change Notification"
-#            detail:
-#              state:
-#                - pending
-#      - cloudwatchLog: '/aws/lambda/hello'
-#      - cognitoUserPool:
-#          pool: MyUserPool
-#          trigger: PreSignUp
-
-#    Define function environment variables here
-#    environment:
-#      variable2: value2
-
-# you can add CloudFormation resource templates here
-resources:
-  Resources:
-    # USERS
-    VolunteerUsersDynamoDbTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.VOLUNTEER_USERS_DYNAMODB_TABLE}
-    # BILLS
-    VolunteerBillsDynamoDbTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 10
-          WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.VOLUNTEER_BILLS_DYNAMODB_TABLE}
-    # BILL TYPES
-    VolunteerBillTypesDynamoDbTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.VOLUNTEER_BILLTYPES_DYNAMODB_TABLE}
-    # BILL ACTIONS
-    VolunteerBillActionsDynamoDbTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.VOLUNTEER_BILLACTIONS_DYNAMODB_TABLE}
-    # BILL VERSIONS
-    VolunteerVersionsDynamoDbTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.VOLUNTEER_BILLVERSIONS_DYNAMODB_TABLE}
-    # BILL CATEGORIES
-    VolunteerBillCategoriesDynamoDbTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.VOLUNTEER_BILLCATEGORIES_DYNAMODB_TABLE}
-    # CONGRESS MEMBER - ROLES
-    VolunteerRolesDynamoDbTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.VOLUNTEER_ROLES_DYNAMODB_TABLE}
-    # CONGRESS MEMBER - PERSONS
-    VolunteerPersonsDynamoDbTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.VOLUNTEER_PERSONS_DYNAMODB_TABLE}
-    # TASKS
-    VolunteerTasksDynamoDbTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.VOLUNTEER_TASKS_DYNAMODB_TABLE}
-    # SUBMISSIONS
-    VolunteerSubmissionsDynamoDbTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.VOLUNTEER_SUBMISSIONS_DYNAMODB_TABLE}
-    # BILL DOWNLOAD TASK
-    VolunteerBillDownloadTaskDynamoDbTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.VOLUNTEER_BILLDOWNLOADTASK_DYNAMODB_TABLE}
-
-#  Outputs:
-#     NewOutput:
-#       Description: "Description for the output"
-#       Value: "Some output value"

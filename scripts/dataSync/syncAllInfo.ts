@@ -1,11 +1,11 @@
 import { CongressGovAllInfoParser } from '../../libs/congressGov/CongressGovAllInfoParser'
 import { CongressGovHelper } from '../../libs/congressGov/CongressGovHelper';
-import { CongressGovSummary } from '../../libs/congressGov/CongressGovModels';
 import * as dbLib from '../../libs/dbLib'
 import * as s3Lib from '../../libs/s3Lib'
-import * as awsConfig from '../../config/aws.json'
 import * as _ from 'lodash'
 import * as aws from 'aws-sdk'
+
+var awsConfig = require('../../config/aws.json');
 
 export class AllInfoSync {
   public readonly congressGovAllInfoParser = new CongressGovAllInfoParser()

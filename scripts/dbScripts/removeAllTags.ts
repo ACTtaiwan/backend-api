@@ -1,5 +1,6 @@
 import * as dbLib from '../../libs/dbLib'
-import * as awsConfig from '../../config/aws.json'
+
+var awsConfig = require('../../config/aws.json');
 
 let f = async () => {
   const db = dbLib.DynamoDBManager.instance()

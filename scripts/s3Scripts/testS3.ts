@@ -1,6 +1,7 @@
 import * as s3Lib from '../../libs/s3Lib'
-import * as awsConfig from '../../config/aws.json'
 import { CongressGovTextUpdater } from '../../libs/congressGov/CongressGovTextUpdater';
+
+var awsConfig = require('../../config/aws.json');
 
 let f = async () => {
   const bcktName = (<any> awsConfig).s3.VOLUNTEER_BILLS_STATICINFO_BUCKET_NAME

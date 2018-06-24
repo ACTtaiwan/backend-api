@@ -1,9 +1,9 @@
 import * as aws from 'aws-sdk'
-import * as awsConfig from '../../config/aws.json'
-import * as models from '../congressGov/CongressGovModels'
 import * as _ from 'lodash'
 import { CongressGovSyncBillTable, BillTable, TagTable, TagMetaTable, CongressTable,
   RoleTable, PersonTable, BillTypeTable, BillCategoryTable, BillVersionTable, BulkPeopleTable } from './'
+
+var awsConfig = require('../../config/aws.json');
 
 export class DynamoDBManager {
   private static _instance: DynamoDBManager
@@ -169,7 +169,7 @@ export abstract class Table<HydrateField = string> {
     }
 
     if (attrNamesToGet && attrNamesToGet.length > 0) {
-      params.AttributesToGet = attrNamesToGet
+      params.AttributesToGet = <string[]> attrNamesToGet
     }
 
     return new Promise((resolve, reject) => {
@@ -190,7 +190,7 @@ export abstract class Table<HydrateField = string> {
     }
 
     if (attrNamesToGet && attrNamesToGet.length > 0) {
-      params.AttributesToGet = attrNamesToGet
+      params.AttributesToGet = <string[]> attrNamesToGet
     }
 
     return new Promise((resolve, reject) => {
@@ -240,7 +240,7 @@ export abstract class Table<HydrateField = string> {
     itemsMap[this.tableName] = { Keys: keys };
 
     if (attrNamesToGet && attrNamesToGet.length > 0) {
-      itemsMap[this.tableName].AttributesToGet = attrNamesToGet
+      itemsMap[this.tableName].AttributesToGet = <string[]> attrNamesToGet
     }
 
     const params: aws.DynamoDB.DocumentClient.BatchGetItemInput = {
@@ -289,7 +289,7 @@ export abstract class Table<HydrateField = string> {
       options.expAttrNames = {}
       _.each(attrNamesToGet, attr => {
         options.attrNamesToGet.push(<any> `#k_${attr}`)
-        options.expAttrNames[ `#k_${attr}` ] = attr
+        options.expAttrNames[ `#k_${attr}` ] = <string> attr
       })
     }
     return this.scanItems<T>(options)

@@ -1,7 +1,8 @@
 import * as aws from 'aws-sdk'
-import * as awsConfig from '../../config/aws.json'
 import * as models from '../congressGov/CongressGovModels'
 import { Table, TableEntity, BillEntity } from './'
+
+var awsConfig = require('../../config/aws.json');
 
 // BillTypeTable
 

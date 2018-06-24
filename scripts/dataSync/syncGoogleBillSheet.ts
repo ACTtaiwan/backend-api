@@ -1,12 +1,12 @@
-import * as awsConfig from '../../config/aws.json'
 import { GoogleSheetAgent } from '../../libs/googleApi/GoogleSheetAgent'
 import * as dbLib from '../../libs/dbLib'
-import * as fs from 'fs'
 import * as _ from 'lodash'
 import { BillRow, CategoryRow } from '../../libs/googleApi/CongressSheetModels';
 import { v4 as uuid } from 'uuid';
 import { TagManager } from '../../libs/dataManager/TagManager';
 import { CategoryManager } from '../../libs/dataManager/CategoryManager';
+
+var awsConfig = require('../../config/aws.json');
 
 export class GoogleBillSheetSyncOption {
   syncBasicInfo?: boolean = true
@@ -189,7 +189,7 @@ export class GoogleBillSheetSync {
 
   public async updateTag (row: BillRow, bill: dbLib.BillEntity) {
     if (row && row.tags && row.tags.length > 0) {
-      let rowTags: string[] = _.chain(row.tags).filter(x => x).map(x => x.toLowerCase()).value()
+      let rowTags: string[] = _.chain(row.tags).filter(x => x).map((x: string) => x.toLowerCase()).value()
       let existingTags: string[] = (bill && bill.tags && _.keys(bill.tags)) || []
       let interTags = _.intersection(rowTags, existingTags)
 

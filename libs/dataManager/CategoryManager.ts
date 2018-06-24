@@ -1,6 +1,7 @@
 import * as dbLib from '../../libs/dbLib'
-import * as awsConfig from '../../config/aws.json'
 import * as _ from 'lodash'
+
+var awsConfig = require('../../config/aws.json');
 
 export class CategoryManager {
   private readonly db = dbLib.DynamoDBManager.instance()

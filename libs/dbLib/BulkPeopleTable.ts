@@ -1,6 +1,7 @@
 import * as aws from 'aws-sdk'
-import * as awsConfig from '../../config/aws.json'
 import { TableEntity, Table } from './'
+
+var awsConfig = require('../../config/aws.json');
 
 // BulkPeopleTable
 

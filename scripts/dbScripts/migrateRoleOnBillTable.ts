@@ -1,6 +1,7 @@
 import * as dbLib from '../../libs/dbLib'
-import * as awsConfig from '../../config/aws.json'
 import * as _ from 'lodash'
+
+var awsConfig = require('../../config/aws.json');
 
 let doBatch = async (bills: dbLib.BillEntity[], tbl: dbLib.BillTable): Promise<boolean | void> => {
   console.log(`Bill batch size = ${bills.length}`)

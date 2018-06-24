@@ -1,9 +1,8 @@
 import * as aws from 'aws-sdk'
-import * as awsConfig from '../../config/aws.json'
-import * as models from '../congressGov/CongressGovModels'
 import * as _ from 'lodash'
+import { TableEntity, Table, ScanInput } from './'
 
-import {TableEntity, Table, QueryInput, ScanInput, ScanOutput, DynamoDBManager} from './'
+var awsConfig = require('../../config/aws.json');
 
 // TagMetaTable
 

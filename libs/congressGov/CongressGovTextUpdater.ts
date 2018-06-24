@@ -1,12 +1,10 @@
 import { CongressGovTextParser } from './CongressGovTextParser'
 import * as models from './CongressGovModels'
 import Utility from '../utils/Utility'
-import * as aws from 'aws-sdk'
 import * as s3Lib from '../s3Lib';
-import * as awsConfig from '../../config/aws.json'
 import { CongressGovHelper } from './CongressGovHelper';
-import * as _ from 'lodash'
-import { S3BucketHelper } from '../s3Lib';
+
+var awsConfig = require('../../config/aws.json');
 
 export class CongressGovTextUpdater {
   public readonly parser = new CongressGovTextParser()

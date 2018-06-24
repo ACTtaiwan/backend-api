@@ -2,9 +2,10 @@ import { Context, Callback, APIGatewayEvent } from 'aws-lambda'
 import Response from '../../../libs/utils/Response'
 import Utility from '../../../libs/utils/Utility'
 import * as dbLib from '../../../libs/dbLib'
-import * as awsConfig from '../../../config/aws.json'
 import * as _ from 'lodash'
 import { BillCategoryApi } from './billCategoryHandler';
+
+var awsConfig = require('../../../config/aws.json');
 
 // queryBills()
 

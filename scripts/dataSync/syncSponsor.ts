@@ -1,4 +1,3 @@
-import * as awsConfig from '../../config/aws.json'
 import * as dbLib from '../../libs/dbLib'
 import { CongressGovHelper } from '../../libs/congressGov/CongressGovHelper'
 import { CongressGovSponsorParser } from '../../libs/congressGov/CongressGovSponsorParser'
@@ -6,6 +5,8 @@ import * as models from '../../libs/congressGov/CongressGovModels'
 import * as _ from 'lodash'
 import { CongressGovAllInfoParser } from '../../libs/congressGov/CongressGovAllInfoParser';
 import { RoleManager } from '../../libs/dataManager/RoleManager';
+
+var awsConfig = require('../../config/aws.json');
 
 /**
  *  sync for sponsors & co-sponsors

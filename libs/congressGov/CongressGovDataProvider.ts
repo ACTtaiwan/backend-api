@@ -1,8 +1,8 @@
 import * as dbLib from '../dbLib'
 import * as cheerio from 'cheerio'
 import Utility from '../utils/Utility'
-import * as awsConfig from '../../config/aws.json'
-import { CongressGovHelper } from './CongressGovHelper'
+
+var awsConfig = require('../../config/aws.json');
 
 export class CongressGovDataProvider {
   public static readonly EXPIRE_IN_MIN_BASIC_INFO: number = 60 * 24 * 1 // 1 day

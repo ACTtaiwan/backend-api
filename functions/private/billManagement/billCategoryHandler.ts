@@ -1,9 +1,10 @@
 import { Context, Callback, APIGatewayEvent } from 'aws-lambda'
 import Response from '../../../libs/utils/Response'
 import * as dbLib from '../../../libs/dbLib'
-import * as awsConfig from '../../../config/aws.json'
 import * as _ from 'lodash'
 import Utility from '../../../libs/utils/Utility';
+
+var awsConfig = require('../../../config/aws.json');
 
 export class BillCategoryApi {
   private readonly db = dbLib.DynamoDBManager.instance()

@@ -1,11 +1,12 @@
 import * as dbLib from '../../libs/dbLib'
 import * as s3Lib from '../../libs/s3Lib'
-import * as awsConfig from '../../config/aws.json'
 import * as _ from 'lodash'
 import * as fs from 'fs'
 import { v4 as uuid } from 'uuid';
 import { ProfilePictureResolution } from '../s3Lib';
 import Utility from '../utils/Utility'
+
+var awsConfig = require('../../config/aws.json');
 
 export class PersonManager {
   private readonly db = dbLib.DynamoDBManager.instance()

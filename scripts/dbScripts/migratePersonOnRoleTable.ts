@@ -1,6 +1,7 @@
 import * as dbLib from '../../libs/dbLib'
-import * as awsConfig from '../../config/aws.json'
 import * as _ from 'lodash'
+
+var awsConfig = require('../../config/aws.json');
 
 let doBatch = async (roles: dbLib.RoleEntity[], tbl: dbLib.RoleTable): Promise<boolean | void> => {
   console.log(`Role batch size = ${roles.length}`)

@@ -1,8 +1,9 @@
 import { CongressGovIntroDateParser } from '../../libs/congressGov/CongressGovIntroDateParser'
 import * as dbLib from '../../libs/dbLib'
-import * as awsConfig from '../config/aws.json'
 import { CongressGovHelper } from '../../libs/congressGov/CongressGovHelper';
 import * as _ from 'lodash'
+
+var awsConfig = require('../config/aws.json');
 
 export class IntroducedDateSync {
   private readonly db = dbLib.DynamoDBManager.instance()

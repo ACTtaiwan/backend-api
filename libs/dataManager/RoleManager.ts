@@ -1,7 +1,8 @@
 import * as dbLib from '../../libs/dbLib'
-import * as awsConfig from '../../config/aws.json'
 import * as _ from 'lodash'
 import { CongressGovHelper } from '../congressGov/CongressGovHelper';
+
+var awsConfig = require('../../config/aws.json');
 
 export class RoleManager {
   private readonly db = dbLib.DynamoDBManager.instance()
@@ -28,7 +29,7 @@ export class RoleManager {
 
     const bills = await this.tblBill.getAllBills('id', 'congress', 'billNumber', 'billType', 'sponsor', 'cosponsors')
 
-    const billsWithSponsors = _.filter(bills, b => b.sponsor)
+    const billsWithSponsors = <dbLib.BillEntity[]> _.filter(bills, (b => b.sponsor));
     await this.syncSponsors(billsWithSponsors)
 
     const billsWithCosonsors = _.filter(bills, b => b.cosponsors && b.cosponsors.length > 0)

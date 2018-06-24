@@ -1,7 +1,8 @@
 import * as dbLib from '../../libs/dbLib'
-import * as awsConfig from '../../config/aws.json'
 import * as _ from 'lodash'
 import { CongressGovHelper } from '../../libs/congressGov/CongressGovHelper';
+
+var awsConfig = require('../../config/aws.json');
 
 let f = async () => {
   const db = dbLib.DynamoDBManager.instance()

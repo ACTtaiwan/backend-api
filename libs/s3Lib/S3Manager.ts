@@ -1,8 +1,9 @@
 import * as aws from 'aws-sdk'
-import * as awsConfig from '../../config/aws.json'
 import * as models from '../congressGov/CongressGovModels'
 import * as _ from 'lodash'
 import Utility from '../utils/Utility'
+
+var awsConfig = require('../../config/aws.json');
 
 export class S3Manager {
   private static _instance: S3Manager
@@ -24,7 +25,7 @@ export class S3Manager {
       new BillTextBucket(this.s3),
       new PersonBucket(this.s3)
     ]
-    this.buckets = _.keyBy(buckets, x => x.bucketName)
+    this.buckets = <{[name: string]: S3Bucket}> _.keyBy(buckets, x => x.bucketName)
   }
 
   public getBucket (bucketName: string): S3Bucket {

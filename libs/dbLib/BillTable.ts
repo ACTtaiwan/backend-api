@@ -1,10 +1,11 @@
 import * as aws from 'aws-sdk'
-import * as awsConfig from '../../config/aws.json'
 import * as models from '../congressGov/CongressGovModels'
 import {TableEntity, BillCategoryEntity, BillTypeEntity, BillVersionEntity,
   RoleTable, RoleEntity, Table, ScanInput, QueryInput, DynamoDBManager} from './'
 import { BillTextContentType } from '../s3Lib';
 import * as _ from 'lodash'
+
+var awsConfig = require('../../config/aws.json');
 
 // BillTable
 

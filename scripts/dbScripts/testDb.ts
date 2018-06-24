@@ -1,5 +1,4 @@
 import * as dbLib from '../../libs/dbLib'
-import * as awsConfig from '../../config/aws.json'
 import * as aws from 'aws-sdk'
 import { CongressGovDataProvider } from '../../libs/congressGov/CongressGovDataProvider'
 import { CongressGovTextParser } from '../../libs/congressGov/CongressGovTextParser'
@@ -7,6 +6,8 @@ import { CongressGovTrackerParser } from '../../libs/congressGov/CongressGovTrac
 import { CongressGovHelper } from '../../libs/congressGov/CongressGovHelper'
 import * as models from '../../libs/congressGov/CongressGovModels'
 import * as _ from 'lodash'
+
+var awsConfig = require('../../config/aws.json');
 
 // const db = dbLib.DynamoDBManager.instance()
 // const tableName = (<any> awsConfig).dynamodb.CONGRESSGOV_SYNC_ALL_INFO_TABLE_NAME

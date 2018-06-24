@@ -2,11 +2,11 @@ import { CongressGovTextUpdater } from '../../libs/congressGov/CongressGovTextUp
 import { CongressGovHelper } from '../../libs/congressGov/CongressGovHelper';
 import * as dbLib from '../../libs/dbLib'
 import * as s3Lib from '../../libs/s3Lib'
-import * as awsConfig from '../../config/aws.json'
 import * as _ from 'lodash'
-import Utility from '../../libs/utils/Utility';
 import * as fs from 'fs'
 import * as moment from 'moment'
+
+var awsConfig = require('../../config/aws.json');
 
 export class FullTextSync {
   public  readonly updater = new CongressGovTextUpdater()

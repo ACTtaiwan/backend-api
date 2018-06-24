@@ -1,7 +1,8 @@
 import * as aws from 'aws-sdk'
-import * as awsConfig from '../../config/aws.json'
 import { PersonEntity, TableEntity, Table, BillEntity, DynamoDBManager, PersonTable, QueryInput } from './'
 import * as _ from 'lodash'
+
+var awsConfig = require('../../config/aws.json');
 
 // RoleTable
 

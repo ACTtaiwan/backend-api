@@ -91,7 +91,7 @@ export default class Utility {
 
   public static stringToArray<T> (str: string, postConvert: (x: string) => T = _.identity): T[] {
     let arr = _.filter(str.trim().split(','), x => x)
-    let rtn = _.map(arr, x => postConvert(x.trim()))
+    let rtn = _.map(arr, (x: string) => postConvert(x.trim()))
     return rtn
   }
 }

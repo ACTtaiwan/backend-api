@@ -1,6 +1,7 @@
 import * as aws from 'aws-sdk'
-import * as awsConfig from '../../config/aws.json'
 import { Table, TableEntity } from './'
+
+var awsConfig = require('../../config/aws.json');
 
 // CongressGovSyncBillTable
 

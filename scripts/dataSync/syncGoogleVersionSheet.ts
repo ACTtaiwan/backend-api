@@ -1,9 +1,10 @@
-import * as awsConfig from '../../config/aws.json'
 import { GoogleSheetAgent } from '../../libs/googleApi/GoogleSheetAgent'
 import * as dbLib from '../../libs/dbLib'
 import * as _ from 'lodash'
 import { VersionRow } from '../../libs/googleApi/CongressSheetModels';
 import { v4 as uuid } from 'uuid';
+
+var awsConfig = require('../../config/aws.json');
 
 export class GoogleVersionSheetSync {
   private readonly db = dbLib.DynamoDBManager.instance()
