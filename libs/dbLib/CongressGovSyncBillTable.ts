@@ -1,5 +1,5 @@
 import * as aws from 'aws-sdk'
-import { Table, TableEntity } from './'
+import { DynamoDBTable, TableEntity } from './'
 
 var awsConfig = require('../../config/aws.json');
 
@@ -11,7 +11,7 @@ export interface CongressGovSyncBillEntity extends TableEntity {
   lastUpdate?: number
 }
 
-export class CongressGovSyncBillTable extends Table {
+export class CongressGovSyncBillTable extends DynamoDBTable {
   public readonly tableName = (<any> awsConfig).dynamodb.CONGRESSGOV_SYNC_BILL_TABLE_NAME
 
   constructor (db: aws.DynamoDB.DocumentClient) {

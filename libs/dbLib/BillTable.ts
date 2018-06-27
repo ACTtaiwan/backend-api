@@ -1,7 +1,7 @@
 import * as aws from 'aws-sdk'
 import * as models from '../congressGov/CongressGovModels'
 import {TableEntity, BillCategoryEntity, BillTypeEntity, BillVersionEntity,
-  RoleTable, RoleEntity, Table, ScanInput, QueryInput, DynamoDBManager} from './'
+  RoleTable, RoleEntity, DynamoDBTable, ScanInput, QueryInput, DynamoDBManager} from './'
 import { BillTextContentType } from '../s3Lib';
 import * as _ from 'lodash'
 
@@ -71,7 +71,7 @@ export interface BillScanOutput {
 
 export type BillEntityHydrateField = 'sponsor' | 'cosponsors'
 
-export class BillTable extends Table<BillEntityHydrateField> {
+export class BillTable extends DynamoDBTable<BillEntityHydrateField> {
   public readonly tableName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLS_TABLE_NAME
 
   constructor (db: aws.DynamoDB.DocumentClient) {
@@ -213,7 +213,7 @@ export class BillTable extends Table<BillEntityHydrateField> {
     callback: (batchBills: BillEntity[], lastKey?: string) => Promise<boolean | void>,
     attrNamesToGet?: (keyof BillEntity)[]
   ) {
-    super.forEachBatch('id', callback, this.applyHydrateFieldsForAttrNames(attrNamesToGet))
+    return super.forEachBatch('id', callback, this.applyHydrateFieldsForAttrNames(attrNamesToGet))
   }
 
   public getAllBills (...attrNamesToGet: (keyof BillEntity)[]): Promise<BillEntity[]> {

@@ -1,5 +1,5 @@
 import * as aws from 'aws-sdk'
-import { PersonEntity, TableEntity, Table, BillEntity, DynamoDBManager, PersonTable, QueryInput } from './'
+import { PersonEntity, TableEntity, DynamoDBTable, DynamoDBManager, PersonTable, QueryInput } from './'
 import * as _ from 'lodash'
 
 var awsConfig = require('../../config/aws.json');
@@ -45,7 +45,7 @@ export interface RoleEntity extends TableEntity {
 
 export type RoleEntityHydrateField = 'person' | 'billSponsored' | 'billCosponsored'
 
-export class RoleTable extends Table<RoleEntityHydrateField> {
+export class RoleTable extends DynamoDBTable<RoleEntityHydrateField> {
   public readonly tableName = (<any> awsConfig).dynamodb.VOLUNTEER_ROLES_TABLE_NAME
 
   constructor (docClient: aws.DynamoDB.DocumentClient, db: aws.DynamoDB) {
@@ -79,7 +79,10 @@ export class RoleTable extends Table<RoleEntityHydrateField> {
       callback: (batchRoles: RoleEntity[], lastKey?: string) => Promise<boolean | void>,
       attrNamesToGet?: (keyof RoleEntity)[]
   ): Promise<void> {
-    return super.forEachBatch('id', callback, attrNamesToGet)
+    return super.forEachBatch('id', async (items: RoleEntity[], lastKey?: string) => {
+      items = _.map(items, (r: any) => this.convertAttrMapToBillRoleEntity(r))
+      return await callback(items, lastKey)
+    }, attrNamesToGet)
   }
 
   public getRolesByPersonId (personId: string, attrNamesToGet?: (keyof RoleEntity)[]): Promise<RoleEntity[]> {

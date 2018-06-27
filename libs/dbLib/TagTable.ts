@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk'
 import * as _ from 'lodash'
-import { TableEntity, Table, ScanInput } from './'
+import { TableEntity, DynamoDBTable, ScanInput } from './'
 
 var awsConfig = require('../../config/aws.json');
 
@@ -12,7 +12,7 @@ export interface TagMetaEntity extends TableEntity {
   typeDisplay: string
 }
 
-export class TagMetaTable extends Table {
+export class TagMetaTable extends DynamoDBTable {
   public readonly tableName = (<any> awsConfig).dynamodb.VOLUNTEER_TAGS_META_TABLE_NAME
 
   constructor (db: aws.DynamoDB.DocumentClient) {
@@ -56,7 +56,7 @@ export interface TagEntity extends TableEntity {
   totalUserCount?: number
 }
 
-export class TagTable extends Table {
+export class TagTable extends DynamoDBTable {
   public readonly tableName = (<any> awsConfig).dynamodb.VOLUNTEER_TAGS_TABLE_NAME
 
   constructor (docClient: aws.DynamoDB.DocumentClient, db: aws.DynamoDB) {

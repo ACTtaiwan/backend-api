@@ -9,7 +9,7 @@ export class DynamoDBManager {
   private static _instance: DynamoDBManager
   private dynamoDb: aws.DynamoDB
   private dynamoDbDocClient: aws.DynamoDB.DocumentClient
-  private tables: {[name: string]: Table} = {}
+  private tables: {[name: string]: DynamoDBTable} = {}
 
   public static instance (): DynamoDBManager {
     if (!DynamoDBManager._instance) {
@@ -22,7 +22,7 @@ export class DynamoDBManager {
     aws.config.update({region: (<any> awsConfig).metadata.REGION })
     this.dynamoDb = new aws.DynamoDB()
     this.dynamoDbDocClient = new aws.DynamoDB.DocumentClient()
-    const tables = <Table[]> [
+    const tables = <DynamoDBTable[]> [
       new CongressGovSyncBillTable(this.dynamoDbDocClient),
       new BillTable(this.dynamoDbDocClient),
       new BillTypeTable(this.dynamoDbDocClient),
@@ -89,7 +89,7 @@ export class DynamoDBManager {
   }
 
   public getTable<T extends Table> (tableName: string): T {
-    return <T> this.tables[tableName]
+    return <T> (this.tables[tableName] as Table)
   }
 }
 
@@ -117,18 +117,9 @@ export interface QueryInput<T> extends ScanInput<T> {
 
 export abstract class Table<HydrateField = string> {
   public abstract get tableName (): string
-  public abstract get tableDefinition (): [aws.DynamoDB.KeySchema, aws.DynamoDB.AttributeDefinitions]
-
-  protected docClient: aws.DynamoDB.DocumentClient
-  protected db: aws.DynamoDB
 
   private _hydrateFields: HydrateField[] = []
   private _useHydrateFields: boolean = true
-
-  constructor (docClient: aws.DynamoDB.DocumentClient, db?: aws.DynamoDB) {
-    this.docClient = docClient
-    this.db = db
-  }
 
   public set hydrateFields (v: HydrateField[]) {
     this._hydrateFields = (v && _.uniq(v)) || []
@@ -148,6 +139,20 @@ export abstract class Table<HydrateField = string> {
 
   public get useHydrateFields () {
     return this._useHydrateFields && this.hasHydrateFields
+  }
+
+}
+
+export abstract class DynamoDBTable<HydrateField = string> extends Table<HydrateField> {
+  public abstract get tableDefinition (): [aws.DynamoDB.KeySchema, aws.DynamoDB.AttributeDefinitions]
+
+  protected docClient: aws.DynamoDB.DocumentClient
+  protected db: aws.DynamoDB
+
+  constructor (docClient: aws.DynamoDB.DocumentClient, db?: aws.DynamoDB) {
+    super();
+    this.docClient = docClient
+    this.db = db
   }
 
   public describe (): Promise<aws.DynamoDB.DescribeTableOutput> {

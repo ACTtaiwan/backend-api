@@ -13,6 +13,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/aws-lambda": "8.10.7",
+    "@types/mongodb": "^2.2.20",
     "aws-sdk": "^2.188.0",
     "babel-core": "^6.25.0",
     "babel-eslint": "^8.2.1",
@@ -46,6 +47,7 @@
     "joi": "^10.6.0",
     "lodash": "^4.17.4",
     "moment": "^2.20.1",
+    "mongodb": "^2.2.35",
     "request": "^2.83.0",
     "serverless": "^1.26.0",
     "string-similarity": "^1.2.0",

@@ -1,5 +1,5 @@
 import * as aws from 'aws-sdk'
-import { TableEntity, Table } from './'
+import { TableEntity, DynamoDBTable } from './'
 
 var awsConfig = require('../../config/aws.json');
 
@@ -31,7 +31,7 @@ export interface BulkPeopleEntity extends TableEntity {
   metavidid?: string
 }
 
-export class BulkPeopleTable extends Table {
+export class BulkPeopleTable extends DynamoDBTable {
   public readonly tableName = (<any> awsConfig).dynamodb.BULK_PEOPLE_TABLE_NAME
 
   constructor (db: aws.DynamoDB.DocumentClient) {

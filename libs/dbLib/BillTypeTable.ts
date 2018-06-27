@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk'
 import * as models from '../congressGov/CongressGovModels'
-import { Table, TableEntity, BillEntity } from './'
+import { DynamoDBTable, TableEntity, BillEntity } from './'
 
 var awsConfig = require('../../config/aws.json');
 
@@ -14,7 +14,7 @@ export interface BillTypeEntity extends TableEntity {
   name: string
 }
 
-export class BillTypeTable extends Table {
+export class BillTypeTable extends DynamoDBTable {
   public readonly tableName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLTYPES_TABLE_NAME
 
   constructor (db: aws.DynamoDB.DocumentClient) {

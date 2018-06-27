@@ -1,5 +1,5 @@
 import * as aws from 'aws-sdk'
-import {TableEntity, Table} from './'
+import {TableEntity, DynamoDBTable} from './'
 import * as _ from 'lodash'
 
 var awsConfig = require('../../config/aws.json');
@@ -16,7 +16,7 @@ export interface BillCategoryEntity extends TableEntity {
   billId?: string[]
 }
 
-export class BillCategoryTable extends Table {
+export class BillCategoryTable extends DynamoDBTable {
   public readonly tableName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLCATEGORIES_TABLE_NAME
 
   constructor (docClient: aws.DynamoDB.DocumentClient, db: aws.DynamoDB) {
@@ -34,7 +34,7 @@ export class BillCategoryTable extends Table {
   }
 
   public getAllCategories (): Promise<BillCategoryEntity[]> {
-    return super.getAllItems<BillCategoryEntity>(['id', 'code', 'name', 'name_zh', 'description', 'description_zh'])
+    return super.getAllItems<BillCategoryEntity>(['id', 'code', 'name', 'name_zh', 'description', 'description_zh', 'billId'])
       .then(out => _.map(out.results, (r: any) => this.convertAttrMapToBillCategoryEntity(r)) || [] )
   }
 

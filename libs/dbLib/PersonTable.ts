@@ -1,5 +1,5 @@
 import * as aws from 'aws-sdk'
-import { TableEntity, Table, QueryInput } from './'
+import { TableEntity, DynamoDBTable, QueryInput } from './'
 import { ProfilePictureResolution } from '../s3Lib';
 
 var awsConfig = require('../../config/aws.json');
@@ -46,7 +46,7 @@ export interface PersonEntity extends TableEntity {
   profilePictures: {[res in ProfilePictureResolution]?: string} // resolution <--> s3 url
 }
 
-export class PersonTable extends Table {
+export class PersonTable extends DynamoDBTable {
   public readonly tableName = (<any> awsConfig).dynamodb.VOLUNTEER_PERSON_TABLE_NAME
 
   constructor (db: aws.DynamoDB.DocumentClient) {
