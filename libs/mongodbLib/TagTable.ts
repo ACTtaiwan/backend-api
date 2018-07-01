@@ -60,7 +60,7 @@ export class TagTable extends MongoDBTable {
   }
 
   public queryTags (
-    q: string | RegExp,
+    q: string,
     attrNamesToGet?: (keyof dbLib.TagEntity)[],
     maxSearchItems?: number,
     op: 'contains' | 'begins_with' | 'regex' = 'begins_with'
@@ -77,15 +77,13 @@ export class TagTable extends MongoDBTable {
 
     switch (op) {
       case 'contains':
-        let reqex1 = new RegExp(<string> q, 'ig')
+      case 'regex':
+        let reqex1 = new RegExp(q, 'ig')
         return queryItems({tag: { $regex: reqex1 }})
 
       case 'begins_with':
-        let reqex2 = new RegExp('^' + <string> q, 'ig')
+        let reqex2 = new RegExp('^' + q, 'ig')
         return queryItems({tag: { $regex: reqex2 }})
-
-      case 'regex':
-        return queryItems({tag: { $regex: <RegExp> q }})
     }
     return Promise.resolve([])
   }

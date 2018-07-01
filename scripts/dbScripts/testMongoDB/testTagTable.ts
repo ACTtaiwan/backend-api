@@ -12,6 +12,12 @@ class TestTagTable {
     console.log(JSON.stringify(tag, null, 2))
   }
 
+  public static async queryTags () {
+    const tbl = await TestTagTable.getTable()
+    const tags = await tbl.queryTags('ait', ['tag'], 10, 'regex')
+    console.log(JSON.stringify(tags, null, 2))
+  }
+
   private static async getTable () {
     const db = await mongoDbLib.MongoDBManager.instance
     const tblCat = db.getTable<mongoDbLib.TagTable>(tblName)
@@ -19,4 +25,5 @@ class TestTagTable {
   }
 }
 
-TestTagTable.putTag()
+// TestTagTable.putTag()
+TestTagTable.queryTags()

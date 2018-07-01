@@ -1,23 +1,30 @@
 import * as dbLib from '../../libs/dbLib'
 import * as _ from 'lodash'
+import * as mongoDbLib from '../../libs/mongodbLib'
+import { MongoDbConfig } from '../../config/mongodb'
 
 var awsConfig = require('../../config/aws.json');
 
 export class TagManager {
+  private tblBill: mongoDbLib.BillTable
+  private tblTagMeta: mongoDbLib.TagMetaTable
+  private tblTag: mongoDbLib.TagTable
+
   private defaultMaxSearchItems: number = 20
-
-  private readonly db = dbLib.DynamoDBManager.instance()
-
-  private readonly tblBillName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLS_TABLE_NAME
-  public  readonly tblBill = <dbLib.BillTable> this.db.getTable(this.tblBillName)
-
-  private readonly tblTagMetaName = (<any> awsConfig).dynamodb.VOLUNTEER_TAGS_META_TABLE_NAME
-  public  readonly tblTagMeta = <dbLib.TagMetaTable> this.db.getTable(this.tblTagMetaName)
-
-  private readonly tblTagName = (<any> awsConfig).dynamodb.VOLUNTEER_TAGS_TABLE_NAME
-  public  readonly tblTag = <dbLib.TagTable> this.db.getTable(this.tblTagName)
-
   private allMetaMap: {[id: string]: dbLib.TagMetaEntity}
+
+  public async init () {
+    const db = await mongoDbLib.MongoDBManager.instance
+
+    const tblBillName = MongoDbConfig.tableNames.BILLS_TABLE_NAME
+    this.tblBill = db.getTable(tblBillName)
+
+    const tblTagMetaName = MongoDbConfig.tableNames.TAGS_META_TABLE_NAME
+    this.tblTagMeta = db.getTable(tblTagMetaName)
+
+    const tblTagName = MongoDbConfig.tableNames.TAGS_TABLE_NAME
+    this.tblTag = db.getTable(tblTagName)
+  }
 
   public addTagToBill (tag: string, billId: string, userCount?: {[userId: string]: number}, meta?: dbLib.TagMetaEntity) {
     const promises: Promise<any>[] = []

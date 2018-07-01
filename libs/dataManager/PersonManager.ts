@@ -5,24 +5,24 @@ import * as fs from 'fs'
 import { v4 as uuid } from 'uuid';
 import { ProfilePictureResolution } from '../s3Lib';
 import Utility from '../utils/Utility'
+import * as mongoDbLib from '../../libs/mongodbLib'
+import { MongoDbConfig } from '../../config/mongodb'
 
 var awsConfig = require('../../config/aws.json');
 
 export class PersonManager {
-  private readonly db = dbLib.DynamoDBManager.instance()
   private readonly s3 = s3Lib.S3Manager.instance()
-
-  private readonly tblBulkPpllName = (<any> awsConfig).dynamodb.BULK_PEOPLE_TABLE_NAME
-  public  readonly tblBulkPpl = <dbLib.BulkPeopleTable> this.db.getTable(this.tblBulkPpllName)
-
-  private readonly tblPpllName = (<any> awsConfig).dynamodb.VOLUNTEER_PERSON_TABLE_NAME
-  public  readonly tblPpl = <dbLib.PersonTable> this.db.getTable(this.tblPpllName)
-
   private readonly bcktName = (<any> awsConfig).s3.TAIWANWATCH_PERSONS_BUCKET_NAME
   public  readonly bckt = <s3Lib.PersonBucket> this.s3.getBucket(this.bcktName)
 
-  private bulkPplMap: {[key: string]: dbLib.BulkPeopleEntity}
+  private tblPpl: mongoDbLib.PersonTable
   private twPplMap: {[key: string]: dbLib.PersonEntity}
+
+  public async init () {
+    const db = await mongoDbLib.MongoDBManager.instance
+    const tblPpllName = MongoDbConfig.tableNames.PERSON_TABLE_NAME
+    this.tblPpl = db.getTable(tblPpllName)
+  }
 
   public async rebuildProfilePictures () {
     let pplItems: dbLib.PersonEntity[] = _.values(await this.getPersonMap())
@@ -169,14 +169,6 @@ export class PersonManager {
 
   public queryKey (bioGuideId?: string, firstName?: string, middleName?: string, lastName?: string): string {
     return bioGuideId || `${firstName}-${middleName}-${lastName}`
-  }
-
-  private async getBulkPeopleMap (): Promise<{[key: string]: dbLib.BulkPeopleEntity}> {
-    if (!this.bulkPplMap) {
-      const items = await this.tblBulkPpl.getAllPeople()
-      this.bulkPplMap = _.keyBy(items, x => this.queryKey(x.bioguideid, x.firstname, x.middlename, x.lastname))
-    }
-    return this.bulkPplMap
   }
 
   private async getPersonMap (): Promise<{[key: string]: dbLib.PersonEntity}> {

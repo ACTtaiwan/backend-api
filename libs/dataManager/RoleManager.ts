@@ -1,26 +1,31 @@
 import * as dbLib from '../../libs/dbLib'
 import * as _ from 'lodash'
 import { CongressGovHelper } from '../congressGov/CongressGovHelper';
+import * as mongoDbLib from '../../libs/mongodbLib'
+import { MongoDbConfig } from '../../config/mongodb'
 
 var awsConfig = require('../../config/aws.json');
 
 export class RoleManager {
-  private readonly db = dbLib.DynamoDBManager.instance()
-
-  private readonly tblBillName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLS_TABLE_NAME
-  public  readonly tblBill = <dbLib.BillTable> this.db.getTable(this.tblBillName)
-
-  private readonly tblRoleName = (<any> awsConfig).dynamodb.VOLUNTEER_ROLES_TABLE_NAME
-  public  readonly tblRole = <dbLib.RoleTable> this.db.getTable(this.tblRoleName)
-
-  private readonly tblPplName = (<any> awsConfig).dynamodb.VOLUNTEER_PERSON_TABLE_NAME
-  private readonly tblPpl = <dbLib.PersonTable> this.db.getTable(this.tblPplName)
-
-  private readonly tblCngrName = (<any> awsConfig).dynamodb.VOLUNTEER_CONGRESS_TABLE_NAME
-  public  readonly tblCngr = <dbLib.CongressTable> this.db.getTable(this.tblCngrName)
+  private tblBill: mongoDbLib.BillTable
+  private tblRole: mongoDbLib.RoleTable
+  private tblPpl: mongoDbLib.PersonTable
 
   private _tblRoleSponsors: {[roldId: string]: dbLib.RoleEntity}
   private _tblRoleCosponsors: {[roleId: string]: dbLib.RoleEntity}
+
+  public async init () {
+    const db = await mongoDbLib.MongoDBManager.instance
+
+    const tblBillName = MongoDbConfig.tableNames.BILLS_TABLE_NAME
+    this.tblBill = db.getTable(tblBillName)
+
+    const tblRoleName = MongoDbConfig.tableNames.ROLES_TABLE_NAME
+    this.tblRole = db.getTable(tblRoleName)
+
+    const tblPplName = MongoDbConfig.tableNames.PERSON_TABLE_NAME
+    this.tblPpl = db.getTable(tblPplName)
+  }
 
   public async rebuildBillIndex (cleanup: boolean = false) {
     if (cleanup) {
@@ -48,35 +53,6 @@ export class RoleManager {
 
     console.log(`\n---------------------------------- Clean up Co-Sponsors -------------------------------\n`)
     clean(_.values(await this.getRolesCosponsored()))
-  }
-
-  public async rebuildCongressIndex (cleanup: boolean = false): Promise<void> {
-    if (cleanup) {
-      console.log(`\n---------------------------------- Clean up role id on congress table ----------------------------------\n`)
-      for (let c = 1; c <= CongressGovHelper.CURRENT_CONGRESS; ++c) {
-        await this.tblCngr.removeAllRolesFromCongress(c)
-      }
-    }
-
-    console.log(`\n---------------------------------- Rebuilding congress <--> roleId[] map ----------------------------------\n`)
-    let cngrRoleMap: {[congress: number]: string[]} = {}
-    await this.tblRole.forEachBatchOfAllRoles(async roles => {
-      console.log(`[RoleManager::rebuildCongressIndex()] Batch role size = ${roles.length}`)
-      _.each(roles, r => {
-        if (r.congressNumbers && r.congressNumbers.length > 0) {
-          _.each(r.congressNumbers, c => cngrRoleMap[c] ? cngrRoleMap[c].push(r.id) : cngrRoleMap[c] = [r.id])
-        }
-      })
-    }, ['id', 'congressNumbers'])
-
-    console.log(`\n---------------------------------- Writing role id on congress table ----------------------------------\n`)
-    _.each(cngrRoleMap, (val, key) => cngrRoleMap[key] = _.uniq(val))
-    for (let key of _.keys(cngrRoleMap)) {
-      let congress = parseInt(key)
-      let roleIdx = cngrRoleMap[congress]
-      console.log(`[RoleManager::rebuildCongressIndex()] congress = ${congress} roles = ${roleIdx.length}`)
-      await this.tblCngr.addRoleIdArrayToCongress(congress, roleIdx)
-    }
   }
 
   public getRolesById (id: string[], ...attrNamesToGet: (keyof dbLib.RoleEntity)[] ): Promise<dbLib.RoleEntity[]> {
@@ -107,8 +83,7 @@ export class RoleManager {
   }
 
   public getRolesByCongress (congress: number, ...attrNamesToGet: (keyof dbLib.RoleEntity)[]): Promise<dbLib.RoleEntity[]> {
-    return this.tblCngr.getRoleIdxByCongress(congress).then(
-      roleIdx => this.getRolesById(roleIdx, ...attrNamesToGet))
+    return this.tblRole.getRolesByCongress(congress, attrNamesToGet)
   }
 
   public getRolesByState (state: string, congress?: number, attrNamesToGet?: (keyof dbLib.RoleEntity)[]): Promise<dbLib.RoleEntity[]> {

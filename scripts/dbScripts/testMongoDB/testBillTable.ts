@@ -46,6 +46,12 @@ class TestBillTable {
     console.log(JSON.stringify(bill, null, 2))
   }
 
+  public static async getBill () {
+    let tbl = await TestBillTable.getTable()
+    let bill = await tbl.getBill(104, 'hconres', 33, 'title', 'title_zh')
+    console.log(JSON.stringify(bill, null, 2))
+  }
+
   public static async getAllBillsHavingAttributes () {
     let tbl = await TestBillTable.getTable()
     let bills = await tbl.getAllBillsHavingAttributes(['sponsorRoleId', 'cosponsors'], 'id')
@@ -56,6 +62,14 @@ class TestBillTable {
     let tbl = await TestBillTable.getTable()
     let bills = await tbl.queryBillsByCongress(115, ['id', 'title', 'congress', 'billType', 'billNumber'])
     console.log(JSON.stringify(bills, null, 2))
+  }
+
+  public static async deleteTagFromBill () {
+    let tbl = await TestBillTable.getTable()
+    let billId = 'a9f00c7f-ec6a-4ce2-9f80-e51ecdc4fa5f'
+    await tbl.deleteTagFromBill(billId, 'democracy')
+    let bill = await tbl.getBillById(billId, 'tags')
+    console.log(JSON.stringify(bill, null, 2))
   }
 
   public static async updateTagUserCount () {
@@ -88,7 +102,9 @@ class TestBillTable {
 // TestBillTable.createEmptyTagsAttrForBill()
 // TestBillTable.addTagToBill()
 // TestBillTable.getBillById()
+TestBillTable.getBill()
 // TestBillTable.getAllBillsHavingAttributes()
-TestBillTable.queryBillsByCongress()
+// TestBillTable.queryBillsByCongress()
+// TestBillTable.deleteTagFromBill()
 // TestBillTable.updateTagUserCount()
 // TestBillTable.clearTagUserCount()

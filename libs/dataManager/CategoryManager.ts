@@ -1,16 +1,21 @@
 import * as dbLib from '../../libs/dbLib'
+import * as mongoDbLib from '../../libs/mongodbLib'
+import { MongoDbConfig } from '../../config/mongodb'
 import * as _ from 'lodash'
 
-var awsConfig = require('../../config/aws.json');
-
 export class CategoryManager {
-  private readonly db = dbLib.DynamoDBManager.instance()
+  private tblBill: mongoDbLib.BillTable
+  private tblCat: mongoDbLib.BillCategoryTable
 
-  private readonly tblBillName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLS_TABLE_NAME
-  public  readonly tblBill = <dbLib.BillTable> this.db.getTable(this.tblBillName)
+  public async init () {
+    const db = await mongoDbLib.MongoDBManager.instance
 
-  private readonly tblCatName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLCATEGORIES_TABLE_NAME
-  public  readonly tblCat = <dbLib.BillCategoryTable> this.db.getTable(this.tblCatName)
+    const tblBillName = MongoDbConfig.tableNames.BILLS_TABLE_NAME
+    this.tblBill = db.getTable(tblBillName)
+
+    const tblCatName = MongoDbConfig.tableNames.BILLCATEGORIES_TABLE_NAME
+    this.tblCat = db.getTable(tblCatName)
+  }
 
   public async rebuildIndex () {
     const cats = await this.tblCat.getAllCategories()
