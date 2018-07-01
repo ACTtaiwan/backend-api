@@ -189,7 +189,7 @@ export class GoogleBillSheetSync {
 
   public async updateTag (row: BillRow, bill: dbLib.BillEntity) {
     if (row && row.tags && row.tags.length > 0) {
-      let rowTags: string[] = _.chain(row.tags).filter(x => x).map((x: string) => x.toLowerCase()).value()
+      let rowTags: string[] = _.chain(row.tags).filter(x => !!x).map((x: string) => x.toLowerCase()).value()
       let existingTags: string[] = (bill && bill.tags && _.keys(bill.tags)) || []
       let interTags = _.intersection(rowTags, existingTags)
 

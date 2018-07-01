@@ -1,15 +1,12 @@
-import * as dbLib from '../dbLib'
+import * as mongoDbLib from '../mongodbLib'
 import * as cheerio from 'cheerio'
 import Utility from '../utils/Utility'
-
-var awsConfig = require('../../config/aws.json');
+import { MongoDbConfig } from '../../config/mongodb'
 
 export class CongressGovDataProvider {
   public static readonly EXPIRE_IN_MIN_BASIC_INFO: number = 60 * 24 * 1 // 1 day
   public static readonly EXPIRE_IN_MIN_ALL_INFO: number = 60 * 24 * 1 // 1 day
   public static readonly EXPIRE_IN_MIN_TEXT: number = -1; // never
-
-  private db = dbLib.DynamoDBManager.instance()
 
   public fetchBillInfoHtml (url: string): Promise<any> {
     console.log(`[CongressGovDataProvider::fetchBillInfoHtml()] start, url = ${url}`)
@@ -26,10 +23,9 @@ export class CongressGovDataProvider {
     return this.fetchBillHtml(url, CongressGovDataProvider.EXPIRE_IN_MIN_TEXT)
   }
 
-  private fetchBillHtml (url: string, expireIn: number): Promise<any> {
+  private async fetchBillHtml (url: string, expireIn: number): Promise<any> {
     console.log(`[CongressGovDataProvider::fetchBillContent()] start, url = ${url}`)
-    const tblName = (<any> awsConfig).dynamodb.CONGRESSGOV_SYNC_BILL_TABLE_NAME
-    const tbl = <dbLib.CongressGovSyncBillTable> this.db.getTable(tblName)
+    const tbl = await CongressGovDataProvider.getCacheTable()
 
     return tbl.getObjectByUrlPath(url).then(obj => {
       if (obj) {
@@ -47,7 +43,7 @@ export class CongressGovDataProvider {
     })
   }
 
-  private updateDbContent (tbl: dbLib.CongressGovSyncBillTable, url: string): any {
+  private updateDbContent (tbl: mongoDbLib.CongressGovSyncBillTable, url: string): any {
     return Utility.fetchUrlContent(url).then(body => {
       console.log(`[CongressGovDataProvider::fetchBillContent()] URL content fetched`)
       tbl.putObject({
@@ -79,5 +75,12 @@ export class CongressGovDataProvider {
         return expired
       }
     }
+  }
+
+  private static async getCacheTable () {
+    const tblName = MongoDbConfig.tableNames.CONGRESSGOV_SYNC_BILL_TABLE_NAME
+    const db = await mongoDbLib.MongoDBManager.instance
+    const tblCat = db.getTable<mongoDbLib.CongressGovSyncBillTable>(tblName)
+    return tblCat
   }
 }

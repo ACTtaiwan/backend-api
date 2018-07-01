@@ -85,6 +85,7 @@ export class MongoDBManager {
                 new mongoDbLib.RoleTable(this.db),
                 new mongoDbLib.TagMetaTable(this.db),
                 new mongoDbLib.TagTable(this.db),
+                new mongoDbLib.CongressGovSyncBillTable(this.db)
               ]
               this.tables = _.keyBy(tables, x => x.tableName)
               resolve();

@@ -25,7 +25,7 @@ export class S3Manager {
       new BillTextBucket(this.s3),
       new PersonBucket(this.s3)
     ]
-    this.buckets = <{[name: string]: S3Bucket}> _.keyBy(buckets, x => x.bucketName)
+    this.buckets = <{[name: string]: S3Bucket}> _.keyBy(buckets, x => <string> x.bucketName)
   }
 
   public getBucket (bucketName: string): S3Bucket {

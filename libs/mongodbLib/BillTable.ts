@@ -138,20 +138,20 @@ export class BillTable extends MongoDBTable<dbLib.BillEntityHydrateField> {
     let setter = {}
     setter[`tags.$.userVote.${userId}`] = count
     return super.getTable<dbLib.BillTable>().update(
-      {
-        _id: billId,
-        tags: { $elemMatch: {tag} }
-      },
-      { $set: setter },
-      { upsert: true }
-    ).catch(err => {
-      if (err && err.code && err.code === 16836) {
-        console.log(`[BillTable::updateTagUserCount()] {tag='${tag}', billId='${billId}'} not found. Skip update.`)
-        return null
-      } else {
-        throw err
-      }
-    })
+        {
+          _id: billId,
+          tags: { $elemMatch: {tag} }
+        },
+        { $set: setter },
+        { upsert: true }
+      ).catch(err => {
+        if (err && err.code && err.code === 16836) {
+          console.log(`[BillTable::updateTagUserCount()] {tag='${tag}', billId='${billId}'} not found. Skip update.`)
+          return null
+        } else {
+          throw err
+        }
+      })
   }
 
   public clearTagUserCount (tag: string, billId: string): Promise<mongodb.WriteOpResult> {

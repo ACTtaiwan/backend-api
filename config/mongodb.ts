@@ -10,13 +10,14 @@ export class MongoDbConfig {
     'ROLES_TABLE_NAME': 'volunteer.roles',
     'TAGS_TABLE_NAME': 'volunteer.tags',
     'TAGS_META_TABLE_NAME': 'volunteer.tags.meta',
+    'CONGRESSGOV_SYNC_BILL_TABLE_NAME': 'congressgov.sync.bill'
   }
 
   private static _remoteUrl: string
 
   public static get connectionUrl (): Promise<string> {
-    // return MongoDbConfig.localUrl
-    return MongoDbConfig.remoteUrl
+    return MongoDbConfig.localUrl
+    // return MongoDbConfig.remoteUrl
   }
 
   public static get localUrl (): Promise<string> {

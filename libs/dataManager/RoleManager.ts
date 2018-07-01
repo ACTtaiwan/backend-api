@@ -29,7 +29,7 @@ export class RoleManager {
 
     const bills = await this.tblBill.getAllBills('id', 'congress', 'billNumber', 'billType', 'sponsor', 'cosponsors')
 
-    const billsWithSponsors = <dbLib.BillEntity[]> _.filter(bills, (b => b.sponsor));
+    const billsWithSponsors = _.filter(bills, (b => !!b.sponsor));
     await this.syncSponsors(billsWithSponsors)
 
     const billsWithCosonsors = _.filter(bills, b => b.cosponsors && b.cosponsors.length > 0)

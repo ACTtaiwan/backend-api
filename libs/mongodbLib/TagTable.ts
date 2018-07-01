@@ -40,22 +40,11 @@ export class TagTable extends MongoDBTable {
   }
 
   public putTag (obj: dbLib.TagEntity): Promise<dbLib.TagEntity> {
-    let copyObj = _.cloneDeep(obj)
-    copyObj['_id'] = new mongodb.ObjectId(copyObj['id'] || <string> uuid())
-    delete copyObj['id']
-
     return super.getTable<dbLib.TagEntity>().update(
-      { tag: { $not: { $elemMatch: obj.tag } } },
-      { $set: obj },
-      { upsert: true }
-    ).catch(err => {
-      if (err && err.code && err.code === 11000) {
-        console.log(`[TagTable::putTag()] Tag = '${obj.tag}' already exists. Skip putting tag.`)
-        return null
-      } else {
-        throw err
-      }
-    })
+        { tag: obj.tag },
+        { $set: obj },
+        { upsert: true }
+      ).then(() => obj)
   }
 
   public getTag (tag: string, ...attrNamesToGet: (keyof dbLib.TagEntity)[]): Promise<dbLib.TagEntity> {
