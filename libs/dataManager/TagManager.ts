@@ -54,7 +54,7 @@ export class TagManager {
     // BillTable
     const billTblPromise = this.tblBill.getBillById(billId, 'tags').then(async bill => {
       if (bill && !bill.tags) {
-        await this.tblBill.createEmptyTagsAttrForBill(tag, billId)
+        await this.tblBill.createEmptyTagsAttrForBill(billId)
       }
       await this.tblBill.addTagToBill(tag, billId, userCount || {})
     })
@@ -157,8 +157,9 @@ export class TagManager {
       this.tblTag.getTag(tags).then(out => (out && [out]) || [])
   }
 
-  public getTagsOfBill (billId: string): Promise<{[tag: string]: {[userId: string]: number}}> {
-    return this.tblBill.getBillById(billId, 'tags').then(bill => (bill && bill.tags) || {})
+  public getTagsOfBill (billId: string): Promise<dbLib.BillTagEntityDynamoDB> {
+    return this.tblBill.getBillById(billId, 'tags')
+      .then(bill => <dbLib.BillTagEntityDynamoDB> (bill && bill.tags) || {})
   }
 
   public isBillWithTag (billId: string, tag: string): Promise<boolean> {

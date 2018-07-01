@@ -11,8 +11,11 @@ let migrateBill = async () => {
   await tbl.forEachBatchOfAllBills(async (objs) => {
     objs = _.map(objs, x => {
       if (x.tags) {
-        let tags = _.keys(x.tags)
-        x.tags = <any> tags
+        let mongoDbTags: dbLib.BillTagEntityMongoDB[] = []
+        _.each(x.tags, (userVote, tag) => {
+          mongoDbTags.push({tag, userVote})
+        })
+        x.tags = mongoDbTags
       }
       x['_id'] = x.id
       delete x.id
@@ -128,11 +131,11 @@ let migratePerson = async () => {
 //   console.log(err);
 // });
 
-// migrateBill()
+migrateBill()
 // migrateBillType()
 // migrateBillVersion()
 // migrateBillCategory()
 // migrateTag()
 // migrateTagMeta()
-migrateRole()
+// migrateRole()
 // migratePerson()

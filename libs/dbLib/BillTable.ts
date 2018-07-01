@@ -25,6 +25,17 @@ export interface CosponsorEntity {
   roleId?: string
 }
 
+export type BillTagUserVote = {[userId: string]: number}
+
+export interface BillTagEntityDynamoDB {
+  [tag: string]: BillTagUserVote
+}
+
+export interface BillTagEntityMongoDB {
+  tag: string
+  userVote?: BillTagUserVote
+}
+
 export interface BillEntity extends TableEntity {
   id: string
   congress: number
@@ -45,10 +56,10 @@ export interface BillEntity extends TableEntity {
 
   // Taiwan Watch fields
   categories?: BillCategoryEntity[]
-  tags?: {[tag: string]: {[userId: string]: number}}
-  relevence?: number,
-  china?: string,
-  insight?: string,
+  tags?: BillTagEntityDynamoDB | BillTagEntityMongoDB[]
+  relevence?: number
+  china?: string
+  insight?: string
   comment?: string
 
   // Congress.gov all-info
@@ -93,7 +104,7 @@ export class BillTable extends DynamoDBTable<BillEntityHydrateField> {
     return super.putItem(obj)
   }
 
-  public createEmptyTagsAttrForBill (tag: string, billId: string)
+  public createEmptyTagsAttrForBill (billId: string)
   : Promise<aws.DynamoDB.DocumentClient.UpdateItemOutput> {
     const params: aws.DynamoDB.DocumentClient.UpdateItemInput = {
       TableName: this.tableName,
@@ -109,17 +120,17 @@ export class BillTable extends DynamoDBTable<BillEntityHydrateField> {
     })
   }
 
-  public addTagToBill (tag: string, billId: string, userCount: {[userId: string]: number} = {})
+  public addTagToBill (tag: string, billId: string, userVote: BillTagUserVote = {})
   : Promise<aws.DynamoDB.DocumentClient.UpdateItemOutput> {
     const params: aws.DynamoDB.DocumentClient.UpdateItemInput = {
       TableName: this.tableName,
       Key: { 'id': billId },
-      UpdateExpression: `SET #k_tags.#k_tag = :v_userCount`,
+      UpdateExpression: `SET #k_tags.#k_tag = :v_userVote`,
       ExpressionAttributeNames: {
         '#k_tags': 'tags',
         '#k_tag': tag
       },
-      ExpressionAttributeValues: {':v_userCount': userCount}
+      ExpressionAttributeValues: {':v_userVote': userVote}
     }
     return new Promise((resolve, reject) => {
       this.docClient.update(params, (err, data) => err ? reject(err) : resolve(data))
@@ -163,51 +174,51 @@ export class BillTable extends DynamoDBTable<BillEntityHydrateField> {
       async data => data ? await (this.applyHydrateFields([data]))[0] : null)
   }
 
-  public getAllBillsBySingleKeyFilterPaging (
-    key: keyof BillEntity, val: any, attrNamesToGet?: (keyof BillEntity)[], flushOut: boolean = true, lastKey?: string
-  ): Promise<BillScanOutput> {
-    const filterExp = `#k_key = :v_val`
-    const expAttrNames: aws.DynamoDB.DocumentClient.ExpressionAttributeNameMap = {
-      '#k_key': key,
-    }
-    const expAttrVals: aws.DynamoDB.DocumentClient.ExpressionAttributeValueMap = {
-      ':v_val': val,
-    }
-    attrNamesToGet && (attrNamesToGet = this.applyHydrateFieldsForAttrNames(attrNamesToGet))
-    const input: ScanInput<BillEntity> = { filterExp, expAttrNames, expAttrVals, attrNamesToGet, flushOut }
-    if (lastKey) {
-      input.lastKey = { 'id': lastKey }
-    }
-    return super.scanItems<BillEntity>(input).then(async out => <BillScanOutput> {
-      results: await this.applyHydrateFields(out.results),
-      lastKey: out.lastKey && out.lastKey['id']
-    })
-  }
+  // public getAllBillsBySingleKeyFilterPaging (
+  //   key: keyof BillEntity, val: any, attrNamesToGet?: (keyof BillEntity)[], flushOut: boolean = true, lastKey?: string
+  // ): Promise<BillScanOutput> {
+  //   const filterExp = `#k_key = :v_val`
+  //   const expAttrNames: aws.DynamoDB.DocumentClient.ExpressionAttributeNameMap = {
+  //     '#k_key': key,
+  //   }
+  //   const expAttrVals: aws.DynamoDB.DocumentClient.ExpressionAttributeValueMap = {
+  //     ':v_val': val,
+  //   }
+  //   attrNamesToGet && (attrNamesToGet = this.applyHydrateFieldsForAttrNames(attrNamesToGet))
+  //   const input: ScanInput<BillEntity> = { filterExp, expAttrNames, expAttrVals, attrNamesToGet, flushOut }
+  //   if (lastKey) {
+  //     input.lastKey = { 'id': lastKey }
+  //   }
+  //   return super.scanItems<BillEntity>(input).then(async out => <BillScanOutput> {
+  //     results: await this.applyHydrateFields(out.results),
+  //     lastKey: out.lastKey && out.lastKey['id']
+  //   })
+  // }
 
-  public getAllBillsBySingleKeyFilter (key: keyof BillEntity, val: any, attrNamesToGet?: (keyof BillEntity)[]): Promise<BillEntity[]> {
-    return this.getAllBillsBySingleKeyFilterPaging(key, val, this.applyHydrateFieldsForAttrNames(attrNamesToGet)).then(out => out.results)
-  }
+  // public getAllBillsBySingleKeyFilter (key: keyof BillEntity, val: any, attrNamesToGet?: (keyof BillEntity)[]): Promise<BillEntity[]> {
+  //   return this.getAllBillsBySingleKeyFilterPaging(key, val, this.applyHydrateFieldsForAttrNames(attrNamesToGet)).then(out => out.results)
+  // }
 
-  public getAllBillsHavingAttributes (keys: (keyof BillEntity)[], ...attrNamesToGet: (keyof BillEntity)[]): Promise<BillEntity[]> {
-    return super.getItemsHavingAttributes<BillEntity>(keys, ...this.applyHydrateFieldsForAttrNames(attrNamesToGet)).then(
-      data => this.applyHydrateFields(data))
-  }
+  // public getAllBillsHavingAttributes (keys: (keyof BillEntity)[], ...attrNamesToGet: (keyof BillEntity)[]): Promise<BillEntity[]> {
+  //   return super.getItemsHavingAttributes<BillEntity>(keys, ...this.applyHydrateFieldsForAttrNames(attrNamesToGet)).then(
+  //     data => this.applyHydrateFields(data))
+  // }
 
   public getAllBillsNotHavingAttributes (keys: (keyof BillEntity)[], ...attrNamesToGet: (keyof BillEntity)[]): Promise<BillEntity[]> {
     return super.getItemsNotHavingAttributes<BillEntity>(keys, ...this.applyHydrateFieldsForAttrNames(attrNamesToGet)).then(
       data => this.applyHydrateFields(data))
   }
 
-  public getAllBillsPaging (
-    attrNamesToGet?: (keyof BillEntity)[], flushOut: boolean = true, lastKey?: string
-  ): Promise<BillScanOutput> {
-    attrNamesToGet && (attrNamesToGet = this.applyHydrateFieldsForAttrNames(attrNamesToGet))
-    return super.getAllItems<BillEntity>(attrNamesToGet, flushOut, lastKey ? { 'id': lastKey } : undefined).then(async out =>
-      <BillScanOutput> {
-        results: await this.applyHydrateFields(out.results),
-        lastKey: out.lastKey && out.lastKey['id']
-      })
-  }
+  // public getAllBillsPaging (
+  //   attrNamesToGet?: (keyof BillEntity)[], flushOut: boolean = true, lastKey?: string
+  // ): Promise<BillScanOutput> {
+  //   attrNamesToGet && (attrNamesToGet = this.applyHydrateFieldsForAttrNames(attrNamesToGet))
+  //   return super.getAllItems<BillEntity>(attrNamesToGet, flushOut, lastKey ? { 'id': lastKey } : undefined).then(async out =>
+  //     <BillScanOutput> {
+  //       results: await this.applyHydrateFields(out.results),
+  //       lastKey: out.lastKey && out.lastKey['id']
+  //     })
+  // }
 
   public async forEachBatchOfAllBills (
     callback: (batchBills: BillEntity[], lastKey?: string) => Promise<boolean | void>,

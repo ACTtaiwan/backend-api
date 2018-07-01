@@ -2,10 +2,22 @@ import * as aws from 'aws-sdk'
 
 export class MongoDbConfig {
   public static readonly tableNames = {
-    'VOLUNTEER_BILLCATEGORIES_TABLE_NAME': 'volunteer.billCategories'
+    'BILLCATEGORIES_TABLE_NAME': 'volunteer.billCategories',
+    'BILLS_TABLE_NAME': 'volunteer.bills',
+    'BILLTYPES_TABLE_NAME': 'volunteer.billTypes',
+    'BILLVERSIONS_TABLE_NAME': 'volunteer.billVersions',
+    'PERSON_TABLE_NAME': 'volunteer.persons',
+    'ROLES_TABLE_NAME': 'volunteer.roles',
+    'TAGS_TABLE_NAME': 'volunteer.tags',
+    'TAGS_META_TABLE_NAME': 'volunteer.tags.meta',
   }
 
   private static _remoteUrl: string
+
+  public static get connectionUrl (): Promise<string> {
+    // return MongoDbConfig.localUrl
+    return MongoDbConfig.remoteUrl
+  }
 
   public static get localUrl (): Promise<string> {
     return Promise.resolve(`mongodb://localhost:27017/congress`)

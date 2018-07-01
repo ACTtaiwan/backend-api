@@ -1,8 +1,8 @@
-import * as mongoDbLib from '../../libs/mongodbLib'
-import { MongoDbConfig } from '../../config/mongodb'
+import * as mongoDbLib from '../../../libs/mongodbLib'
+import { MongoDbConfig } from '../../../config/mongodb'
 import * as _ from 'lodash'
 
-const tblName = MongoDbConfig.tableNames.VOLUNTEER_BILLCATEGORIES_TABLE_NAME
+const tblName = MongoDbConfig.tableNames.BILLCATEGORIES_TABLE_NAME
 
 class TestBillCategoryTable {
   public static async getAllCategories () {
@@ -221,7 +221,6 @@ class TestBillCategoryTable {
     return tblCat
   }
 }
-
 
 TestBillCategoryTable.getAllCategories()
 // TestBillCategoryTable.getCategoriesById()

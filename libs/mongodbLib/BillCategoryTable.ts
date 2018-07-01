@@ -6,7 +6,8 @@ import * as _ from 'lodash'
 import { EntryType } from './MongoDBManager';
 
 export class BillCategoryTable extends MongoDBTable {
-  public readonly tableName = MongoDbConfig.tableNames.VOLUNTEER_BILLCATEGORIES_TABLE_NAME
+  public readonly tableName = MongoDbConfig.tableNames.BILLCATEGORIES_TABLE_NAME
+  protected readonly suggestPageSize: number = 500
 
   constructor (db: mongodb.Db) {
     super(db)
@@ -17,11 +18,11 @@ export class BillCategoryTable extends MongoDBTable {
   }
 
   public getCategoriesById (idx: string[], ...attrNamesToGet: (keyof dbLib.BillCategoryEntity)[]): Promise<dbLib.BillCategoryEntity[]> {
-    return super.getItems<dbLib.BillCategoryEntity>('_id', idx, attrNamesToGet);
+    return super.getItems<dbLib.BillCategoryEntity>('_id', idx, attrNamesToGet)
   }
 
   public setBillIdArrayToCategory (catId: string, billIdx: string[]): Promise<mongodb.WriteOpResult> {
-    return super.updateItemByObjectId<dbLib.BillCategoryEntity>(catId, <any> { billId: _.uniq(billIdx) })
+    return super.updateItemByObjectId<dbLib.BillCategoryEntity>(catId, { billId: _.uniq(billIdx) })
   }
 
   public addBillToCategory (catId: string, billId: string): Promise<mongodb.WriteOpResult> {
@@ -37,6 +38,6 @@ export class BillCategoryTable extends MongoDBTable {
   }
 
   public removeAllBillsFromCategory (catId: string): Promise<mongodb.WriteOpResult> {
-    return super.deleteAttributesFromItem<dbLib.BillCategoryEntity>(catId, ['billId']);
+    return super.deleteAttributesFromItem<dbLib.BillCategoryEntity>(catId, ['billId'])
   }
 }
