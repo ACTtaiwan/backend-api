@@ -32,23 +32,23 @@ export class RoleTable extends MongoDBTable<dbLib.RoleEntityHydrateField> {
     return super.forEachBatch<dbLib.RoleEntity>(callback, attrNamesToGet)
   }
 
-  public getRolesByPersonId (personId: string, attrNamesToGet?: (keyof dbLib.RoleEntity)[]): Promise<dbLib.RoleEntity[]> {
-    return super.queryItems<dbLib.RoleEntity>({ personId }, this.applyHydrateFieldsForAttrNames(attrNamesToGet))
-      .then(items => this.applyHydrateFields(items))
-  }
-
-  public getRolesByState (state: string, attrNamesToGet?: (keyof dbLib.RoleEntity)[], congress?: number): Promise<dbLib.RoleEntity[]> {
-    let query: EntryType<dbLib.RoleEntity> = { state }
-    if (congress) {
-      query.congressNumbers = congress
-    }
+  public queryRoles (
+      personId?: string | string[],
+      state?: string | string[],
+      congress?: number | number[],
+      attrNamesToGet?: (keyof dbLib.RoleEntity)[]
+  ): Promise<dbLib.RoleEntity[]> {
+    let queryPerson = super.composeQueryOfSingleOrMultipleValues('personId', personId)
+    let queryState = super.composeQueryOfSingleOrMultipleValues('state', state)
+    let queryCongress = super.composeQueryOfSingleOrMultipleValues('congressNumbers', congress)
+    let query = _.merge(queryPerson, queryState, queryCongress)
+    console.log(`[RoleTable::queryRole()] query = ${JSON.stringify(query, null, 2)}`)
     return super.queryItems<dbLib.RoleEntity>(query, this.applyHydrateFieldsForAttrNames(attrNamesToGet))
       .then(items => this.applyHydrateFields(items))
   }
 
-  public getRolesByCongress (congress: number, attrNamesToGet?: (keyof dbLib.RoleEntity)[]): Promise<dbLib.RoleEntity[]> {
-    return super.queryItems<dbLib.RoleEntity>({ congressNumbers: congress }, this.applyHydrateFieldsForAttrNames(attrNamesToGet))
-      .then(items => this.applyHydrateFields(items))
+  public getRolesByPersonId (personId?: string | string[], attrNamesToGet?: (keyof dbLib.RoleEntity)[]): Promise<dbLib.RoleEntity[]> {
+    return this.queryRoles(personId, null, null, attrNamesToGet)
   }
 
   public getRolesHavingSponsoredBills (type: dbLib.SponsorType): Promise<dbLib.RoleEntity[]> {
@@ -114,7 +114,7 @@ export class RoleTable extends MongoDBTable<dbLib.RoleEntityHydrateField> {
     let tblPpl = dbMngr.getTable<mongoDbLib.PersonTable>(tblPplName)
     if (_.includes<dbLib.RoleEntityHydrateField>(this.hydrateFields, 'person')) {
       let pplIdx = _.uniq(_.filter(_.map(roles, x => x.personId), _.identity))
-      let pplItems = _.keyBy(await tblPpl.getPersonsById(pplIdx), '_id')
+      let pplItems = _.keyBy(await tblPpl.getPersonsById(pplIdx), 'id')
       _.each(roles, r => r.personId && (r.person = pplItems[r.personId]))
       // console.log(`[RoleTable::applyHydrateFields()] Hydrated persons = ${JSON.stringify(pplItems, null, 2)}`)
       // console.log(`[RoleTable::applyHydrateFields()] Hydrated person idx = ${JSON.stringify(pplIdx, null, 2)}`)

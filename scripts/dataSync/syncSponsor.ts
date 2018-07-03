@@ -5,6 +5,8 @@ import * as models from '../../libs/congressGov/CongressGovModels'
 import * as _ from 'lodash'
 import { CongressGovAllInfoParser } from '../../libs/congressGov/CongressGovAllInfoParser';
 import { RoleManager } from '../../libs/dataManager/RoleManager';
+import * as mongoDbLib from '../../libs/mongodbLib'
+import { MongoDbConfig } from '../../config/mongodb'
 
 var awsConfig = require('../../config/aws.json');
 
@@ -12,17 +14,27 @@ var awsConfig = require('../../config/aws.json');
  *  sync for sponsors & co-sponsors
  */
 export class SponsorSync {
-  private readonly db = dbLib.DynamoDBManager.instance()
-
-  private readonly tblName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLS_TABLE_NAME
-  public  readonly tblBill = <dbLib.BillTable> this.db.getTable(this.tblName)
-
   private readonly roleManager = new RoleManager()
+  private tblBill: mongoDbLib.BillTable
 
   private readonly congressGovSponsorParser = new CongressGovSponsorParser()
   private readonly congressGovAllInfoParser = new CongressGovAllInfoParser()
 
   private roleMapSearchId = (bioGuideId: string, chamber: models.ChamberType) => bioGuideId + '-' + chamber
+
+  public get billTable (): mongoDbLib.BillTable {
+    return this.tblBill
+  }
+
+  public async init (): Promise<void> {
+    if (!this.tblBill) {
+      await this.roleManager.init()
+      let db = await mongoDbLib.MongoDBManager.instance
+      const tblBillName = MongoDbConfig.tableNames.BILLS_TABLE_NAME
+      this.tblBill = db.getTable(tblBillName)
+    }
+    return Promise.resolve()
+  }
 
   public async syncSponsorForAllBills (
     currentCongress: number,
@@ -150,7 +162,8 @@ let sync = new SponsorSync()
 // sync.syncSponsorForAllBills(115)
 
 let patch = async (billId: string, currentCongress = 115) => {
-  const bill = await sync.tblBill.getBillById(billId)
+  await sync.init()
+  const bill = await sync.billTable.getBillById(billId)
   await sync.batchSyncForCongress(bill.congress, [bill], currentCongress, /* writeToDb */ true)
 }
 

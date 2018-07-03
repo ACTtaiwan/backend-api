@@ -8,14 +8,22 @@ import { TagManager } from '../../../libs/dataManager/TagManager';
 export class TagApi {
   private readonly tagMngr = new TagManager()
 
-  public getTags (tags: string[]): Promise<dbLib.TagEntity[]> {
+  public async getTags (tags: string[]): Promise<dbLib.TagEntity[]> {
+    await this.tagMngr.init()
     console.log(`[TagApi::getTags()] id = ${JSON.stringify(tags, null, 2)}`)
     return (tags && tags.length > 0) ? this.tagMngr.getTags([...tags]) : Promise.resolve([])
   }
 
-  public queryTagsBeginWith (q: string): Promise<string[]> {
+  public async queryTagsBeginWith (q: string): Promise<string[]> {
+    await this.tagMngr.init()
     console.log(`[TagApi::queryTagsBeginWith()] q = ${JSON.stringify(q, null, 2)}`)
     return this.tagMngr.searchTagStartWith(q, ['tag']).then(out => _.map(out, x => x.tag))
+  }
+
+  public async queryTagsContains (q: string): Promise<string[]> {
+    await this.tagMngr.init()
+    console.log(`[TagApi::queryTagsContains()] q = ${JSON.stringify(q, null, 2)}`)
+    return this.tagMngr.searchTagContains(q, ['tag']).then(out => _.map(out, x => x.tag))
   }
 }
 
@@ -33,6 +41,10 @@ export class TagHandlerGetParams {
 export class TagHandler {
   public static handleRequest (event: APIGatewayEvent, context: Context, callback?: Callback) {
     console.log(`[TagHandler::handleRequest()] event = ${JSON.stringify(event, null, 2)}`)
+
+    // This freezes node event loop when callback is invoked
+    context.callbackWaitsForEmptyEventLoop = false;
+
     let params: TagHandlerGetParams = {
       tag:
            (event.pathParameters && event.pathParameters.tag)
@@ -69,11 +81,11 @@ export class TagHandler {
       return api.getTags(tags)
     }
 
-    // query tags begin_with
+    // query tags contains
     if (httpMethod === 'GET' && !params.tag && params.q) {
       let q = decodeURIComponent(params.q)
       console.log(`[TagHandler::dispatchEvent()] query tags = ${q}`)
-      return api.queryTagsBeginWith(q)
+      return api.queryTagsContains(q)
     }
   }
 }

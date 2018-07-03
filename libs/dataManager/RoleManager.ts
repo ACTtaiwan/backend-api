@@ -14,17 +14,20 @@ export class RoleManager {
   private _tblRoleSponsors: {[roldId: string]: dbLib.RoleEntity}
   private _tblRoleCosponsors: {[roleId: string]: dbLib.RoleEntity}
 
-  public async init () {
-    const db = await mongoDbLib.MongoDBManager.instance
+  public async init (): Promise<void> {
+    if (!this.tblBill || !this.tblRole || !this.tblPpl) {
+      let db = await mongoDbLib.MongoDBManager.instance
 
-    const tblBillName = MongoDbConfig.tableNames.BILLS_TABLE_NAME
-    this.tblBill = db.getTable(tblBillName)
+      const tblBillName = MongoDbConfig.tableNames.BILLS_TABLE_NAME
+      this.tblBill = db.getTable(tblBillName)
 
-    const tblRoleName = MongoDbConfig.tableNames.ROLES_TABLE_NAME
-    this.tblRole = db.getTable(tblRoleName)
+      const tblRoleName = MongoDbConfig.tableNames.ROLES_TABLE_NAME
+      this.tblRole = db.getTable(tblRoleName)
 
-    const tblPplName = MongoDbConfig.tableNames.PERSON_TABLE_NAME
-    this.tblPpl = db.getTable(tblPplName)
+      const tblPplName = MongoDbConfig.tableNames.PERSON_TABLE_NAME
+      this.tblPpl = db.getTable(tblPplName)
+    }
+    return Promise.resolve()
   }
 
   public async rebuildBillIndex (cleanup: boolean = false) {
@@ -66,28 +69,20 @@ export class RoleManager {
     return Promise.resolve([])
   }
 
-  public getRolesByPersonId (personId: string[], ...attrNamesToGet: (keyof dbLib.RoleEntity)[] ): Promise<dbLib.RoleEntity[]> {
-    if (personId) {
-      if (personId.length === 1) {
-        return this.tblRole.getRolesByPersonId(personId[0])
-      } else {
-        let promises: Promise<dbLib.RoleEntity[]>[] = []
-        _.each(personId, pid => promises.push(this.tblRole.getRolesByPersonId(pid)))
-        return Promise.all(promises).then(results => {
-          let roles = _.keyBy(_.flatten(results), 'id')
-          return _.values(roles)
-        })
-      }
-    }
-    return Promise.resolve([])
+  public getRolesByPersonId (personId: string | string[], ...attrNamesToGet: (keyof dbLib.RoleEntity)[] ): Promise<dbLib.RoleEntity[]> {
+    return this.tblRole.queryRoles(personId, null, null, attrNamesToGet)
   }
 
-  public getRolesByCongress (congress: number, ...attrNamesToGet: (keyof dbLib.RoleEntity)[]): Promise<dbLib.RoleEntity[]> {
-    return this.tblRole.getRolesByCongress(congress, attrNamesToGet)
+  public getRolesByCongress (congress: number | number[], ...attrNamesToGet: (keyof dbLib.RoleEntity)[] ): Promise<dbLib.RoleEntity[]> {
+    return this.tblRole.queryRoles(null, null, congress, attrNamesToGet)
   }
 
-  public getRolesByState (state: string, congress?: number, attrNamesToGet?: (keyof dbLib.RoleEntity)[]): Promise<dbLib.RoleEntity[]> {
-    return this.tblRole.getRolesByState(state, attrNamesToGet, congress)
+  public getRolesByState (state: string | string[], ...attrNamesToGet: (keyof dbLib.RoleEntity)[] ): Promise<dbLib.RoleEntity[]> {
+    return this.tblRole.queryRoles(null, state, null, attrNamesToGet)
+  }
+
+  public getRoleByStatesAndCongress (state: string | string[], congress: number | number[], ...attrNamesToGet: (keyof dbLib.RoleEntity)[] ): Promise<dbLib.RoleEntity[]> {
+    return this.tblRole.queryRoles(null, state, congress, attrNamesToGet)
   }
 
   public getRolesByBioGuideId (bioGuideId: string): Promise<dbLib.RoleEntity[]> {

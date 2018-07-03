@@ -13,8 +13,8 @@ let roleMngr = new RoleManager()
 // }
 // getRolesByBioGuideId()
 
-let getRolesByState = async () => {
-  let roles = await roleMngr.getRolesByState('WA', 115)
+let getRoleByStatesAndCongress = async () => {
+  let roles = await roleMngr.getRoleByStatesAndCongress('WA', 115)
   console.log(JSON.stringify(roles, null, 2))
 }
-getRolesByState()
+getRoleByStatesAndCongress()

@@ -8,13 +8,15 @@ export class CategoryManager {
   private tblCat: mongoDbLib.BillCategoryTable
 
   public async init () {
-    const db = await mongoDbLib.MongoDBManager.instance
+    if (!this.tblBill || !this.tblCat) {
+      const db = await mongoDbLib.MongoDBManager.instance
 
-    const tblBillName = MongoDbConfig.tableNames.BILLS_TABLE_NAME
-    this.tblBill = db.getTable(tblBillName)
+      const tblBillName = MongoDbConfig.tableNames.BILLS_TABLE_NAME
+      this.tblBill = db.getTable(tblBillName)
 
-    const tblCatName = MongoDbConfig.tableNames.BILLCATEGORIES_TABLE_NAME
-    this.tblCat = db.getTable(tblCatName)
+      const tblCatName = MongoDbConfig.tableNames.BILLCATEGORIES_TABLE_NAME
+      this.tblCat = db.getTable(tblCatName)
+    }
   }
 
   public async rebuildIndex () {

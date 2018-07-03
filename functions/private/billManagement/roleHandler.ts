@@ -10,51 +10,38 @@ export class RoleApi {
 
   public getRoleById (id: string[]): Promise<dbLib.RoleEntity[]> {
     console.log(`[RoleApi::getRoleById()] id = ${JSON.stringify(id, null, 2)}`)
-    return this.roleMngr.getRolesById(id).then(roles => this.sortAndFilter(roles))
+    return this.roleMngr.init()
+      .then(() => this.roleMngr.getRolesById(id))
+      .then(roles => this.sortAndFilter(roles))
   }
 
   public getRoleByPersonId (personId: string[]): Promise<dbLib.RoleEntity[]> {
     console.log(`[RoleApi::getRoleByPersonId()] personId = ${JSON.stringify(personId, null, 2)}`)
-    return this.roleMngr.getRolesByPersonId(personId).then(roles => this.sortAndFilter(roles))
+    return this.roleMngr.init()
+      .then(() => this.roleMngr.getRolesByPersonId(personId))
+      .then(roles => this.sortAndFilter(roles))
   }
 
   public getRoleByStates (states: string[]): Promise<dbLib.RoleEntity[]> {
     console.log(`[RoleApi::getRoleById()] states = ${JSON.stringify(states, null, 2)}`)
-    let promises: Promise<dbLib.RoleEntity[]>[] = []
-    _.each(states, st => promises.push(this.roleMngr.getRolesByState(st)))
-    return Promise.all(promises).then(results => {
-      let roles = _.keyBy(_.flatten(results), 'id')
-      return this.sortAndFilter(_.values(roles))
-    })
+    return this.roleMngr.init()
+      .then(() => this.roleMngr.getRolesByState(states))
+      .then(roles => this.sortAndFilter(roles))
   }
 
   public getRoleByCongress (congress: number[]): Promise<dbLib.RoleEntity[]> {
     console.log(`[RoleApi::getRoleByCongress()] congress = ${JSON.stringify(congress, null, 2)}`)
-    let promises: Promise<dbLib.RoleEntity[]>[] = []
-    _.each(congress, cngr => promises.push(this.roleMngr.getRolesByCongress(cngr)))
-    return Promise.all(promises)
-      .then(results => _.flatten(results))
+    return this.roleMngr.init()
+      .then(() => this.roleMngr.getRolesByCongress(congress))
       .then(roles => this.sortAndFilter(roles))
   }
 
   public getRoleByStatesAndCongress (states: string[], congress: number[]): Promise<dbLib.RoleEntity[]> {
-    console.log(`[RoleApi::getRoleByStatesAndCongress()] congress = ${JSON.stringify(congress, null, 2)}`)
-    console.log(`[RoleApi::getRoleByStatesAndCongress()] states = ${JSON.stringify(states, null, 2)}`)
-    if (states.length === 1 && congress.length ===  1) {
-      console.log(`[RoleApi::getRoleByStatesAndCongress()] state.length == 1 && congress.length == 1`)
-      return this.roleMngr.getRolesByState(states[0], congress[0])
-          .then(roles => this.sortAndFilter(roles))
-    } else if (congress.length < states.length) {
-      console.log(`[RoleApi::getRoleByStatesAndCongress()] congress.length (${congress.length}) < states.length (${states.length})`)
-      return this.getRoleByCongress(congress)
-        .then(roles => _.filter(roles, r => _.includes(states, r.state)))
-        .then(roles => this.sortAndFilter(roles))
-    } else {
-      console.log(`[RoleApi::getRoleByStatesAndCongress()] congress.length (${congress.length}) >= states.length (${states.length})`)
-      return this.getRoleByStates(states)
-        .then(roles => _.filter(roles, r => _.intersection(congress, r.congressNumbers).length > 0))
-        .then(roles => this.sortAndFilter(roles))
-    }
+    console.log(`[RoleApi::getRoleByStatesAndCongress()] congress (${congress.length}) = ${JSON.stringify(congress, null, 2)}`)
+    console.log(`[RoleApi::getRoleByStatesAndCongress()] states (${states.length}) = ${JSON.stringify(states, null, 2)}`)
+    return this.roleMngr.init()
+      .then(() => this.roleMngr.getRoleByStatesAndCongress(states, congress))
+      .then(roles => this.sortAndFilter(roles))
   }
 
   private sortAndFilter (roles: dbLib.RoleEntity[]): dbLib.RoleEntity[] {
@@ -80,6 +67,10 @@ export class RoleHandlerGetParams {
 export class RoleHandler {
   public static handleRequest (event: APIGatewayEvent, context: Context, callback?: Callback) {
     console.log(`[RoleHandler::handleRequest()] event = ${JSON.stringify(event, null, 2)}`)
+
+    // This freezes node event loop when callback is invoked
+    context.callbackWaitsForEmptyEventLoop = false;
+
     let params: RoleHandlerGetParams = {
       id:
            (event.pathParameters && event.pathParameters.id)
@@ -133,16 +124,16 @@ export class RoleHandler {
     // congress
     if (httpMethod === 'GET' && !params.id && params.congress && !params.states && !params.personId) {
       let congress: number[] = Utility.stringToArray(params.congress, parseInt)
-      console.log(`[BillCategoryHandler::dispatchEvent()] fetch full entity by congress.`)
-      console.log(`[BillCategoryHandler::dispatchEvent()] congress = ${JSON.stringify(congress)}`)
+      console.log(`[RoleHandler::dispatchEvent()] fetch full entity by congress.`)
+      console.log(`[RoleHandler::dispatchEvent()] congress = ${JSON.stringify(congress)}`)
       return api.getRoleByCongress(congress)
     }
 
     // state
     if (httpMethod === 'GET' && !params.id && !params.congress && params.states && !params.personId) {
       let states: string[] = Utility.stringToArray(params.states)
-      console.log(`[BillCategoryHandler::dispatchEvent()] fetch full entity by states.`)
-      console.log(`[BillCategoryHandler::dispatchEvent()] states = ${JSON.stringify(states)}`)
+      console.log(`[RoleHandler::dispatchEvent()] fetch full entity by states.`)
+      console.log(`[RoleHandler::dispatchEvent()] states = ${JSON.stringify(states)}`)
       return api.getRoleByStates(states)
     }
 
@@ -150,9 +141,9 @@ export class RoleHandler {
     if (httpMethod === 'GET' && !params.id && params.congress && params.states && !params.personId) {
       let congress: number[] = Utility.stringToArray(params.congress, parseInt)
       let states: string[] = Utility.stringToArray(params.states)
-      console.log(`[BillCategoryHandler::dispatchEvent()] fetch full entity by congress + states.`)
-      console.log(`[BillCategoryHandler::dispatchEvent()] congress = ${JSON.stringify(congress)}`)
-      console.log(`[BillCategoryHandler::dispatchEvent()] states = ${JSON.stringify(states)}`)
+      console.log(`[RoleHandler::dispatchEvent()] fetch full entity by congress + states.`)
+      console.log(`[RoleHandler::dispatchEvent()] congress = ${JSON.stringify(congress)}`)
+      console.log(`[RoleHandler::dispatchEvent()] states = ${JSON.stringify(states)}`)
       return api.getRoleByStatesAndCongress(states, congress)
     }
   }

@@ -2,10 +2,10 @@ import { Context, Callback, APIGatewayEvent } from 'aws-lambda'
 import Response from '../../../libs/utils/Response'
 import Utility from '../../../libs/utils/Utility'
 import * as dbLib from '../../../libs/dbLib'
+import * as mongoDbLib from '../../../libs/mongodbLib'
 import * as _ from 'lodash'
 import { BillCategoryApi } from './billCategoryHandler';
-
-var awsConfig = require('../../../config/aws.json');
+import { MongoDbConfig } from '../../../config/mongodb'
 
 // queryBills()
 
@@ -27,12 +27,10 @@ export interface GetBillByIdRequest {
 export type GetBillByIdResponse = dbLib.BillEntity[]
 
 export class BillApi {
-  private readonly db = dbLib.DynamoDBManager.instance()
-  private readonly tblName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLS_TABLE_NAME
-  private readonly tbl = <dbLib.BillTable> this.db.getTable(this.tblName)
+  private tbl: mongoDbLib.BillTable
 
   public async queryBills (req: QueryBillsRequest): Promise<QueryBillsResponse> {
-    let out: Promise<QueryBillsResponse>
+    await this.init()
     let queryAttrs: (keyof dbLib.BillEntity)[] = ['id', 'introducedDate']
     if (req.categoryIdx) {
       console.log(`[BillApi::queryBills()] Redirect to category api. req.categoryIdx = ${JSON.stringify(req.categoryIdx)}`)
@@ -55,30 +53,33 @@ export class BillApi {
     // if (req.categoryIdx) {
     //   queryAttrs.push('categories')
     // }
+
+    let query = {}
+
+    if (req.congress) {
+      if (req.congress.length === 1 && req.congress[0]) {
+        query['congress'] = req.congress[0]
+      } else {
+        query['congress'] = { $in: req.congress }
+      }
+    }
+
     if (req.sponsorRoleId) {
-      queryAttrs.push(<any> 'sponsor.id')
+      if (req.sponsorRoleId.length === 1 && req.sponsorRoleId[0]) {
+        query['sponsorRoleId'] = req.sponsorRoleId[0]
+      } else {
+        query['sponsorRoleId'] = { $in: req.sponsorRoleId }
+      }
     }
-    if (!req.congress) {
-      out = this.tbl.getAllBills(...queryAttrs).then(out => {
-        let rtn = this.sortAndFilter(req, out, queryAttrs)
-        return _.map(rtn, x => x.id)
-      })
-    } else {
-      let promises: Promise<dbLib.BillEntity[]>[] = []
-      _.each(req.congress, congress => {
-        let p = this.tbl.queryBillsByCongress(congress, queryAttrs).then(out => out.results)
-        promises.push(p)
-      })
-      out = Promise.all(promises).then(results => {
-        let combined = _.concat<dbLib.BillEntity>([], ...results)
-        let rtn = this.sortAndFilter(req, combined, queryAttrs)
-        return _.map(rtn, x => x.id)
-      })
-    }
+
+    let results = await this.tbl.getBillsByMongoQuery(query, queryAttrs)
+    results = this.sortAndFilter(req, results, queryAttrs)
+    let out: QueryBillsResponse = _.map(results, x => x.id)
     return out
   }
 
   public async getBillById (req: GetBillByIdRequest): Promise<GetBillByIdResponse> {
+    await this.init()
     let attrNamesToGet = req.attrNamesToGet || []
     if (req.id && req.id.length === 1) {
       return this.tbl.getBillById(req.id[0], ...attrNamesToGet).then(out => [out])
@@ -96,6 +97,14 @@ export class BillApi {
     }
     results = _.orderBy(results, ['introducedDate'], ['desc'])
     return results
+  }
+
+  private async init () {
+    if (!this.tbl) {
+      const db = await mongoDbLib.MongoDBManager.instance
+      const tblBillName = MongoDbConfig.tableNames.BILLS_TABLE_NAME
+      this.tbl = db.getTable(tblBillName)
+    }
   }
 }
 
@@ -115,6 +124,10 @@ class BillHandlerGetParams {
 class BillHandler {
   public static handleRequest (event: APIGatewayEvent, context: Context, callback?: Callback) {
     console.log(`[BillHandler::handleRequest()] event = ${JSON.stringify(event, null, 2)}`)
+
+    // This freezes node event loop when callback is invoked
+    context.callbackWaitsForEmptyEventLoop = false;
+
     let params = <BillHandlerGetParams> {
       congress: (event.queryStringParameters && event.queryStringParameters.congress) || undefined,
       categoryIdx: (event.queryStringParameters && event.queryStringParameters.categoryIdx) || undefined,

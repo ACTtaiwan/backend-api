@@ -66,33 +66,27 @@ export class MongoDBManager {
     if (this.db) {
       return Promise.resolve();
     } else {
-      return new Promise<void>((resolve, reject) => {
-        MongoDbConfig.connectionUrl.then(dbUrl => {
-          console.log(`[MongoDBManager] URL = ${dbUrl}`);
-          mongodb.connect(dbUrl, (err, db) => {
-            if (err) {
-              console.log(`[MongoDBManager] DB connect error = ${JSON.stringify(err, null, 2)}`)
-              reject(err);
-            } else {
-              console.log(`[MongoDBManager] DB connected`)
-              this.db = db;
-              const tables = <MongoDBTable[]> [
-                new mongoDbLib.BillCategoryTable(this.db),
-                new mongoDbLib.BillTable(this.db),
-                new mongoDbLib.BillTypeTable(this.db),
-                new mongoDbLib.BillVersionTable(this.db),
-                new mongoDbLib.PersonTable(this.db),
-                new mongoDbLib.RoleTable(this.db),
-                new mongoDbLib.TagMetaTable(this.db),
-                new mongoDbLib.TagTable(this.db),
-                new mongoDbLib.CongressGovSyncBillTable(this.db)
-              ]
-              this.tables = _.keyBy(tables, x => x.tableName)
-              resolve();
-            }
-          });
-        });
-      });
+      return MongoDbConfig.connectionUrl
+        .then(dbUrl => mongodb.MongoClient.connect(dbUrl))
+        .then(db => {
+          console.log(`[MongoDBManager] DB connected`)
+          this.db = db;
+          const tables = <MongoDBTable[]> [
+            new mongoDbLib.BillCategoryTable(this.db),
+            new mongoDbLib.BillTable(this.db),
+            new mongoDbLib.BillTypeTable(this.db),
+            new mongoDbLib.BillVersionTable(this.db),
+            new mongoDbLib.PersonTable(this.db),
+            new mongoDbLib.RoleTable(this.db),
+            new mongoDbLib.TagMetaTable(this.db),
+            new mongoDbLib.TagTable(this.db),
+            new mongoDbLib.CongressGovSyncBillTable(this.db)
+          ]
+          this.tables = _.keyBy(tables, x => x.tableName)
+        }).catch(err => {
+          console.log(`[MongoDBManager] DB connect error = ${JSON.stringify(err, null, 2)}`)
+          throw err
+        })
     }
   }
 }
@@ -102,6 +96,7 @@ export type MongoDBProjectQueryType = {[key: string]: 1}
 export type EntryType<T extends dbLib.TableEntity> = {[key in (keyof T)]?: T[key] | number | string}
 
 export abstract class MongoDBTable<HydrateField = string> extends dbLib.Table<HydrateField> {
+  public static readonly AZURE_MAX_QUERY_ITEMS = 500
   protected abstract get suggestPageSize (): number
   protected db: mongodb.Db
 
@@ -128,7 +123,7 @@ export abstract class MongoDBTable<HydrateField = string> extends dbLib.Table<Hy
 
   protected async getAllItems<T extends dbLib.TableEntity> (attrNamesToGet?: (keyof T)[]): Promise<T[]> {
     let prjFields = this.composeProjectFields<T>(attrNamesToGet)
-    return this.getTable<T>().find({}, prjFields).toArray()
+    return this.getTable<T>().find({}, prjFields).toArray().then(res => this.addBackIdField(res))
   }
 
   protected getItem<T extends dbLib.TableEntity, KeyType = string> (
@@ -142,33 +137,71 @@ export abstract class MongoDBTable<HydrateField = string> extends dbLib.Table<Hy
   protected getItems<T extends dbLib.TableEntity, KeyType = string> (
     keyName: string, keyValues: KeyType[], attrNamesToGet?: (keyof T)[]
   ): Promise<T[]> {
-    let query = {}
-    query[keyName] = { $in: keyValues }
-    return this.queryItems<T>(query, attrNamesToGet)
+    let prjFields = this.composeProjectFields<T>(attrNamesToGet)
+    let makeQuery = (chunk) => {
+      let query = {}
+      query[keyName] = { $in: chunk }
+      return this.getTable<T>().find(query, prjFields).toArray().then(res => this.addBackIdField(res))
+    }
+
+    let chunks = _.chunk(keyValues, MongoDBTable.AZURE_MAX_QUERY_ITEMS)
+    let promises: Promise<T[]>[] = []
+    _.each(chunks, chunk => promises.push(makeQuery(chunk)))
+    return Promise.all(promises).then(results => _.flatten(results))
   }
 
-  protected queryItems<T extends dbLib.TableEntity> (query: any, attrNamesToGet?: (keyof T)[]): Promise<T[]> {
+  protected async queryItems<T extends dbLib.TableEntity> (query: any, attrNamesToGet?: (keyof T)[]): Promise<T[]> {
     let prjFields = this.composeProjectFields<T>(attrNamesToGet)
-    return this.getTable<T>().find(query, prjFields).toArray()
+    let pageSize = MongoDBTable.AZURE_MAX_QUERY_ITEMS
+    let runQuery = (skip: number = 0) =>
+      this.getTable<T>()
+        .find(query, prjFields)
+        .limit(pageSize)
+        .skip(skip * pageSize)
+        .toArray()
+        .then(res => this.addBackIdField(res))
+
+    let results: T[] = []
+    let skip = 0
+    while (true) {
+      try {
+        let batch = await runQuery(skip)
+        console.log(`[MongoDBTable::queryItems()] skip = ${skip}, batch.length = ${batch.length}`)
+        if (batch && batch.length > 0) {
+          results = _.concat(results, batch)
+          if (batch.length < pageSize) {
+            break
+          } else {
+            ++skip
+          }
+        } else {
+          break
+        }
+      } catch (err) {
+        console.log(`[MongoDBTable::queryItems()] DB Error = ${JSON.stringify(err, null, 2)}`)
+        return results
+      }
+    }
+    return results
   }
 
   protected queryItemOne<T extends dbLib.TableEntity> (query: any, attrNamesToGet?: (keyof T)[]): Promise<T> {
     let prjFields = this.composeProjectFields<T>(attrNamesToGet)
-    return this.getTable<T>().findOne(query, prjFields)
+    return this.getTable<T>().findOne(query, prjFields).then(res => this.addBackIdField(res))
   }
 
   protected getItemsHavingAttributes<T extends dbLib.TableEntity> (keys: (keyof T)[], ...attrNamesToGet: (keyof T)[]): Promise<T[]> {
     let query = {}
     _.each(keys, key => query[<string> key] = { $exists: true })
     let prjFields = this.composeProjectFields<T>(attrNamesToGet)
-    return this.getTable<T>().find(query, prjFields).toArray()
+    return this.getTable<T>().find(query, prjFields).toArray().then(res => this.addBackIdField(res))
   }
 
   protected getItemsNotHavingAttributes<T extends dbLib.TableEntity> (keys: (keyof T)[], ...attrNamesToGet: (keyof T)[]): Promise<T[]> {
     let query = {}
     _.each(keys, key => query[<string> key] = { $exists: false })
     let prjFields = this.composeProjectFields<T>(attrNamesToGet)
-    return this.getTable<T>().find(query, prjFields).toArray()
+    return this.getTable<T>().find(query, prjFields).toArray().then(res => this.addBackIdField(res))
   }
 
   public async forEachBatch<T extends dbLib.TableEntity> (
@@ -176,7 +209,7 @@ export abstract class MongoDBTable<HydrateField = string> extends dbLib.Table<Hy
     attrNamesToGet?: (keyof T)[]
   ): Promise<void> {
 
-    const pageSize = this.suggestPageSize
+    const pageSize = Math.min(this.suggestPageSize, MongoDBTable.AZURE_MAX_QUERY_ITEMS)
     let pageId = 0
     let prjFields = this.composeProjectFields<T>(attrNamesToGet)
 
@@ -227,5 +260,41 @@ export abstract class MongoDBTable<HydrateField = string> extends dbLib.Table<Hy
       r['_id'] = 1
     }
     return r
+  }
+
+  // '_id' to 'id'
+  protected addBackIdField<T> (items: T): T {
+    if (!items) {
+      return items
+    }
+
+    let convert = (b: any) => {
+      if (b['_id']) {
+        b['id'] = b['_id']
+        delete b['_id']
+      }
+      return b
+    }
+
+    return _.isArray(items) ? _.each(items, convert) : convert(items)
+  }
+
+  protected composeQueryOfSingleOrMultipleValues<T> (key: string, val: T | T[]): any {
+    let query = {}
+
+    if (!val) {
+      return query
+    }
+
+    if (_.isArray(val)) {
+      if (val.length === 1 && val[0]) {
+        query[key] = val[0]
+      } else if (val.length > 1) {
+        query[key] = { $in: val }
+      }
+    } else {
+      query[key] = val
+    }
+    return query
   }
 }

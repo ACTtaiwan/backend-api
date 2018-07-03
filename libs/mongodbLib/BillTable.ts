@@ -93,6 +93,11 @@ export class BillTable extends MongoDBTable<dbLib.BillEntityHydrateField> {
       .then(items => this.applyHydrateFields(items))
   }
 
+  public getBillsByMongoQuery (query: {}, attrNamesToGet?: (keyof dbLib.BillEntity)[]): Promise<dbLib.BillEntity[]> {
+    return super.queryItems<dbLib.BillEntity>(query, this.applyHydrateFieldsForAttrNames(attrNamesToGet))
+      .then(items => this.applyHydrateFields(items))
+  }
+
   public queryBillsByCongress (congress: number, attrNamesToGet?: (keyof dbLib.BillEntity)[]): Promise<dbLib.BillEntity[]> {
     return super.queryItems<dbLib.BillEntity>({ congress }, this.applyHydrateFieldsForAttrNames(attrNamesToGet))
       .then(items => this.applyHydrateFields(items))
@@ -213,7 +218,7 @@ export class BillTable extends MongoDBTable<dbLib.BillEntityHydrateField> {
     // console.log(`[BillTable::applyHydrateFields()] roleIdx = ${JSON.stringify(roleIdx, null, 2)}`)
 
     if (roleIdx.length > 0) {
-      let rolesMap = _.keyBy(await tblRole.getRolesById(roleIdx), '_id')
+      let rolesMap = _.keyBy(await tblRole.getRolesById(roleIdx), 'id')
       _.each(bills, b => {
         if (hydrateSponsor) {
           b.sponsor = rolesMap[b.sponsorRoleId]
@@ -224,7 +229,6 @@ export class BillTable extends MongoDBTable<dbLib.BillEntityHydrateField> {
       })
       // console.log(`[BillTable::applyHydrateFields()] post-hydrated: ${JSON.stringify(bills, null, 2)}`)
     }
-
     return bills
   }
 }

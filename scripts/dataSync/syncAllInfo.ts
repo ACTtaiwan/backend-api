@@ -4,21 +4,29 @@ import * as dbLib from '../../libs/dbLib'
 import * as s3Lib from '../../libs/s3Lib'
 import * as _ from 'lodash'
 import * as aws from 'aws-sdk'
+import * as mongoDbLib from '../../libs/mongodbLib'
+import { MongoDbConfig } from '../../config/mongodb'
 
 var awsConfig = require('../../config/aws.json');
 
 export class AllInfoSync {
   public readonly congressGovAllInfoParser = new CongressGovAllInfoParser()
-
-  private readonly db = dbLib.DynamoDBManager.instance()
-  private readonly tblName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLS_TABLE_NAME
-  private readonly tbl = <dbLib.BillTable> this.db.getTable(this.tblName)
+  private tbl: mongoDbLib.BillTable
 
   private readonly s3 = s3Lib.S3Manager.instance()
   private readonly bcktName = (<any> awsConfig).s3.VOLUNTEER_BILLS_STATICINFO_BUCKET_NAME
   private readonly bckt = <s3Lib.BillStaticInfoBucket> this.s3.getBucket(this.bcktName)
 
   private congressBillsMap: {[congress: number]: dbLib.BillEntity[]}
+
+  public async init (): Promise<void> {
+    if (!this.tbl) {
+      let db = await mongoDbLib.MongoDBManager.instance
+      const tblBillName = MongoDbConfig.tableNames.BILLS_TABLE_NAME
+      this.tbl = db.getTable(tblBillName)
+    }
+    return Promise.resolve()
+  }
 
   public async syncAllInfoForAllBills (
     currentCongress: number,

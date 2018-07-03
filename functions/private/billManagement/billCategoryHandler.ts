@@ -1,29 +1,28 @@
 import { Context, Callback, APIGatewayEvent } from 'aws-lambda'
 import Response from '../../../libs/utils/Response'
 import * as dbLib from '../../../libs/dbLib'
+import * as mongoDbLib from '../../../libs/mongodbLib'
 import * as _ from 'lodash'
 import Utility from '../../../libs/utils/Utility';
-
-var awsConfig = require('../../../config/aws.json');
+import { MongoDbConfig } from '../../../config/mongodb'
 
 export class BillCategoryApi {
-  private readonly db = dbLib.DynamoDBManager.instance()
-  private readonly tblName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLCATEGORIES_TABLE_NAME
-  private readonly tbl = <dbLib.BillCategoryTable> this.db.getTable(this.tblName)
-
-  private readonly tblBillName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLS_TABLE_NAME
-  private readonly tblBill = <dbLib.BillTable> this.db.getTable(this.tblBillName)
+  private tblBill: mongoDbLib.BillTable
+  private tblCat: mongoDbLib.BillCategoryTable
 
   public async prefetchAll (): Promise<dbLib.BillCategoryEntity[]> {
-    return this.tbl.getAllCategories()
+    await this.init()
+    return this.tblCat.getAllCategories()
   }
 
   public async fullFetch (idx: string[]): Promise<dbLib.BillCategoryEntity[]> {
-    return this.tbl.getCategoriesById(idx)
+    await this.init()
+    return this.tblCat.getCategoriesById(idx)
   }
 
   public async fullFetchWithCongress (idx: string[], congress: number[]): Promise<dbLib.BillCategoryEntity[]> {
-    return this.tbl.getCategoriesById(idx).then(cats => {
+    await this.init()
+    return this.tblCat.getCategoriesById(idx).then(cats => {
       let billIdx: string[] = []
       _.each(cats, x => billIdx = billIdx.concat(x.billId))
       billIdx = _.uniq(billIdx)
@@ -38,6 +37,18 @@ export class BillCategoryApi {
         })
       }
     })
+  }
+
+  private async init () {
+    if (!this.tblBill || !this.tblCat) {
+      const db = await mongoDbLib.MongoDBManager.instance
+
+      const tblBillName = MongoDbConfig.tableNames.BILLS_TABLE_NAME
+      this.tblBill = db.getTable(tblBillName)
+
+      const tblCatName = MongoDbConfig.tableNames.BILLCATEGORIES_TABLE_NAME
+      this.tblCat = db.getTable(tblCatName)
+    }
   }
 }
 
@@ -55,6 +66,10 @@ class BillCategoryHandlerGetParams {
 class BillCategoryHandler {
   public static handleRequest (event: APIGatewayEvent, context: Context, callback?: Callback) {
     console.log(`[BillCategoryHandler::dispatchEvent()] event = ${JSON.stringify(event, null, 2)}`)
+
+    // This freezes node event loop when callback is invoked
+    context.callbackWaitsForEmptyEventLoop = false;
+
     let params = <BillCategoryHandlerGetParams> {
       id: (event.pathParameters && event.pathParameters.id)
        || (event.queryStringParameters && event.queryStringParameters.id)

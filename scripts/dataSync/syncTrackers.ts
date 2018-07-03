@@ -3,22 +3,32 @@ import { CongressGovHelper } from '../../libs/congressGov/CongressGovHelper'
 import { CongressGovTrackerParser } from '../../libs/congressGov/CongressGovTrackerParser'
 import * as models from '../../libs/congressGov/CongressGovModels'
 import * as _ from 'lodash'
-
-var awsConfig = require('../../config/aws.json');
+import * as mongoDbLib from '../../libs/mongodbLib'
+import { MongoDbConfig } from '../../config/mongodb'
 
 export class TrackerSync {
-  private readonly tblName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLS_TABLE_NAME
-  private readonly tbl = <dbLib.BillTable> dbLib.DynamoDBManager.instance().getTable(this.tblName)
   private readonly congressGovTrackParser = new CongressGovTrackerParser()
+  private tbl: mongoDbLib.BillTable
+
+  public async init (): Promise<void> {
+    if (!this.tbl) {
+      let db = await mongoDbLib.MongoDBManager.instance
+      const tblBillName = MongoDbConfig.tableNames.BILLS_TABLE_NAME
+      this.tbl = db.getTable(tblBillName)
+    }
+    return Promise.resolve()
+  }
 
   public async syncTrackersForBillEntity (bill: dbLib.BillEntity) {
     const path = CongressGovHelper.generateCongressGovBillPath(bill.congress, bill.billType.code, bill.billNumber)
+    console.log(`[TrackerSync::syncTrackersForBillEntity()] path = ${path}`)
     const tracker = await this.congressGovTrackParser.getTracker(path)
+    console.log(`[TrackerSync::syncTrackersForBillEntity()] got tracker`)
     if (!_.isEqual(bill.trackers, tracker)) {
-      console.log(`Updating ${path}`)
+      console.log(`[TrackerSync::syncTrackersForBillEntity()] Updating ${path}`)
       await this.tbl.updateTracker(bill.id, tracker)
     } else {
-      console.log(`Not updating ${path} - same values`)
+      console.log(`[TrackerSync::syncTrackersForBillEntity()] Not updating ${path} - same values`)
     }
   }
 

@@ -82,6 +82,17 @@ class TestBillTable {
     console.log(JSON.stringify(await tbl.getBillById(billId, 'tags'), null, 2))
   }
 
+  public static async updateTracker () {
+    let tbl = await TestBillTable.getTable()
+    let billId = 'a9f00c7f-ec6a-4ce2-9f80-e51ecdc4fa5f'
+    console.log(JSON.stringify(await tbl.getBillById(billId, 'trackers'), null, 2))
+    await tbl.updateTracker(billId, [
+      { stepName : 'Introduced', selected : false },
+      { stepName : 'Agreed to in House', selected : true }
+    ])
+    console.log(JSON.stringify(await tbl.getBillById(billId, 'trackers'), null, 2))
+  }
+
   public static async clearTagUserCount () {
     let tbl = await TestBillTable.getTable()
     const billId = '9be9e553-f2b3-48b3-a7f2-87dfb369c7a8'
@@ -102,9 +113,10 @@ class TestBillTable {
 // TestBillTable.createEmptyTagsAttrForBill()
 // TestBillTable.addTagToBill()
 // TestBillTable.getBillById()
-TestBillTable.getBill()
+// TestBillTable.getBill()
 // TestBillTable.getAllBillsHavingAttributes()
 // TestBillTable.queryBillsByCongress()
 // TestBillTable.deleteTagFromBill()
+TestBillTable.updateTracker()
 // TestBillTable.updateTagUserCount()
 // TestBillTable.clearTagUserCount()

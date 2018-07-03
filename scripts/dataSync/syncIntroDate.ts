@@ -2,16 +2,24 @@ import { CongressGovIntroDateParser } from '../../libs/congressGov/CongressGovIn
 import * as dbLib from '../../libs/dbLib'
 import { CongressGovHelper } from '../../libs/congressGov/CongressGovHelper';
 import * as _ from 'lodash'
-
-var awsConfig = require('../config/aws.json');
+import { CongressGovTextUpdater } from '../../libs/congressGov/CongressGovTextUpdater';
+import * as mongoDbLib from '../../libs/mongodbLib'
+import { MongoDbConfig } from '../../config/mongodb'
 
 export class IntroducedDateSync {
-  private readonly db = dbLib.DynamoDBManager.instance()
-
-  private readonly tblName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLS_TABLE_NAME
-  private readonly tbl = <dbLib.BillTable> this.db.getTable(this.tblName)
+  public  readonly updater = new CongressGovTextUpdater()
+  private tbl: mongoDbLib.BillTable
 
   private readonly congressGovIntroDateParser = new CongressGovIntroDateParser()
+
+  public async init (): Promise<void> {
+    if (!this.tbl) {
+      let db = await mongoDbLib.MongoDBManager.instance
+      const tblName = MongoDbConfig.tableNames.BILLS_TABLE_NAME
+      this.tbl = db.getTable(tblName)
+    }
+    return Promise.resolve()
+  }
 
   public async syncIntroducedDateForAllBills (currentCongress: number, minUpdateCongress?: number, maxUpdateCongress?: number) {
     const minCongress = Math.max(minUpdateCongress || CongressGovHelper.MIN_CONGRESS_DATA_AVAILABLE,
@@ -55,4 +63,5 @@ export class IntroducedDateSync {
 }
 
 let sync = new IntroducedDateSync()
-sync.syncIntroducedDateForAllBills(CongressGovHelper.CURRENT_CONGRESS)
+sync.init()
+  .then(() => sync.syncIntroducedDateForAllBills(CongressGovHelper.CURRENT_CONGRESS))

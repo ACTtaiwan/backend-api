@@ -5,27 +5,22 @@ import * as s3Lib from '../../libs/s3Lib'
 import * as _ from 'lodash'
 import * as fs from 'fs'
 import * as moment from 'moment'
+import * as mongoDbLib from '../../libs/mongodbLib'
+import { MongoDbConfig } from '../../config/mongodb'
 
 var awsConfig = require('../../config/aws.json');
 
 export class FullTextSync {
   public  readonly updater = new CongressGovTextUpdater()
+  private tblBill: mongoDbLib.BillTable
+  private tblVrsn: mongoDbLib.BillVersionTable
 
   private readonly s3 = s3Lib.S3Manager.instance()
   private readonly bcktName = (<any> awsConfig).s3.VOLUNTEER_BILLS_FULLTEXT_BUCKET_NAME
   public  readonly bckt = <s3Lib.BillTextBucket> this.s3.getBucket(this.bcktName)
 
-  private readonly db = dbLib.DynamoDBManager.instance()
-
-  private readonly tblBillName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLS_TABLE_NAME
-  public  readonly tblBill = <dbLib.BillTable> this.db.getTable(this.tblBillName)
-
-  private readonly tblVrsnName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLVERSIONS_TABLE_NAME
-  private readonly tblVrsn = <dbLib.BillVersionTable> this.db.getTable(this.tblVrsnName)
   private _allVersionMap: {[code: string]: dbLib.BillVersionEntity}
-
   private congressBillsMap: {[congress: number]: dbLib.BillEntity[]}
-
   private readonly loggerFile: string
 
   constructor (useLogging: boolean = true) {
@@ -33,6 +28,19 @@ export class FullTextSync {
       this.loggerFile = `./log-${moment(new Date()).format('YYYYMMDD-hhmmss')}.txt`
       fs.writeFileSync(this.loggerFile, '')
     }
+  }
+
+  public async init (): Promise<void> {
+    if (!this.tblBill || !this.tblVrsn) {
+      let db = await mongoDbLib.MongoDBManager.instance
+
+      const tblBillName = MongoDbConfig.tableNames.BILLS_TABLE_NAME
+      this.tblBill = db.getTable(tblBillName)
+
+      const tblVrsnName = MongoDbConfig.tableNames.BILLVERSIONS_TABLE_NAME
+      this.tblVrsn = db.getTable(tblVrsnName)
+    }
+    return Promise.resolve()
   }
 
   public async syncAllBills (currentCongress: number, minUpdateCongress?: number, maxUpdateCongress?: number) {
@@ -145,7 +153,8 @@ export class FullTextSync {
 }
 
 let sync = new FullTextSync(false)
-sync.syncAllBills(CongressGovHelper.CURRENT_CONGRESS, CongressGovHelper.CURRENT_CONGRESS)
+sync.init()
+  .then(() => sync.syncAllBills(CongressGovHelper.CURRENT_CONGRESS, CongressGovHelper.CURRENT_CONGRESS))
 
 // problems:
 //   [106-s-1059 (154155dd-0d68-4a15-ae54-98f747fdef66)] Error: [FullTextSync::updateMongoDb()] can not find bill version for code = pwh
