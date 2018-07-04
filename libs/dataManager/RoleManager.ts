@@ -13,6 +13,7 @@ export class RoleManager {
 
   private _tblRoleSponsors: {[roldId: string]: dbLib.RoleEntity}
   private _tblRoleCosponsors: {[roleId: string]: dbLib.RoleEntity}
+  private _defaultMaxSearchItems: number = 20
 
   public async init (): Promise<void> {
     if (!this.tblBill || !this.tblRole || !this.tblPpl) {
@@ -71,6 +72,10 @@ export class RoleManager {
 
   public getRolesByPersonId (personId: string | string[], ...attrNamesToGet: (keyof dbLib.RoleEntity)[] ): Promise<dbLib.RoleEntity[]> {
     return this.tblRole.queryRoles(personId, null, null, attrNamesToGet)
+  }
+
+  public searchPersonsWithNameContains (q: string, attrNamesToGet?: (keyof dbLib.PersonEntity)[]): Promise<dbLib.PersonEntity[]> {
+    return this.tblPpl.searchPerson(q, attrNamesToGet, this._defaultMaxSearchItems, 'contains')
   }
 
   public getRolesByCongress (congress: number | number[], ...attrNamesToGet: (keyof dbLib.RoleEntity)[] ): Promise<dbLib.RoleEntity[]> {

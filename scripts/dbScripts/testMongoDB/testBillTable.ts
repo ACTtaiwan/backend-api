@@ -64,6 +64,12 @@ class TestBillTable {
     console.log(JSON.stringify(bills, null, 2))
   }
 
+  public static async searchBills (q: string) {
+    let tbl = await TestBillTable.getTable()
+    let bills = await tbl.searchBills(q, ['id', 'title', 'title_zh', 'congress', 'billType', 'billNumber'])
+    console.log(JSON.stringify(bills, null, 2))
+  }
+
   public static async deleteTagFromBill () {
     let tbl = await TestBillTable.getTable()
     let billId = 'a9f00c7f-ec6a-4ce2-9f80-e51ecdc4fa5f'
@@ -116,7 +122,8 @@ class TestBillTable {
 // TestBillTable.getBill()
 // TestBillTable.getAllBillsHavingAttributes()
 // TestBillTable.queryBillsByCongress()
+TestBillTable.searchBills('hr 台灣 中國')
 // TestBillTable.deleteTagFromBill()
-TestBillTable.updateTracker()
+// TestBillTable.updateTracker()
 // TestBillTable.updateTagUserCount()
 // TestBillTable.clearTagUserCount()

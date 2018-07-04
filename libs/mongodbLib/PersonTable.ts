@@ -35,6 +35,37 @@ export class PersonTable extends MongoDBTable {
       .then(results => (results && results[0]) || null)
   }
 
+  public searchPerson (
+    q: string,
+    attrNamesToGet?: (keyof dbLib.PersonEntity)[],
+    maxSearchItems?: number,
+    op: 'contains' | 'begins_with' | 'regex' = 'contains'
+  ): Promise<dbLib.PersonEntity[]> {
+
+    let queryItems = (query) => {
+      let prjFields = this.composeProjectFields<dbLib.PersonEntity>(attrNamesToGet)
+      let cursor = this.getTable<dbLib.PersonEntity>().find(query, prjFields)
+      if (maxSearchItems && maxSearchItems > 0) {
+        cursor = cursor.limit(maxSearchItems)
+      }
+      return cursor.toArray().then(res => super.addBackIdField(res))
+    }
+
+    let makeRegExp = () => {
+      switch (op) {
+        case 'contains':
+        case 'regex':
+          return new RegExp(q, 'ig')
+
+        case 'begins_with':
+          return new RegExp('^' + q, 'ig')
+      }
+    }
+
+    let regExp = makeRegExp()
+    return queryItems({ searchName: { $regex: regExp } })
+  }
+
   public updatePerson (id: string, item: dbLib.PersonEntity): Promise<mongodb.WriteOpResult> {
     return super.updateItemByObjectId<dbLib.BillCategoryEntity>(id, item)
   }

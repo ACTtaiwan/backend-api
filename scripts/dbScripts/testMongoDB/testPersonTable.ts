@@ -21,6 +21,12 @@ class TestPersonTable {
     console.log(JSON.stringify(person, null, 2))
   }
 
+  public static async searchPerson () {
+    let tbl = await TestPersonTable.getTable()
+    let persons = await tbl.searchPerson('solarz', ['id', 'firstname', 'lastname', 'middlename'])
+    console.log(JSON.stringify(persons, null, 2))
+  }
+
   public static async updatePerson () {
     let tbl = await TestPersonTable.getTable()
     const pid = '9d382f05-d628-4635-907d-af96ee7302d6'
@@ -38,4 +44,5 @@ class TestPersonTable {
 
 // TestPersonTable.forEachBatchOfAllPersons()
 // TestPersonTable.getPersonByBioGuideId()
-TestPersonTable.updatePerson()
+TestPersonTable.searchPerson()
+// TestPersonTable.updatePerson()

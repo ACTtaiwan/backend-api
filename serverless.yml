@@ -104,6 +104,14 @@ functions:
               paths:
                 id: true
           cors: true
+      - http:
+          path: congressional/bills/search/{q}
+          method: get
+          request:
+            parameters:
+              paths:
+                q: true
+          cors: true
 
   billMgmt-billCategories:
     handler: functions/private/billManagement/billCategoryHandler.main
@@ -143,6 +151,14 @@ functions:
             parameters:
               paths:
                 personId: true
+          cors: true  
+      - http:
+          path: congressional/roles/person/search/{q}
+          method: get
+          request:
+            parameters:
+              paths:
+                q: true
           cors: true  
       - http:
           path: congressional/roles/state/{state}

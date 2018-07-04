@@ -26,6 +26,15 @@ export interface GetBillByIdRequest {
 
 export type GetBillByIdResponse = dbLib.BillEntity[]
 
+
+export interface SearchBillsRequest {
+  q: string
+  congress?: number[]
+  attrNamesToGet?: (keyof dbLib.BillEntity)[]
+}
+
+export type SearchBillsResponse = dbLib.BillEntity[]
+
 export class BillApi {
   private tbl: mongoDbLib.BillTable
 
@@ -88,6 +97,17 @@ export class BillApi {
     }
   }
 
+  public async searchBills (req: SearchBillsRequest): Promise<SearchBillsResponse> {
+    await this.init()
+    let attrNamesToGet: (keyof dbLib.BillEntity)[] =
+         req.attrNamesToGet
+      || ['id', 'title', 'title_zh', 'billNumber', 'billType', 'congress']
+    attrNamesToGet.push('introducedDate')
+    attrNamesToGet = _.uniq(attrNamesToGet)
+    return this.tbl.searchBills(req.q, attrNamesToGet, null, req.congress)
+      .then(bills =>  _.orderBy(bills, ['introducedDate'], ['desc']))
+  }
+
   private sortAndFilter (req: QueryBillsRequest, results: dbLib.BillEntity[], queryAttrs: (keyof dbLib.BillEntity)[]): dbLib.BillEntity[] {
     if (req.categoryIdx && req.categoryIdx.length > 0 && queryAttrs && _.includes(queryAttrs, 'categories')) {
       results = _.filter(results, bill =>
@@ -119,6 +139,7 @@ class BillHandlerGetParams {
   categoryIdx?: string
   attrNamesToGet?: string
   id?: string
+  q?: string
 }
 
 class BillHandler {
@@ -134,6 +155,9 @@ class BillHandler {
       attrNamesToGet: (event.queryStringParameters && event.queryStringParameters.attrNamesToGet) || undefined,
       id: (event.pathParameters && event.pathParameters.id)
        || (event.queryStringParameters && event.queryStringParameters.id)
+       || undefined,
+      q:  (event.pathParameters && event.pathParameters.q)
+       || (event.queryStringParameters && event.queryStringParameters.q)
        || undefined
     }
     params = _.pickBy(params, _.identity)
@@ -155,7 +179,7 @@ class BillHandler {
     let api = new BillApi()
 
     // pre-fetch
-    if (httpMethod === 'GET' && (params.congress || _.isEmpty(params))) {
+    if (httpMethod === 'GET' && (params.congress || _.isEmpty(params)) && !params.q) {
       let req: QueryBillsRequest = {}
       if (params.congress) {
         req.congress = Utility.stringToArray(params.congress, parseInt)
@@ -168,7 +192,7 @@ class BillHandler {
     }
 
     // full fetch
-    if (httpMethod === 'GET' && params.id) {
+    if (httpMethod === 'GET' && params.id && !params.q) {
       let req: GetBillByIdRequest = {
         id: Utility.stringToArray(params.id)
       }
@@ -179,6 +203,24 @@ class BillHandler {
 
       console.log(`[BillHandler::dispatchEvent()] request = ${JSON.stringify(req, null, 2)}`)
       return api.getBillById(req)
+    }
+
+    // search bills
+    if (httpMethod === 'GET' && params.q) {
+      let req: SearchBillsRequest = {
+        q: params.q
+      }
+
+      if (params.congress) {
+        req.congress = Utility.stringToArray(params.congress, parseInt)
+      }
+
+      if (params.attrNamesToGet) {
+        req.attrNamesToGet = Utility.stringToArray(params.attrNamesToGet)
+      }
+
+      console.log(`[BillHandler::dispatchEvent()] request = ${JSON.stringify(req, null, 2)}`)
+      return api.searchBills(req)
     }
   }
 }

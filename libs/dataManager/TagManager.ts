@@ -151,11 +151,11 @@ export class TagManager {
   }
 
   public searchTagStartWith (q: string, attrNamesToGet?: (keyof dbLib.TagEntity)[]): Promise<dbLib.TagEntity[]> {
-    return this.tblTag.queryTags(q, attrNamesToGet, this.defaultMaxSearchItems, 'begins_with')
+    return this.tblTag.searchTags(q, attrNamesToGet, this.defaultMaxSearchItems, 'begins_with')
   }
 
   public searchTagContains (q: string, attrNamesToGet?: (keyof dbLib.TagEntity)[]): Promise<dbLib.TagEntity[]> {
-    return this.tblTag.queryTags(q, attrNamesToGet, this.defaultMaxSearchItems, 'contains')
+    return this.tblTag.searchTags(q, attrNamesToGet, this.defaultMaxSearchItems, 'contains')
   }
 
   public getTags (tags: string | string[]): Promise<dbLib.TagEntity[]> {

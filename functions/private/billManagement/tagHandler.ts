@@ -14,15 +14,15 @@ export class TagApi {
     return (tags && tags.length > 0) ? this.tagMngr.getTags([...tags]) : Promise.resolve([])
   }
 
-  public async queryTagsBeginWith (q: string): Promise<string[]> {
+  public async searchTagStartWith (q: string): Promise<string[]> {
     await this.tagMngr.init()
-    console.log(`[TagApi::queryTagsBeginWith()] q = ${JSON.stringify(q, null, 2)}`)
+    console.log(`[TagApi::searchTagStartWith()] q = ${JSON.stringify(q, null, 2)}`)
     return this.tagMngr.searchTagStartWith(q, ['tag']).then(out => _.map(out, x => x.tag))
   }
 
-  public async queryTagsContains (q: string): Promise<string[]> {
+  public async searchTagContains (q: string): Promise<string[]> {
     await this.tagMngr.init()
-    console.log(`[TagApi::queryTagsContains()] q = ${JSON.stringify(q, null, 2)}`)
+    console.log(`[TagApi::searchTagContains()] q = ${JSON.stringify(q, null, 2)}`)
     return this.tagMngr.searchTagContains(q, ['tag']).then(out => _.map(out, x => x.tag))
   }
 }
@@ -85,7 +85,7 @@ export class TagHandler {
     if (httpMethod === 'GET' && !params.tag && params.q) {
       let q = decodeURIComponent(params.q)
       console.log(`[TagHandler::dispatchEvent()] query tags = ${q}`)
-      return api.queryTagsContains(q)
+      return api.searchTagContains(q)
     }
   }
 }

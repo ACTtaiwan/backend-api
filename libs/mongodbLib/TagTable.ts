@@ -59,7 +59,7 @@ export class TagTable extends MongoDBTable {
     return super.getAllItems<dbLib.TagEntity>(attrNamesToGet)
   }
 
-  public queryTags (
+  public searchTags (
     q: string,
     attrNamesToGet?: (keyof dbLib.TagEntity)[],
     maxSearchItems?: number,

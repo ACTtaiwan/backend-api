@@ -5,10 +5,13 @@ import { MongoDbConfig } from '../../config/mongodb'
 import * as dbLib from '../dbLib'
 import * as _ from 'lodash'
 import * as mongoDbLib from './';
+import { CongressGovHelper } from '../congressGov/CongressGovHelper';
 
 export class BillTable extends MongoDBTable<dbLib.BillEntityHydrateField> {
   public readonly tableName = MongoDbConfig.tableNames.BILLS_TABLE_NAME
   protected readonly suggestPageSize: number = 100
+
+  public static readonly MAX_SEARCH_TOKENS = 5
 
   constructor (db: mongodb.Db) {
     super(db)
@@ -101,6 +104,79 @@ export class BillTable extends MongoDBTable<dbLib.BillEntityHydrateField> {
   public queryBillsByCongress (congress: number, attrNamesToGet?: (keyof dbLib.BillEntity)[]): Promise<dbLib.BillEntity[]> {
     return super.queryItems<dbLib.BillEntity>({ congress }, this.applyHydrateFieldsForAttrNames(attrNamesToGet))
       .then(items => this.applyHydrateFields(items))
+  }
+
+  public searchBills (
+    q: string,
+    attrNamesToGet?: (keyof dbLib.BillEntity)[],
+    maxSearchItems?: number,
+    congress?: number[]
+  ): Promise<dbLib.BillEntity[]> {
+
+    q = q.toLowerCase()
+
+    let billTypeCodes = _.keys(CongressGovHelper.typeCodeToFullTypeNameMap)
+    let billTypeFirstMatch = _.filter(billTypeCodes, code => q.includes(code))[0] || ''
+    let numberMatch = q.match(/^\d+|\d+\b|\d+(?=\w)/g)
+    let numberFirstMatch = (numberMatch && numberMatch[0] && parseInt(numberMatch[0])) || undefined
+
+    let query = {}
+
+    if (billTypeFirstMatch) {
+      query['billType.code'] = billTypeFirstMatch
+      q = q.replace(billTypeFirstMatch, '')
+    }
+
+    if (numberFirstMatch) {
+      query['billNumber'] = numberFirstMatch
+      q = q.replace(numberFirstMatch.toString(), '')
+    }
+
+    if (congress) {
+      if (congress.length === 1 && congress[0]) {
+        query['congress'] = congress[0]
+      } else {
+        query['congress'] = { $in: congress }
+      }
+    }
+
+    let tokens = (q.match(/\S+/g) || []).slice(0, BillTable.MAX_SEARCH_TOKENS);
+    if (tokens && tokens.length > 0) {
+      let conditions: {[key in keyof dbLib.BillEntity]?: any}[] = []
+      _.each(tokens, token =>  {
+        let regExp = new RegExp(token, 'ig')
+        conditions.push({ 'title':    { $regex: regExp } })
+        conditions.push({ 'title_zh': { $regex: regExp } })
+      })
+
+      if (conditions.length > 0) {
+        query['$or'] = conditions
+      }
+    }
+
+    console.log('[BillTable::searchBills()] q = ' + q)
+    console.log('[BillTable::searchBills()] tokens = ' + tokens)
+    console.log(`[BillTable::searchBills()] query = ${JSON.stringify(query, null, 2)}`)
+
+    let queryItems = (query) => {
+      let hydratedAttrNames = this.applyHydrateFieldsForAttrNames(attrNamesToGet)
+      let prjFields = this.composeProjectFields<dbLib.BillEntity>(hydratedAttrNames)
+      let cursor = this.getTable<dbLib.BillEntity>().find(query, prjFields)
+      if (maxSearchItems && maxSearchItems > 0) {
+        cursor = cursor.limit(maxSearchItems)
+      }
+      return cursor.toArray()
+        .then(items => super.addBackIdField(items))
+        .then(items => this.applyHydrateFields(items))
+    }
+
+    const perfMark = '[BillTable::searchBills()] search time'
+    console['time'](perfMark)
+    return queryItems(query)
+      .then(items => {
+        console['timeEnd'](perfMark)
+        return items
+      })
   }
 
   public deleteBills (idx: string[]): Promise<mongodb.DeleteWriteOpResultObject> {

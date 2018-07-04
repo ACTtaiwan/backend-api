@@ -151,28 +151,33 @@ export abstract class MongoDBTable<HydrateField = string> extends dbLib.Table<Hy
   }
 
   protected async queryItems<T extends dbLib.TableEntity> (query: any, attrNamesToGet?: (keyof T)[]): Promise<T[]> {
+    if (_.isEmpty(query)) {
+      console.log(`[MongoDBTable::queryItems()] empty query! Reutrn empty results.`)
+      return Promise.resolve([])
+    }
+
     let prjFields = this.composeProjectFields<T>(attrNamesToGet)
     let pageSize = MongoDBTable.AZURE_MAX_QUERY_ITEMS
-    let runQuery = (skip: number = 0) =>
+    let runQuery = (pageId: number = 0) =>
       this.getTable<T>()
         .find(query, prjFields)
         .limit(pageSize)
-        .skip(skip * pageSize)
+        .skip(pageId * pageSize)
         .toArray()
         .then(res => this.addBackIdField(res))
 
     let results: T[] = []
-    let skip = 0
+    let pageId = 0
     while (true) {
       try {
-        let batch = await runQuery(skip)
-        console.log(`[MongoDBTable::queryItems()] skip = ${skip}, batch.length = ${batch.length}`)
+        let batch = await runQuery(pageId)
+        console.log(`[MongoDBTable::queryItems()] pageSize = ${pageSize}, pageId = ${pageId}, batch.length = ${batch.length}`)
         if (batch && batch.length > 0) {
           results = _.concat(results, batch)
           if (batch.length < pageSize) {
             break
           } else {
-            ++skip
+            ++pageId
           }
         } else {
           break

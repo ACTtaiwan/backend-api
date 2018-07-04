@@ -37,7 +37,7 @@ export class SponsorSync {
   }
 
   public async syncSponsorForAllBills (
-    currentCongress: number,
+    currentCongress: number = CongressGovHelper.CURRENT_CONGRESS,
     minUpdateCongress: number = CongressGovHelper.MIN_CONGRESS_DATA_AVAILABLE,
     maxUpdateCongress: number = currentCongress
   ) {
@@ -55,12 +55,12 @@ export class SponsorSync {
       let congress = parseInt(keys[c])
       let bills = congressBillsMap[congress]
       console.log(`Updating congress = ${congress}`)
-      await this.batchSyncForCongress(congress, bills, currentCongress)
+      await this.batchSyncForCongress(congress, bills)
       console.log('\n\n\n')
     }
   }
 
-  public async batchSyncForCongress (congress: number, bills: dbLib.BillEntity[], currentCongress: number, writeToDb: boolean = true) {
+  public async batchSyncForCongress (congress: number, bills: dbLib.BillEntity[], writeToDb: boolean = true) {
     const roleMap = await this.buildRoleMapOfCongress(congress)
 
     let queryRole = (sponsor: models.CongressGovSponsor, bill: dbLib.BillEntity, cosponsorDate?: number) => {
@@ -159,12 +159,12 @@ export class SponsorSync {
 }
 
 let sync = new SponsorSync()
-// sync.syncSponsorForAllBills(115)
+// sync.syncSponsorForAllBills()
 
-let patch = async (billId: string, currentCongress = 115) => {
+let patch = async (billId: string) => {
   await sync.init()
   const bill = await sync.billTable.getBillById(billId)
-  await sync.batchSyncForCongress(bill.congress, [bill], currentCongress, /* writeToDb */ true)
+  await sync.batchSyncForCongress(bill.congress, [bill], /* writeToDb */ true)
 }
 
 patch('df717157-4d7b-4a55-acf4-eae451f2ff64')
