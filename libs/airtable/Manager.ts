@@ -1,9 +1,8 @@
 import * as _ from 'lodash';
 import * as assert from 'assert';
 import * as airtable from 'airtable'
-import * as util from 'util'
 
-import { Entity, EntityTable, EntityType, SCHEMAS } from './'
+import { Entity, EntityType, SCHEMAS } from './'
 
 class Cache {
   protected _storage: { [type: string]: { [id: string]: Entity } } = {};
@@ -38,7 +37,7 @@ class Cache {
   public printKeys (): void {
     _.each(this._storage, (v, type) =>
       _.each(v, (_entry, id) => {
-        console.log(type + " " + id);
+        console.log(type + ' ' + id);
       })
     );
   }
@@ -56,8 +55,8 @@ export class Manager {
 
   protected async _prefetch (): Promise<void> {
     await Promise.all(
-      _.map(EntityTable, async (_tableName, type: EntityType) => {
-        if (SCHEMAS[type].prefetch) {
+      _.map(SCHEMAS, async (schema, type: EntityType) => {
+        if (schema.prefetch) {
           await this.list(type);
         }
       }),
@@ -91,7 +90,7 @@ export class Manager {
         this._assertDb();
         let results: Entity[] = [];
 
-        this._db(EntityTable[type]).select(options).eachPage(
+        this._db(SCHEMAS[type].table).select(options).eachPage(
           (records, fetchNextPage) => {
             results = results.concat(_.map(records, record =>
               Entity._instantiate(
@@ -137,7 +136,7 @@ export class Manager {
     let shallowEntity = await new Promise<Entity>(
       async resolve => {
         this._assertDb();
-        this._db(EntityTable[type]).find(id, (err, record) => {
+        this._db(SCHEMAS[type].table).find(id, (err, record) => {
           if (err) {
             console.error(err);
             resolve(null);
@@ -165,7 +164,7 @@ export class Manager {
   public async create (type: EntityType): Promise<Entity> {
     return new Promise<Entity>(resolve => {
       this._assertDb();
-      this._db(EntityTable[type]).create({}, (err, record) => {
+      this._db(SCHEMAS[type].table).create({}, (err, record) => {
         if (err) {
           console.error(err);
           resolve(null);
@@ -181,7 +180,7 @@ export class Manager {
   public async update (type: EntityType, id: string, data: any): Promise<void> {
     return new Promise<void>(resolve => {
       this._assertDb();
-      this._db(EntityTable[type]).update(id, data, (err, record) => {
+      this._db(SCHEMAS[type].table).update(id, data, (err, record) => {
         if (err) {
           console.error(err);
         }
@@ -193,7 +192,7 @@ export class Manager {
   public async delete (type: EntityType, id: string): Promise<void> {
     return new Promise<void>(resolve => {
       this._assertDb();
-      this._db(EntityTable[type]).destroy(id, (err, _record) => {
+      this._db(SCHEMAS[type].table).destroy(id, (err, _record) => {
         if (err) {
           console.error(err);
           resolve();
@@ -204,7 +203,7 @@ export class Manager {
     });
   }
 
-  public _printCache() {
+  public _printCache () {
     this._cache.printKeys();
   }
 }
