@@ -1,7 +1,7 @@
 import * as airtable from './'
 
 async function test () {
-  let m = await airtable.Manager.new('keyy3vixBNbpjW9Pc', 'appp9kTQYOdrmDGuS');
+  let m = await airtable.Manager.new('appp9kTQYOdrmDGuS');
   let bills = await m.list('Bill', 2);
   console.log('-----------');
   console.log(bills);

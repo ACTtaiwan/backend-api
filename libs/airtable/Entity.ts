@@ -18,29 +18,26 @@ export class Entity {
     );
   }
 
-  public static _instantiate (
+  public static async new (
     manager: Manager,
     type: EntityType,
     id: string,
     data: { [key: string]: any },
-  ): Entity {
-    console.log(`instantiate entity ${type} ${id}`);
-    return new Entity(manager, type, id, data);
-  }
-
-  public async _resolveReferences (): Promise<Entity> {
-    await Promise.all(_.chain(this.schema.fields)
+  ): Promise<Entity> {
+    let entity = new Entity(manager, type, id, data);
+    // resolve references
+    await Promise.all(_.chain(entity.schema.fields)
       .pickBy((type, _fieldName) => type !== null)
       .map(async (type, fieldName) => {
-        this._data[fieldName] = await Promise.all(
-          _.map(this._data[fieldName], async id =>
-            await this._manager.find(type, id),
+        entity._data[fieldName] = await Promise.all(
+          _.map(entity._data[fieldName], async id =>
+            await entity._manager.find(type, id),
           ),
         );
       })
       .value(),
     );
-    return this;
+    return entity;
   }
 
   public get schema (): Schema {
@@ -50,7 +47,6 @@ export class Entity {
   }
 
   public get (name: string): any {
-    assert.ok(name in this.schema.fields, `Field does not exist: ${name}`);
     return this._data[name];
   }
 
@@ -81,4 +77,14 @@ export class Entity {
       this._data[name] = value;
     }
   }
+
+  // public str (): string {
+  //   _.map(this.schema.fields, (type, fieldName) => {
+  //     let result = [ fieldName, ': ' ];
+  //     let value = this.get(fieldName);
+  //     if (type) {
+  //       result.concat(_.map(value, v ))
+  //     }
+  //   });
+  // }
 }
