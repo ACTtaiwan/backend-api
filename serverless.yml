@@ -266,3 +266,12 @@ functions:
           method: get
           cors: true
           authorizer: aws_iam
+
+  subscription:
+    handler: functions/private/sendGrid/sendGridApiHandler.main
+    events:
+      - http:
+          path: subscribe/newsletter
+          method: post
+          cors: true
+          authorizer: aws_iam
