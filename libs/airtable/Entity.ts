@@ -10,34 +10,41 @@ export class Entity {
     protected _manager: Manager,
     public readonly type: EntityType,
     public readonly id: string,
-    data: { [key: string]: any },
-  ) {
-    this._data = _.pickBy(
-      data,
-      (_value, key) => key in this.schema.fields,
-    );
-  }
+  ) {}
 
-  public static async new (
+  public static async _new (
     manager: Manager,
     type: EntityType,
     id: string,
     data: { [key: string]: any },
   ): Promise<Entity> {
-    let entity = new Entity(manager, type, id, data);
-    // resolve references
-    await Promise.all(_.chain(entity.schema.fields)
-      .pickBy((type, _fieldName) => type !== null)
-      .map(async (type, fieldName) => {
-        entity._data[fieldName] = await Promise.all(
-          _.map(entity._data[fieldName], async id =>
-            await entity._manager.find(type, id),
-          ),
-        );
+    let entity = new Entity(manager, type, id);
+    return await entity._load(data);
+  }
+
+  protected async _load (data: { [key: string]: any }): Promise<Entity> {
+    // validate fields and resolve references in data
+    let newDataWithPromises = _.chain(data)
+      .pickBy((_value, key) => key in this.schema.fields)
+      .mapValues(async (value, field) => {
+        let type = this.schema.fields[field];
+        if (type) {
+          return await Promise.all(_.map(<string[]>value, async id =>
+            await this._manager.find(type, id),
+          ));
+        } else {
+          return value;
+        }
       })
-      .value(),
-    );
-    return entity;
+      .value();
+    let newDataKeys = Object.keys(newDataWithPromises);
+    let newDataValues = await Promise.all(_.map(newDataKeys, async key =>
+      await newDataWithPromises[key],
+    ));
+    let newData = _.zipObject(newDataKeys, newDataValues);
+
+    this._data = _.assign(this._data, newData);
+    return this;
   }
 
   public get schema (): Schema {
@@ -78,13 +85,26 @@ export class Entity {
     }
   }
 
-  // public str (): string {
-  //   _.map(this.schema.fields, (type, fieldName) => {
-  //     let result = [ fieldName, ': ' ];
-  //     let value = this.get(fieldName);
-  //     if (type) {
-  //       result.concat(_.map(value, v ))
-  //     }
-  //   });
-  // }
+  public async save (fields: string[] = null): Promise<void> {
+    this._manager.update(this, fields);
+  }
+
+  public getExistingFields (): string[] {
+    return Object.keys(this._data);
+  }
+
+  public toString (): string {
+    let shallowEntity = _.mapValues(this.schema.fields, (type, fieldName) => {
+      let value = this.get(fieldName);
+      if (!value) {
+        return null;
+      }
+      if (type) {
+        return _.map(<Entity[]>value, v => v.id);
+      } else {
+        return value;
+      }
+    });
+    return JSON.stringify(shallowEntity);
+  }
 }

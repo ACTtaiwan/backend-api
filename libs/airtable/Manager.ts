@@ -78,12 +78,24 @@ export class Manager {
   }
 
   // Read a list of entities from remote db
-  public async list (type: EntityType, limit: number = 0)
-    : Promise<Entity[]> {
+  public async list (
+    type: EntityType,
+    fields: string[] = null,
+    formula: string = null,
+    limit: number = 0,
+  ): Promise<Entity[]> {
     let options: any = {}
+    if (fields) {
+      fields = _.filter(fields, v => v in SCHEMAS[type].fields);
+      options.fields = fields;
+    } else {
+      options.fields = Object.keys(SCHEMAS[type].fields);
+    }
+    if (formula) {
+      options.filterByFormula = formula;
+    }
     if (limit > 0) {
       options.maxRecords = limit;
-      options.pageSize = 1;
     }
 
     // read raw records
@@ -112,7 +124,7 @@ export class Manager {
     }
     // resolve referenced entities
     let entities = await Promise.all(_.map(data, async d =>
-      await Entity.new(this, type, d.id, d.fields),
+      await Entity._new(this, type, d.id, d.fields),
     ));
     // cache
     _.each(entities, entity => {
@@ -142,7 +154,7 @@ export class Manager {
     if (!data) {
       return null;
     }
-    let entity = await Entity.new(this, type, data.id, data.fields);
+    let entity = await Entity._new(this, type, data.id, data.fields);
     this._cache.put(type, id, entity);
 
     return entity;
@@ -162,16 +174,33 @@ export class Manager {
     if (!data) {
       return null;
     }
-    let entity = await Entity.new(this, type, data.id, {});
+    let entity = await Entity._new(this, type, data.id, {});
     this._cache.put(type, entity.id, entity);
 
     return entity;
   }
 
-  public async update (type: EntityType, id: string, data: any): Promise<void> {
+  public async update (entity: Entity, fields: string[] = null): Promise<void> {
+    let id = entity.id;
+    if (fields) {
+      fields = _.filter(fields, field => field in entity.schema.fields);
+    } else {
+      fields = entity.getExistingFields();
+    }
+    let data = _.reduce(fields, (result, field) => {
+      let type = entity.schema.fields[field];
+      let value = entity.get(field);
+      if (type) {
+        result[field] = _.map(<Entity[]>value, e => e.id);
+      } else {
+        result[field] = entity.get(field);
+      }
+      return result;
+    }, {});
+
     return new Promise<void>((resolve, reject) => {
       this._assertDb();
-      this._db(SCHEMAS[type].table).update(id, data, (err, record) => {
+      this._db(entity.schema.table).update(id, data, (err, record) => {
         if (err) {
           console.error(err);
           reject(err);
@@ -181,17 +210,19 @@ export class Manager {
     });
   }
 
-  public async delete (type: EntityType, id: string): Promise<void> {
+  public async delete (entity: Entity): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this._assertDb();
-      this._db(SCHEMAS[type].table).destroy(id, (err, _record) => {
-        if (err) {
-          console.error(err);
-          reject(err);
+      this._db(entity.schema.table)
+        .destroy(entity.id, (err, _record) => {
+          if (err) {
+            console.error(err);
+            reject(err);
+          }
+          this._cache.delete(entity.type, entity.id);
+          resolve();
         }
-        this._cache.delete(type, id);
-        resolve();
-      });
+      );
     });
   }
 

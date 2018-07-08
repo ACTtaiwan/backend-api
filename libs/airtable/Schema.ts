@@ -25,7 +25,7 @@ export const SCHEMAS: { [key in EntityType]: Schema } = {
       'bill title (zh)': null,
       'categories': 'BillCategory',
       'tags': 'Tag',
-      'relevence': 'Relevance',
+      'relevance': 'Relevance',
       'china': null,
       'insight': null,
       'comment': null,
@@ -34,6 +34,7 @@ export const SCHEMAS: { [key in EntityType]: Schema } = {
       'bill summary (zh)': null,
       'status': null,
       'date introduced': null,
+      'last sync time': null,
     },
   },
   'BillType': {
