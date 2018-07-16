@@ -23,7 +23,7 @@ class TestPersonTable {
 
   public static async searchPerson () {
     let tbl = await TestPersonTable.getTable()
-    let persons = await tbl.searchPerson('solarz', ['id', 'firstname', 'lastname', 'middlename'])
+    let persons = await tbl.searchPerson('jim leach', ['id', 'firstname', 'lastname', 'middlename', 'searchName'])
     console.log(JSON.stringify(persons, null, 2))
   }
 
