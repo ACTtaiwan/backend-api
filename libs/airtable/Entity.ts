@@ -24,7 +24,7 @@ export class Entity {
 
   protected async _load (data: { [key: string]: any }): Promise<Entity> {
     // validate fields and resolve references in data
-    let newDataWithPromises = _.chain(data)
+    let newDataWithPromises = _(data)
       .pickBy((_value, key) => key in this.schema.fields)
       .mapValues(async (value, field) => {
         let type = this.schema.fields[field];
@@ -85,7 +85,7 @@ export class Entity {
     }
   }
 
-  public async save (fields: string[] = null): Promise<void> {
+  public async save (fields?: string[]): Promise<void> {
     this._manager.update(this, fields);
   }
 
@@ -97,7 +97,7 @@ export class Entity {
     let shallowEntity = _.mapValues(this.schema.fields, (type, fieldName) => {
       let value = this.get(fieldName);
       if (!value) {
-        return null;
+        return '';
       }
       if (type) {
         return _.map(<Entity[]>value, v => v.id);
@@ -106,5 +106,16 @@ export class Entity {
       }
     });
     return JSON.stringify(shallowEntity);
+  }
+
+  public getRawData (): Object {
+    let clone = _.clone(this._data);
+    return _.mapValues(clone, (value, key) => {
+      if (this.schema.fields[key]) {
+        return _.map(value, v => v.getRawData());
+      } else {
+        return value;
+      }
+    })
   }
 }

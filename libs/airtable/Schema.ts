@@ -7,7 +7,7 @@ export type EntityType
   | 'Relevance';
 
 export interface Schema {
-  readonly table: string,
+  readonly table: string;
   readonly fields: {
     [field: string]: EntityType; // null means primitive types
   };
@@ -34,7 +34,6 @@ export const SCHEMAS: { [key in EntityType]: Schema } = {
       'bill summary (zh)': null,
       'status': null,
       'date introduced': null,
-      'last sync time': null,
     },
   },
   'BillType': {

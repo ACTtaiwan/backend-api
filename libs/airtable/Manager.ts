@@ -18,10 +18,10 @@ class Cache {
 
   public get (type: EntityType, id: string): Entity {
     if (!(type in this._storage)) {
-      return null;
+      return;
     }
     if (!(id in this._storage[type])) {
-      return null;
+      return;
     }
     return this._storage[type][id];
   }
@@ -58,8 +58,7 @@ export class Manager {
   public static async new (dbId: string): Promise<Manager> {
     let apiKey = await this.getApiKey();
     let instance = new Manager(apiKey, dbId);
-    //await instance._prefetch();
-    console.log('******** prefetch turned off')
+    await instance._prefetch();
     return instance;
   }
 
@@ -80,9 +79,9 @@ export class Manager {
   // Read a list of entities from remote db
   public async list (
     type: EntityType,
-    fields: string[] = null,
-    formula: string = null,
-    limit: number = 0,
+    fields?: string[],
+    formula?: string,
+    limit?: number,
   ): Promise<Entity[]> {
     let options: any = {}
     if (fields) {
@@ -94,7 +93,7 @@ export class Manager {
     if (formula) {
       options.filterByFormula = formula;
     }
-    if (limit > 0) {
+    if (limit) {
       options.maxRecords = limit;
     }
 
@@ -120,7 +119,7 @@ export class Manager {
       }
     );
     if (!data) {
-      return null;
+      return;
     }
     // resolve referenced entities
     let entities = await Promise.all(_.map(data, async d =>
@@ -152,7 +151,7 @@ export class Manager {
       }
     );
     if (!data) {
-      return null;
+      return;
     }
     let entity = await Entity._new(this, type, data.id, data.fields);
     this._cache.put(type, id, entity);
@@ -172,7 +171,7 @@ export class Manager {
       });
     });
     if (!data) {
-      return null;
+      return;
     }
     let entity = await Entity._new(this, type, data.id, {});
     this._cache.put(type, entity.id, entity);
@@ -180,7 +179,7 @@ export class Manager {
     return entity;
   }
 
-  public async update (entity: Entity, fields: string[] = null): Promise<void> {
+  public async update (entity: Entity, fields?: string[]): Promise<void> {
     let id = entity.id;
     if (fields) {
       fields = _.filter(fields, field => field in entity.schema.fields);

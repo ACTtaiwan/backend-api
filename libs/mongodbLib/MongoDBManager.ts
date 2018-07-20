@@ -151,10 +151,10 @@ export abstract class MongoDBTable<HydrateField = string> extends dbLib.Table<Hy
   }
 
   protected async queryItems<T extends dbLib.TableEntity> (query: any, attrNamesToGet?: (keyof T)[]): Promise<T[]> {
-    if (_.isEmpty(query)) {
-      console.log(`[MongoDBTable::queryItems()] empty query! Reutrn empty results.`)
-      return Promise.resolve([])
-    }
+    // if (_.isEmpty(query)) {
+    //   console.log(`[MongoDBTable::queryItems()] empty query! Reutrn empty results.`)
+    //   return Promise.resolve([])
+    // }
 
     let prjFields = this.composeProjectFields<T>(attrNamesToGet)
     let pageSize = MongoDBTable.AZURE_MAX_QUERY_ITEMS
@@ -239,6 +239,15 @@ export abstract class MongoDBTable<HydrateField = string> extends dbLib.Table<Hy
       }
     } while (++pageId);
     return Promise.resolve()
+  }
+
+  protected async addItems<T extends dbLib.TableEntity> (newItem: EntryType<T>[]): Promise<mongodb.InsertWriteOpResult> {
+    _.each(newItem, item => {
+      if (!item['_id']) {
+        item['_id'] = uuid();
+      }
+    });
+    return this.getTable<T>().insertMany(newItem);
   }
 
   protected updateItemByObjectId<T extends dbLib.TableEntity> (objectId: string, updateItem: EntryType<T>): Promise<mongodb.WriteOpResult> {

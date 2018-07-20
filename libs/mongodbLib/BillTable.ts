@@ -27,7 +27,7 @@ export class BillTable extends MongoDBTable<dbLib.BillEntityHydrateField> {
   }
 
   public addTagToBill (tag: string, billId: string, userVote: dbLib.BillTagUserVote = {}): Promise<mongodb.WriteOpResult> {
-    let tagEntity: dbLib.BillTagEntityMongoDB = { tag, userVote }
+    let tagEntity: dbLib.BillTagEntityMongoDB = { name: tag, userVote: userVote }
     return super.getTable<dbLib.BillTable>().update(
       {
         _id: billId,
@@ -92,7 +92,9 @@ export class BillTable extends MongoDBTable<dbLib.BillEntityHydrateField> {
   }
 
   public getAllBills (...attrNamesToGet: (keyof dbLib.BillEntity)[]): Promise<dbLib.BillEntity[]> {
-    return super.getAllItems<dbLib.BillEntity>(this.applyHydrateFieldsForAttrNames(attrNamesToGet))
+    // return super.getAllItems<dbLib.BillEntity>(this.applyHydrateFieldsForAttrNames(attrNamesToGet))
+    //   .then(items => this.applyHydrateFields(items))
+    return super.queryItems<dbLib.BillEntity>({}, this.applyHydrateFieldsForAttrNames(attrNamesToGet))
       .then(items => this.applyHydrateFields(items))
   }
 
@@ -193,6 +195,10 @@ export class BillTable extends MongoDBTable<dbLib.BillEntityHydrateField> {
       { $pull: { tags: { tag } } },
       { multi: true }
     )
+  }
+
+  public addBills (bills: dbLib.BillEntity[]): Promise<mongodb.InsertWriteOpResult> {
+    return super.addItems(bills);
   }
 
   public updateBill (id: string, updateBill: dbLib.BillEntity): Promise<mongodb.WriteOpResult> {

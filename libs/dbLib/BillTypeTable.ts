@@ -7,11 +7,11 @@ var awsConfig = require('../../config/aws.json');
 // BillTypeTable
 
 export interface BillTypeEntity extends TableEntity {
-  id: string
-  chamber: models.ChamberType
-  code: models.BillTypeCode
-  display: string
-  name: string
+  id?: string
+  chamber?: models.ChamberType
+  code?: models.BillTypeCode
+  display?: string
+  name?: string
 }
 
 export class BillTypeTable extends DynamoDBTable {
