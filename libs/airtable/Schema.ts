@@ -1,22 +1,22 @@
-export const EntityTable = {
-  Bill: "Bills",
-  BillType: 'Bill Types',
-  BillCategory: 'Bill Categories',
-  Contributor: 'Volunteers',
-  Tag: 'Tags',
-  Relevance: 'Relevance',
-};
-export type EntityType = keyof typeof EntityTable;
+export type EntityType
+  = 'Bill'
+  | 'BillType'
+  | 'BillCategory'
+  | 'Contributor'
+  | 'Tag'
+  | 'Relevance';
 
 export interface Schema {
+  readonly table: string;
   readonly fields: {
     [field: string]: EntityType; // null means primitive types
   };
   readonly prefetch?: boolean;
 }
 
-export const SCHEMAS: { [t: string]: Schema } = {
+export const SCHEMAS: { [key in EntityType]: Schema } = {
   'Bill': {
+    table: 'Bills',
     fields: {
       'congress': null,
       'bill type': 'BillType',
@@ -25,7 +25,7 @@ export const SCHEMAS: { [t: string]: Schema } = {
       'bill title (zh)': null,
       'categories': 'BillCategory',
       'tags': 'Tag',
-      'relevence': 'Relevance',
+      'relevance': 'Relevance',
       'china': null,
       'insight': null,
       'comment': null,
@@ -37,6 +37,7 @@ export const SCHEMAS: { [t: string]: Schema } = {
     },
   },
   'BillType': {
+    table: 'Bill Types',
     fields: {
       'Code': null,
       'Name': null,
@@ -46,6 +47,7 @@ export const SCHEMAS: { [t: string]: Schema } = {
     prefetch: true,
   },
   'BillCategory': {
+    table: 'Bill Categories',
     fields: {
       'Name': null,
       'Definition': null,
@@ -54,6 +56,7 @@ export const SCHEMAS: { [t: string]: Schema } = {
     prefetch: true,
   },
   'Contributor': {
+    table: 'Volunteers',
     fields: {
       'Name': null,
       // TODO: 'Photo',
@@ -62,6 +65,7 @@ export const SCHEMAS: { [t: string]: Schema } = {
     prefetch: true,
   },
   'Tag': {
+    table: 'Tags',
     fields: {
       'Name': null,
       'Notes': null,
@@ -72,6 +76,7 @@ export const SCHEMAS: { [t: string]: Schema } = {
     prefetch: true,
   },
   'Relevance': {
+    table: 'Relevance',
     fields: {
       'Name': null,
       'Definition': null,

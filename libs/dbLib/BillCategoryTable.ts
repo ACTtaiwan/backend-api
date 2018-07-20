@@ -7,8 +7,8 @@ var awsConfig = require('../../config/aws.json');
 // CategoryTable
 
 export interface BillCategoryEntity extends TableEntity {
-  id: string
-  code: string
+  id?: string
+  code?: string
   name: string
   name_zh?: string
   description?: string

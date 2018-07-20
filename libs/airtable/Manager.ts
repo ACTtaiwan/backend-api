@@ -1,9 +1,10 @@
-import * as _ from 'lodash';
-import * as assert from 'assert';
+import * as _ from 'lodash'
+import * as assert from 'assert'
 import * as airtable from 'airtable'
-import * as util from 'util'
+import * as aws from 'aws-sdk'
 
-import { Entity, EntityTable, EntityType, SCHEMAS } from './'
+import { Entity, EntityType, SCHEMAS } from './'
+import { resolve } from 'url';
 
 class Cache {
   protected _storage: { [type: string]: { [id: string]: Entity } } = {};
@@ -17,10 +18,10 @@ class Cache {
 
   public get (type: EntityType, id: string): Entity {
     if (!(type in this._storage)) {
-      return null;
+      return;
     }
     if (!(id in this._storage[type])) {
-      return null;
+      return;
     }
     return this._storage[type][id];
   }
@@ -38,7 +39,7 @@ class Cache {
   public printKeys (): void {
     _.each(this._storage, (v, type) =>
       _.each(v, (_entry, id) => {
-        console.log(type + " " + id);
+        console.log(type + ' ' + id);
       })
     );
   }
@@ -54,22 +55,21 @@ export class Manager {
     this._assertDb();
   }
 
+  public static async new (dbId: string): Promise<Manager> {
+    let apiKey = await this.getApiKey();
+    let instance = new Manager(apiKey, dbId);
+    await instance._prefetch();
+    return instance;
+  }
+
   protected async _prefetch (): Promise<void> {
     await Promise.all(
-      _.map(EntityTable, async (_tableName, type: EntityType) => {
-        if (SCHEMAS[type].prefetch) {
+      _.map(SCHEMAS, async (schema, type: EntityType) => {
+        if (schema.prefetch) {
           await this.list(type);
         }
       }),
     );
-  }
-
-  public static async new (apiKey: string, dbId: string)
-    : Promise<Manager> {
-    let instance = new Manager(apiKey, dbId);
-    //await instance._prefetch();
-    console.log('prefetch turned off')
-    return instance;
   }
 
   protected _assertDb (): void {
@@ -77,49 +77,53 @@ export class Manager {
   }
 
   // Read a list of entities from remote db
-  public async list (type: EntityType, limit: number = 0)
-    : Promise<Entity[]> {
+  public async list (
+    type: EntityType,
+    fields?: string[],
+    formula?: string,
+    limit?: number,
+  ): Promise<Entity[]> {
     let options: any = {}
-    if (limit > 0) {
+    if (fields) {
+      fields = _.filter(fields, v => v in SCHEMAS[type].fields);
+      options.fields = fields;
+    } else {
+      options.fields = Object.keys(SCHEMAS[type].fields);
+    }
+    if (formula) {
+      options.filterByFormula = formula;
+    }
+    if (limit) {
       options.maxRecords = limit;
-      options.pageSize = 1;
     }
 
     // read raw records
-    let shallowEntities = await new Promise<Entity[]>(
-      async (resolve) => {
+    let data = await new Promise<any[]>(
+      async (resolve, reject) => {
         this._assertDb();
-        let results: Entity[] = [];
+        let results: any[] = [];
 
-        this._db(EntityTable[type]).select(options).eachPage(
+        this._db(SCHEMAS[type].table).select(options).eachPage(
           (records, fetchNextPage) => {
-            results = results.concat(_.map(records, record =>
-              Entity._instantiate(
-                this,
-                type,
-                record.id,
-                record.fields,
-              ),
-            ));
+            results = results.concat(records);
             fetchNextPage();
           },
           (err) => {
             if (err) {
               console.error(err);
-              resolve(null);
-              return;
+              reject(err);
             }
             resolve(results);
           }
         );
       }
     );
-    if (!shallowEntities) {
-      return null;
+    if (!data) {
+      return;
     }
     // resolve referenced entities
-    let entities = await Promise.all(_.map(shallowEntities, entity =>
-      entity._resolveReferences(),
+    let entities = await Promise.all(_.map(data, async d =>
+      await Entity._new(this, type, d.id, d.fields),
     ));
     // cache
     _.each(entities, entity => {
@@ -134,78 +138,117 @@ export class Manager {
     if (cached) {
       return cached;
     }
-    let shallowEntity = await new Promise<Entity>(
-      async resolve => {
+    let data = await new Promise<any>(
+      async (resolve, reject) => {
         this._assertDb();
-        this._db(EntityTable[type]).find(id, (err, record) => {
+        this._db(SCHEMAS[type].table).find(id, (err, record) => {
           if (err) {
             console.error(err);
-            resolve(null);
-            return;
+            reject(err);
           }
-          let entity = Entity._instantiate(
-            this,
-            type,
-            record.id,
-            record.fields,
-          );
-          resolve(entity);
+          resolve(record);
         });
       }
     );
-    if (!shallowEntity) {
-      return null;
+    if (!data) {
+      return;
     }
-    let entity = await shallowEntity._resolveReferences();
+    let entity = await Entity._new(this, type, data.id, data.fields);
     this._cache.put(type, id, entity);
 
     return entity;
   }
 
   public async create (type: EntityType): Promise<Entity> {
-    return new Promise<Entity>(resolve => {
+    let data = await new Promise<Entity>((resolve, reject) => {
       this._assertDb();
-      this._db(EntityTable[type]).create({}, (err, record) => {
+      this._db(SCHEMAS[type].table).create({}, (err, record) => {
         if (err) {
           console.error(err);
-          resolve(null);
-          return;
+          reject(err);
         }
-        let entity = Entity._instantiate(this, type, record.id, {});
-        this._cache.put(type, record.id, entity);
-        resolve(entity);
+        resolve(record);
       });
     });
+    if (!data) {
+      return;
+    }
+    let entity = await Entity._new(this, type, data.id, {});
+    this._cache.put(type, entity.id, entity);
+
+    return entity;
   }
 
-  public async update (type: EntityType, id: string, data: any): Promise<void> {
-    return new Promise<void>(resolve => {
+  public async update (entity: Entity, fields?: string[]): Promise<void> {
+    let id = entity.id;
+    if (fields) {
+      fields = _.filter(fields, field => field in entity.schema.fields);
+    } else {
+      fields = entity.getExistingFields();
+    }
+    let data = _.reduce(fields, (result, field) => {
+      let type = entity.schema.fields[field];
+      let value = entity.get(field);
+      if (type) {
+        result[field] = _.map(<Entity[]>value, e => e.id);
+      } else {
+        result[field] = entity.get(field);
+      }
+      return result;
+    }, {});
+
+    return new Promise<void>((resolve, reject) => {
       this._assertDb();
-      this._db(EntityTable[type]).update(id, data, (err, record) => {
+      this._db(entity.schema.table).update(id, data, (err, record) => {
         if (err) {
           console.error(err);
+          reject(err);
         }
         resolve();
       });
     });
   }
 
-  public async delete (type: EntityType, id: string): Promise<void> {
-    return new Promise<void>(resolve => {
+  public async delete (entity: Entity): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
       this._assertDb();
-      this._db(EntityTable[type]).destroy(id, (err, _record) => {
-        if (err) {
-          console.error(err);
+      this._db(entity.schema.table)
+        .destroy(entity.id, (err, _record) => {
+          if (err) {
+            console.error(err);
+            reject(err);
+          }
+          this._cache.delete(entity.type, entity.id);
           resolve();
         }
-        this._cache.delete(type, id);
-        resolve();
-      });
+      );
     });
   }
 
-  public _printCache() {
+  public _printCache () {
     this._cache.printKeys();
   }
-}
 
+  private static async getApiKey (): Promise<any> {
+    let s3 = new aws.S3();
+    let params = {
+      Bucket: 'taiwanwatch-credentials',
+      Key: 'airtable.json',
+    };
+    return new Promise((resolve, reject) => {
+      s3.getObject(params, (err, data) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        }
+        try {
+          let parsed = JSON.parse(data.Body.toString());
+          resolve(parsed['apiKey']);
+        } catch (e) {
+          console.error(e);
+          reject(e);
+        }
+      })
+    });
+  }
+}

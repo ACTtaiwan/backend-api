@@ -10,36 +10,40 @@ export class Entity {
     protected _manager: Manager,
     public readonly type: EntityType,
     public readonly id: string,
-    data: { [key: string]: any },
-  ) {
-    this._data = _.pickBy(
-      data,
-      (_value, key) => key in this.schema.fields,
-    );
-  }
+  ) {}
 
-  public static _instantiate (
+  public static async _new (
     manager: Manager,
     type: EntityType,
     id: string,
     data: { [key: string]: any },
-  ): Entity {
-    console.log(`instantiate entity ${type} ${id}`);
-    return new Entity(manager, type, id, data);
+  ): Promise<Entity> {
+    let entity = new Entity(manager, type, id);
+    return await entity._load(data);
   }
 
-  public async _resolveReferences (): Promise<Entity> {
-    await Promise.all(_.chain(this.schema.fields)
-      .pickBy((type, _fieldName) => type !== null)
-      .map(async (type, fieldName) => {
-        this._data[fieldName] = await Promise.all(
-          _.map(this._data[fieldName], async id =>
+  protected async _load (data: { [key: string]: any }): Promise<Entity> {
+    // validate fields and resolve references in data
+    let newDataWithPromises = _(data)
+      .pickBy((_value, key) => key in this.schema.fields)
+      .mapValues(async (value, field) => {
+        let type = this.schema.fields[field];
+        if (type) {
+          return await Promise.all(_.map(<string[]>value, async id =>
             await this._manager.find(type, id),
-          ),
-        );
+          ));
+        } else {
+          return value;
+        }
       })
-      .value(),
-    );
+      .value();
+    let newDataKeys = Object.keys(newDataWithPromises);
+    let newDataValues = await Promise.all(_.map(newDataKeys, async key =>
+      await newDataWithPromises[key],
+    ));
+    let newData = _.zipObject(newDataKeys, newDataValues);
+
+    this._data = _.assign(this._data, newData);
     return this;
   }
 
@@ -50,7 +54,6 @@ export class Entity {
   }
 
   public get (name: string): any {
-    assert.ok(name in this.schema.fields, `Field does not exist: ${name}`);
     return this._data[name];
   }
 
@@ -80,5 +83,39 @@ export class Entity {
     } else {
       this._data[name] = value;
     }
+  }
+
+  public async save (fields?: string[]): Promise<void> {
+    this._manager.update(this, fields);
+  }
+
+  public getExistingFields (): string[] {
+    return Object.keys(this._data);
+  }
+
+  public toString (): string {
+    let shallowEntity = _.mapValues(this.schema.fields, (type, fieldName) => {
+      let value = this.get(fieldName);
+      if (!value) {
+        return '';
+      }
+      if (type) {
+        return _.map(<Entity[]>value, v => v.id);
+      } else {
+        return value;
+      }
+    });
+    return JSON.stringify(shallowEntity);
+  }
+
+  public getRawData (): Object {
+    let clone = _.clone(this._data);
+    return _.mapValues(clone, (value, key) => {
+      if (this.schema.fields[key]) {
+        return _.map(value, v => v.getRawData());
+      } else {
+        return value;
+      }
+    })
   }
 }

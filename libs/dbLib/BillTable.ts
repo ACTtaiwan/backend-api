@@ -32,20 +32,34 @@ export interface BillTagEntityDynamoDB {
 }
 
 export interface BillTagEntityMongoDB {
-  tag: string
+  name?: string
+  shortName?: string
+  name_zh?: string
+  shortName_zh?: string
+  notes?: string
   userVote?: BillTagUserVote
 }
 
+export interface BillRelevanceEntity {
+  name: string
+  definition?: string
+}
+
+export interface BillContributorEntity {
+  name: string
+  email?: string
+}
+
 export interface BillEntity extends TableEntity {
-  id: string
-  congress: number
-  billNumber: number
+  id?: string
+  congress?: number
+  billNumber?: number
   billType?: BillTypeEntity
 
   // basic info
-  title: string
+  title?: string
   title_zh?: string
-  introducedDate: number // UTC time
+  introducedDate?: number // UTC time
   trackers?: models.Tracker[]
   currentChamber?: models.ChamberType
 
@@ -58,9 +72,14 @@ export interface BillEntity extends TableEntity {
   categories?: BillCategoryEntity[]
   tags?: BillTagEntityDynamoDB | BillTagEntityMongoDB[]
   relevence?: number
+  relevance?: BillRelevanceEntity
   china?: string
   insight?: string
   comment?: string
+  summary?: string
+  summary_zh?: string
+  contributors?: BillContributorEntity[]
+  status?: string
 
   // Congress.gov all-info
   detailTitles?: models.CongressGovTitleInfo

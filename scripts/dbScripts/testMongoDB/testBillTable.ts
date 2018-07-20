@@ -31,7 +31,7 @@ class TestBillTable {
     await tbl.putBill(<dbLib.BillEntity> {
       id: 'test-bill',
       tags: [
-        { tag: 'ttttaaaggg', userVote: <dbLib.BillTagUserVote> { 'bbb': 123 } }
+        { name: 'ttttaaaggg', userVote: <dbLib.BillTagUserVote> { 'bbb': 123 } }
       ]
     });
     console.log(JSON.stringify(await tbl.getBillById('test-bill', 'tags'), null, 2))
