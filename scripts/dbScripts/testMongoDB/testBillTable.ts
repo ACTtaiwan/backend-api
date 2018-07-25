@@ -52,6 +52,19 @@ class TestBillTable {
     console.log(JSON.stringify(bill, null, 2))
   }
 
+  public static async getBills () {
+    let tbl = await TestBillTable.getTable()
+    // let bills = await tbl.getAllBills('id', 'title_zh', /* 'comment' */);
+    let bills = await tbl.getBillsByMongoQuery(
+      {introducedDate: {$gt: 794466000000}},
+      ['id', 'congress', 'billNumber', 'billType', 'title', 'introducedDate'],
+      {introducedDate: -1},
+      501,
+    );
+    console.log(JSON.stringify(bills, null, 2))
+    console.log(bills.length);
+  }
+
   public static async getAllBillsHavingAttributes () {
     let tbl = await TestBillTable.getTable()
     let bills = await tbl.getAllBillsHavingAttributes(['sponsorRoleId', 'cosponsors'], 'id')
@@ -119,10 +132,10 @@ class TestBillTable {
 // TestBillTable.createEmptyTagsAttrForBill()
 // TestBillTable.addTagToBill()
 // TestBillTable.getBillById()
-// TestBillTable.getBill()
+TestBillTable.getBills()
 // TestBillTable.getAllBillsHavingAttributes()
 // TestBillTable.queryBillsByCongress()
-TestBillTable.searchBills('hr 台灣 中國')
+// TestBillTable.searchBills('hr 台灣 中國')
 // TestBillTable.deleteTagFromBill()
 // TestBillTable.updateTracker()
 // TestBillTable.updateTagUserCount()

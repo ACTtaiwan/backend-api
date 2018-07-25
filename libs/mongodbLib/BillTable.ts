@@ -98,8 +98,8 @@ export class BillTable extends MongoDBTable<dbLib.BillEntityHydrateField> {
       .then(items => this.applyHydrateFields(items))
   }
 
-  public getBillsByMongoQuery (query: {}, attrNamesToGet?: (keyof dbLib.BillEntity)[]): Promise<dbLib.BillEntity[]> {
-    return super.queryItems<dbLib.BillEntity>(query, this.applyHydrateFieldsForAttrNames(attrNamesToGet))
+  public getBillsByMongoQuery (query: {}, attrNamesToGet?: (keyof dbLib.BillEntity)[], sort?: any, limit?: number): Promise<dbLib.BillEntity[]> {
+    return super.queryItems<dbLib.BillEntity>(query, this.applyHydrateFieldsForAttrNames(attrNamesToGet), sort, limit)
       .then(items => this.applyHydrateFields(items))
   }
 

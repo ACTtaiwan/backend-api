@@ -13,7 +13,7 @@ let migrateBill = async () => {
       if (x.tags) {
         let mongoDbTags: dbLib.BillTagEntityMongoDB[] = []
         _.each(x.tags, (userVote, tag) => {
-          mongoDbTags.push({tag, userVote})
+          mongoDbTags.push({'name': tag, userVote})
         })
         x.tags = mongoDbTags
       }

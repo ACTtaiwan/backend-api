@@ -150,31 +150,47 @@ export abstract class MongoDBTable<HydrateField = string> extends dbLib.Table<Hy
     return Promise.all(promises).then(results => _.flatten(results))
   }
 
-  protected async queryItems<T extends dbLib.TableEntity> (query: any, attrNamesToGet?: (keyof T)[]): Promise<T[]> {
+  protected async queryItems<T extends dbLib.TableEntity> (
+    query: any,
+    attrNamesToGet?: (keyof T)[],
+    sort?: any,
+    limit?: number,
+  ): Promise<T[]> {
     // if (_.isEmpty(query)) {
     //   console.log(`[MongoDBTable::queryItems()] empty query! Reutrn empty results.`)
     //   return Promise.resolve([])
     // }
 
-    let prjFields = this.composeProjectFields<T>(attrNamesToGet)
-    let pageSize = MongoDBTable.AZURE_MAX_QUERY_ITEMS
-    let runQuery = (pageId: number = 0) =>
-      this.getTable<T>()
-        .find(query, prjFields)
-        .limit(pageSize)
+    let prjFields = this.composeProjectFields<T>(attrNamesToGet);
+    let pageSize = MongoDBTable.AZURE_MAX_QUERY_ITEMS;
+    let runQuery = (pageId: number, numItems: number) => {
+      let q = this.getTable<T>().find(query, prjFields);
+      if (sort) {
+        q = q.sort(sort);
+      }
+      return q.limit(numItems)
         .skip(pageId * pageSize)
         .toArray()
-        .then(res => this.addBackIdField(res))
+        .then(res => this.addBackIdField(res));
+    }
 
-    let results: T[] = []
-    let pageId = 0
+    let results: T[] = [];
+    let pageId = 0;
     while (true) {
       try {
-        let batch = await runQuery(pageId)
-        console.log(`[MongoDBTable::queryItems()] pageSize = ${pageSize}, pageId = ${pageId}, batch.length = ${batch.length}`)
+        let numItems = limit && limit < pageSize ? limit : pageSize;
+        let batch = await runQuery(pageId, numItems);
+        console.log(`[MongoDBTable::queryItems()] numItems = ${numItems}, `
+          + `pageId = ${pageId}, batch.length = ${batch.length}`);
         if (batch && batch.length > 0) {
           results = _.concat(results, batch)
-          if (batch.length < pageSize) {
+          if (limit) {
+            limit -= batch.length;
+            if (limit <= 0) {
+              break;
+            }
+          }
+          if (batch.length < numItems) {
             break
           } else {
             ++pageId
