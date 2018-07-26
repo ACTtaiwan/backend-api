@@ -56,6 +56,7 @@ export class Manager {
   }
 
   public static async new (dbId: string): Promise<Manager> {
+    console.log(`[Airtable.Manager.new()] ${dbId}`);
     let apiKey = await this.getApiKey();
     let instance = new Manager(apiKey, dbId);
     await instance._prefetch();
@@ -66,14 +67,19 @@ export class Manager {
     await Promise.all(
       _.map(SCHEMAS, async (schema, type: EntityType) => {
         if (schema.prefetch) {
-          await this.list(type);
+          try {
+            await this.list(type);
+          } catch (e) {
+            console.log(`[Airtable.Manager.prefetch()] ${type}: failed `
+              + `but should be ok. ${e}`);
+          }
         }
       }),
     );
   }
 
   protected _assertDb (): void {
-    assert.ok(this._db, 'Could not connect to database');
+    assert.ok(this._db, '[Airtable] Could not connect to database');
   }
 
   // Read a list of entities from remote db
@@ -100,6 +106,7 @@ export class Manager {
     // read raw records
     let data = await new Promise<any[]>(
       async (resolve, reject) => {
+        console.log(`[Airtable.Manager.list()] ${type}`);
         this._assertDb();
         let results: any[] = [];
 
@@ -110,7 +117,6 @@ export class Manager {
           },
           (err) => {
             if (err) {
-              console.error(err);
               reject(err);
             }
             resolve(results);
@@ -122,10 +128,12 @@ export class Manager {
       return;
     }
     // resolve referenced entities
+    console.log(`[Airtable.Manager.list()] ${type}: resolving references`);
     let entities = await Promise.all(_.map(data, async d =>
       await Entity._new(this, type, d.id, d.fields),
     ));
     // cache
+    console.log(`[Airtable.Manager.list()] ${type}: caching`);
     _.each(entities, entity => {
       this._cache.put(type, entity.id, entity);
     });
@@ -141,9 +149,9 @@ export class Manager {
     let data = await new Promise<any>(
       async (resolve, reject) => {
         this._assertDb();
+        console.log(`[Airtable.Manager.find() remote] ${type}: ${id}`);
         this._db(SCHEMAS[type].table).find(id, (err, record) => {
           if (err) {
-            console.error(err);
             reject(err);
           }
           resolve(record);
@@ -160,11 +168,11 @@ export class Manager {
   }
 
   public async create (type: EntityType): Promise<Entity> {
+    console.log(`[Airtable.Manager.create()] ${type}`);
     let data = await new Promise<Entity>((resolve, reject) => {
       this._assertDb();
       this._db(SCHEMAS[type].table).create({}, (err, record) => {
         if (err) {
-          console.error(err);
           reject(err);
         }
         resolve(record);
@@ -180,6 +188,7 @@ export class Manager {
   }
 
   public async update (entity: Entity, fields?: string[]): Promise<void> {
+    console.log(`[Airtable.Manager.update()] ${entity.type}`);
     let id = entity.id;
     if (fields) {
       fields = _.filter(fields, field => field in entity.schema.fields);
@@ -201,7 +210,6 @@ export class Manager {
       this._assertDb();
       this._db(entity.schema.table).update(id, data, (err, record) => {
         if (err) {
-          console.error(err);
           reject(err);
         }
         resolve();
@@ -210,12 +218,12 @@ export class Manager {
   }
 
   public async delete (entity: Entity): Promise<void> {
+    console.log(`[Airtable.Manager.delete()] ${entity.type}`);
     return new Promise<void>((resolve, reject) => {
       this._assertDb();
       this._db(entity.schema.table)
         .destroy(entity.id, (err, _record) => {
           if (err) {
-            console.error(err);
             reject(err);
           }
           this._cache.delete(entity.type, entity.id);

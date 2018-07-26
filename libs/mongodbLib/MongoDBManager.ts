@@ -80,7 +80,8 @@ export class MongoDBManager {
             new mongoDbLib.RoleTable(this.db),
             new mongoDbLib.TagMetaTable(this.db),
             new mongoDbLib.TagTable(this.db),
-            new mongoDbLib.CongressGovSyncBillTable(this.db)
+            new mongoDbLib.CongressGovSyncBillTable(this.db),
+            new mongoDbLib.ArticleSnippetsTable(this.db),
           ]
           this.tables = _.keyBy(tables, x => x.tableName)
         }).catch(err => {
@@ -150,7 +151,7 @@ export abstract class MongoDBTable<HydrateField = string> extends dbLib.Table<Hy
     return Promise.all(promises).then(results => _.flatten(results))
   }
 
-  protected async queryItems<T extends dbLib.TableEntity> (
+  public async queryItems<T extends dbLib.TableEntity> (
     query: any,
     attrNamesToGet?: (keyof T)[],
     sort?: any,
@@ -257,7 +258,7 @@ export abstract class MongoDBTable<HydrateField = string> extends dbLib.Table<Hy
     return Promise.resolve()
   }
 
-  protected async addItems<T extends dbLib.TableEntity> (newItem: EntryType<T>[]): Promise<mongodb.InsertWriteOpResult> {
+  public async addItems<T extends dbLib.TableEntity> (newItem: EntryType<T>[]): Promise<mongodb.InsertWriteOpResult> {
     _.each(newItem, item => {
       if (!item['_id']) {
         item['_id'] = uuid();
@@ -266,7 +267,7 @@ export abstract class MongoDBTable<HydrateField = string> extends dbLib.Table<Hy
     return this.getTable<T>().insertMany(newItem);
   }
 
-  protected updateItemByObjectId<T extends dbLib.TableEntity> (objectId: string, updateItem: EntryType<T>): Promise<mongodb.WriteOpResult> {
+  public updateItemByObjectId<T extends dbLib.TableEntity> (objectId: string, updateItem: EntryType<T>): Promise<mongodb.WriteOpResult> {
     let query = { $set: updateItem }
     return this.getTable<T>().update({ '_id': objectId }, query)
   }

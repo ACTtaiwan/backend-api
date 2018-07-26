@@ -10,7 +10,8 @@ export class MongoDbConfig {
     'ROLES_TABLE_NAME': 'volunteer.roles',
     'TAGS_TABLE_NAME': 'volunteer.tags',
     'TAGS_META_TABLE_NAME': 'volunteer.tags.meta',
-    'CONGRESSGOV_SYNC_BILL_TABLE_NAME': 'congressgov.sync.bill'
+    'CONGRESSGOV_SYNC_BILL_TABLE_NAME': 'congressgov.sync.bill',
+    'ARTICLE_SNIPPETS_TABLE_NAME': 'site.articleSnippets',
   }
 
   private static _remoteUrl: string

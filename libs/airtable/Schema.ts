@@ -4,7 +4,8 @@ export type EntityType
   | 'BillCategory'
   | 'Contributor'
   | 'Tag'
-  | 'Relevance';
+  | 'Relevance'
+  | 'ArticleSnippet';
 
 export interface Schema {
   readonly table: string;
@@ -83,4 +84,17 @@ export const SCHEMAS: { [key in EntityType]: Schema } = {
     },
     prefetch: true,
   },
+  'ArticleSnippet': {
+    table: 'Articles',
+    fields: {
+      'Headline': null,
+      'Readable ID': null,
+      'Subhead': null,
+      'Author': null,
+      'Date': null,
+      'Intro': null,
+      'URL': null,
+      'Image URL': null,
+    },
+  }
 };

@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 import * as mongoDbLib from '../../libs/mongodbLib';
 import { MongoDbConfig } from '../../config/mongodb';
-import * as dbLib from '../../libs/dbLib';
 import * as airtable from '../../libs/airtable';
 import { BillTypeCode, ChamberType } from '../../libs/congressGov/CongressGovModels';
 import Utility from '../../libs/utils/Utility';
@@ -18,40 +17,57 @@ interface Table<E extends Entity = Entity> {
   // TODO Support deletion
 }
 
-class MongoBillTable implements Table {
+abstract class MongoTable implements Table {
   protected _manager: MongoDBManager;
-  protected _handle: mongoDbLib.BillTable;
+  protected _handle: mongoDbLib.MongoDBTable;
+  protected _mockWrite: boolean;
   public async connect (config: MongoTableConfig): Promise<void> {
     this._manager = await mongoDbLib.MongoDBManager.instance;
-    this._handle = this._manager.getTable<mongoDbLib.BillTable>(
-      config.tableName
-    );
+    this._handle = this._manager.getTable(config.tableName);
+    this._mockWrite = config.mockWrite;
   }
   public async fetch (fields: string[]): Promise<Entity[]> {
-    let bills = await this._handle.getAllBills(
-      ...<(keyof dbLib.BillEntity)[]>fields,
-    );
-    return bills;
+    return this._handle.queryItems({}, fields);
   }
   public async insert (entities: Entity[]): Promise<void> {
     if (!entities || entities.length === 0) {
       return;
     }
-    let result = await this._handle.addBills(entities);
-    console.log(`i: count=${result.result.n}/${entities.length}`);
+    if (this._mockWrite) {
+      _.each(entities, e => {
+        console.log('insert');
+        console.log(e);
+      })
+    } else {
+      let result = await this._handle.addItems(entities);
+      console.log(`i: count=${result.result.n}/${entities.length}`);
+    }
   }
   public async update (entities: Entity[]): Promise<void> {
     if (!entities || entities.length === 0) {
       return;
     }
-    let results = await Promise.all(_.map(entities, async ent => {
-      let result = await this._handle.updateBill(ent['id'], ent).catch( e => {
-        console.error(e);
-        return {result: {}};
-      });
-      console.log(`u: ${ent['id']} ${result.result.ok ? 'ok' : 'failed'}`);
-    }));
+    if (this._mockWrite) {
+      _.each(entities, e => {
+        console.log(`update ${e['id']}`);
+        console.log(e);
+      })
+    } else {
+      await Promise.all(_.map(entities, async ent => {
+        let result = await this._handle.updateItemByObjectId(ent['id'], ent)
+          .catch(e => {
+            console.error(e);
+            return {result: {}};
+          }
+        );
+        console.log(`u: ${ent['id']} ${result.result.ok ? 'ok' : 'failed'}`);
+      }));
+    }
   }
+  public abstract getEntityMatchKey (e: Entity): string;
+}
+
+class MongoBillTable extends MongoTable {
   public getEntityMatchKey (e: Entity): string {
     if (!e['congress'] || !e['billType'] || !e['billType']['code']
         || !e['billNumber']) {
@@ -61,7 +77,13 @@ class MongoBillTable implements Table {
   }
 }
 
-class AirtableBillTable implements Table {
+class MongoArticleSnippetsTable extends MongoTable {
+  public getEntityMatchKey (e: Entity): string {
+    return e['readableId'];
+  }
+}
+
+abstract class AirtableTable implements Table {
   protected _handle: airtable.Manager;
   protected _entityType: airtable.EntityType;
   public async connect (config: AirtableTableConfig): Promise<void> {
@@ -78,6 +100,10 @@ class AirtableBillTable implements Table {
   public async update (_: Entity[]): Promise<void> {
     throw new Error('Sync into Airtable is not supported');
   }
+  public abstract getEntityMatchKey (e: Entity): string;
+}
+
+class AirtableBillTable extends AirtableTable {
   public getEntityMatchKey (e: Entity): string {
     if (!e['congress'] || !e['bill type'] || !e['bill type'][0]
         || !e['bill type'][0]['Code'] || !e['bill number']) {
@@ -88,6 +114,12 @@ class AirtableBillTable implements Table {
       SyncUtils.billTypeDisplayToCode(e['bill type'][0]['Code']),
       e['bill number'],
     ]);
+  }
+}
+
+class AirtableArticleSnippetsTable extends AirtableTable {
+  public getEntityMatchKey (e: Entity): string {
+    return e['Readable ID'];
   }
 }
 
@@ -119,6 +151,7 @@ interface AirtableTableConfig extends TableConfig {
 
 interface MongoTableConfig extends TableConfig {
   tableName: string;
+  mockWrite?: boolean;
 }
 
 interface SyncConfig {
@@ -381,15 +414,47 @@ const SYNC_BILL_CONFIG: SyncConfig = {
   },
 };
 
+const SYNC_ARTICLE_SNIPPET_CONFIG: SyncConfig = {
+  sourceTable: {
+    dbId: 'appX2196fiRt2qlzf',
+    entityType: 'ArticleSnippet',
+  },
+  targetTable: {
+    tableName: MongoDbConfig.tableNames.ARTICLE_SNIPPETS_TABLE_NAME,
+    // mockWrite: true,
+  },
+  syncEntityConfig: {
+    'readableId': 'Readable ID',
+    'headline': 'Headline',
+    'subhead': 'Subhead',
+    'author': 'Author',
+    'date': {
+      sourceField: 'Date',
+      transform: SyncUtils.dateToTimestamp,
+    },
+    'intro': 'Intro',
+    'url': 'URL',
+    'imageUrl': 'Image URL',
+  },
+};
+
 /**
  * tester
  */
 (async () => {
-  let sync = new Sync(
+  console.log(`[syncAirtable] start with bills`)
+  await (new Sync(
     SYNC_BILL_CONFIG,
     new AirtableBillTable(),
-    new MongoBillTable()
-  );
-  await sync.sync();
+    new MongoBillTable(),
+  )).sync();
+
+  console.log(`[syncAirtable] start with article snippets`)
+  await (new Sync(
+    SYNC_ARTICLE_SNIPPET_CONFIG,
+    new AirtableArticleSnippetsTable(),
+    new MongoArticleSnippetsTable(),
+  )).sync();
+
   return;
 })();
