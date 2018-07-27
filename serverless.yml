@@ -275,3 +275,16 @@ functions:
           method: post
           cors: true
           authorizer: aws_iam
+
+  articleSnippets:
+    handler: functions/private/articleSnippets/articleSnippetsHandler.main
+    events:
+      - http:
+          path: articles/list
+          method: get
+          request:
+            parameters:
+              querystrings:
+                before: false
+                limit: false
+          cors: true
