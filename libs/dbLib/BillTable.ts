@@ -32,12 +32,12 @@ export interface BillTagEntityDynamoDB {
 }
 
 export interface BillTagEntityMongoDB {
-  name?: string
+  tag: string
+  userVote?: BillTagUserVote
   shortName?: string
   name_zh?: string
   shortName_zh?: string
   notes?: string
-  userVote?: BillTagUserVote
 }
 
 export interface BillRelevanceEntity {
@@ -51,15 +51,15 @@ export interface BillContributorEntity {
 }
 
 export interface BillEntity extends TableEntity {
-  id?: string
-  congress?: number
-  billNumber?: number
+  id: string
+  congress: number
+  billNumber: number
   billType?: BillTypeEntity
 
   // basic info
-  title?: string
+  title: string
   title_zh?: string
-  introducedDate?: number // UTC time
+  introducedDate: number // UTC time
   trackers?: models.Tracker[]
   currentChamber?: models.ChamberType
 

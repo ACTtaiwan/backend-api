@@ -337,6 +337,7 @@ const SYNC_BILL_CONFIG: SyncConfig = {
   },
   targetTable: {
     tableName: MongoDbConfig.tableNames.BILLS_TABLE_NAME,
+    // mockWrite: true,
   },
   syncEntityConfig: {
     'congress': {
@@ -381,7 +382,7 @@ const SYNC_BILL_CONFIG: SyncConfig = {
       sourceField: 'tags',
       sync: SyncUtils.syncEntityArray,
       config: {
-        'name': 'Name',
+        'tag': 'Name',
         'shortName': 'Short Name',
         'name_zh': 'Name (zh)',
         'shortName_zh': 'Short Name (zh)',
