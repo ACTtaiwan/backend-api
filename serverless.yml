@@ -280,10 +280,12 @@ functions:
     handler: functions/private/articleSnippets/articleSnippetsHandler.main
     events:
       - http:
-          path: articles/list
+          path: articles/list/{site}
           method: get
           request:
             parameters:
+              path:
+                site: true
               querystrings:
                 before: false
                 limit: false

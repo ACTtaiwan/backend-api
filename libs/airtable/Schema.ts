@@ -95,6 +95,7 @@ export const SCHEMAS: { [key in EntityType]: Schema } = {
       'Intro': null,
       'URL': null,
       'Image URL': null,
+      'Publish Sites': null,
     },
   }
 };

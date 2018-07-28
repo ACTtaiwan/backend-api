@@ -27,7 +27,7 @@ export class BillTable extends MongoDBTable<dbLib.BillEntityHydrateField> {
   }
 
   public addTagToBill (tag: string, billId: string, userVote: dbLib.BillTagUserVote = {}): Promise<mongodb.WriteOpResult> {
-    let tagEntity: dbLib.BillTagEntityMongoDB = { name: tag, userVote: userVote }
+    let tagEntity: dbLib.BillTagEntityMongoDB = { tag: tag, userVote: userVote }
     return super.getTable<dbLib.BillTable>().update(
       {
         _id: billId,

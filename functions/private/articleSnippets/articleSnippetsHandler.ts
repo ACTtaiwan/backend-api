@@ -12,6 +12,10 @@ export class ArticleSnippetsHandler {
     context.callbackWaitsForEmptyEventLoop = false;
 
     let params = {
+      site: (
+        event.pathParameters &&
+        event.pathParameters.site
+      ) || undefined,
       before: (
         event.queryStringParameters &&
         event.queryStringParameters.before
@@ -22,6 +26,10 @@ export class ArticleSnippetsHandler {
       ) || '10',
     };
 
+    if (!params.site) {
+      Response.error(callback, 'invalid path');
+    }
+
     (new Promise<ArticleSnippet[]>(
       async (resolve, _reject) => {
         let db = await MongoDBManager.instance;
@@ -29,6 +37,7 @@ export class ArticleSnippetsHandler {
           MongoDbConfig.tableNames.ARTICLE_SNIPPETS_TABLE_NAME,
         );
         let res = await table.list(
+          params.site,
           parseInt(params.limit),
           [],
           parseInt(params.before),

@@ -5,13 +5,14 @@ import * as _ from 'lodash';
 export interface ArticleSnippet {
   id: string;
   readableId: string;
-  headline: string;
+  headline?: string;
   subhead?: string;
   author?: string;
   date: number;
   intro?: string;
   url?: string;
   imageUrl?: string;
+  sites?: string[];
 }
 
 export class ArticleSnippetsTable extends MongoDBTable {
@@ -20,15 +21,15 @@ export class ArticleSnippetsTable extends MongoDBTable {
   protected readonly suggestPageSize: number = 100;
 
   public async list (
+    site: string,
     limit: number,
     fields: (keyof ArticleSnippet)[] = [],
     before: number = undefined, // timestamp in millisec
   ): Promise<ArticleSnippet[]> {
-    return super.queryItems<ArticleSnippet>(
-      before ? {date: {$lt: before}} : {},
-      fields,
-      {date: -1},
-      limit,
-    );
+    let q = {sites: site};
+    if (before) {
+      q['date'] = {$lt: before};
+    }
+    return super.queryItems<ArticleSnippet>(q, fields, {date: -1}, limit);
   }
 }

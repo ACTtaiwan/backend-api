@@ -328,6 +328,10 @@ class SyncUtils {
       return Utility.parseDateTimeStringOfFormat(dateStr).getTime();
     }
   }
+
+  public static overwriteArray (data: any[]): any {
+    return data ? data : [];
+  }
 }
 
 const SYNC_BILL_CONFIG: SyncConfig = {
@@ -436,6 +440,10 @@ const SYNC_ARTICLE_SNIPPET_CONFIG: SyncConfig = {
     'intro': 'Intro',
     'url': 'URL',
     'imageUrl': 'Image URL',
+    'sites': {
+      sourceField: 'Publish Sites',
+      transform: SyncUtils.overwriteArray,
+    },
   },
 };
 
