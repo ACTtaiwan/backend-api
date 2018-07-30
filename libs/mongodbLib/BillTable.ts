@@ -213,6 +213,10 @@ export class BillTable extends MongoDBTable<dbLib.BillEntityHydrateField> {
     return super.updateItemByObjectId<dbLib.BillEntity>(id, {'sponsor': val})
   }
 
+  public updateSponsorRoleId (id: string, roleId: string): Promise<mongodb.WriteOpResult> {
+    return super.updateItemByObjectId<dbLib.BillEntity>(id, {'sponsorRoleId': roleId})
+  }
+
   public updateCoSponsors (id: string, val: dbLib.CosponsorEntity[]): Promise<mongodb.WriteOpResult> {
     return super.updateItemByObjectId<dbLib.BillEntity>(id, {'cosponsors': val})
   }
