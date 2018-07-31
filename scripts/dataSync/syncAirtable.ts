@@ -33,12 +33,11 @@ abstract class MongoTable implements Table {
     if (!entities || entities.length === 0) {
       return;
     }
-    if (this._mockWrite) {
-      _.each(entities, e => {
-        console.log('insert');
-        console.log(e);
-      })
-    } else {
+    _.each(entities, e => {
+      console.log('insert');
+      console.log(e);
+    });
+    if (!this._mockWrite) {
       let result = await this._handle.addItems(entities);
       console.log(`i: count=${result.result.n}/${entities.length}`);
     }
@@ -47,12 +46,11 @@ abstract class MongoTable implements Table {
     if (!entities || entities.length === 0) {
       return;
     }
-    if (this._mockWrite) {
-      _.each(entities, e => {
-        console.log(`update ${e['id']}`);
-        console.log(e);
-      })
-    } else {
+    _.each(entities, e => {
+      console.log(`update ${e['id']}`);
+      console.log(e);
+    });
+    if (!this._mockWrite) {
       await Promise.all(_.map(entities, async ent => {
         let result = await this._handle.updateItemByObjectId(ent['id'], ent)
           .catch(e => {
@@ -260,7 +258,7 @@ class SyncUtils {
           return;
         }
       }
-      if (value && (childDiff || value !== target[field])) {
+      if (value && (childDiff || !_.isEqual(value, target[field]))) {
         diff[field] = value;
         target[field] = value;
       }
@@ -450,7 +448,7 @@ const SYNC_ARTICLE_SNIPPET_CONFIG: SyncConfig = {
 /**
  * tester
  */
-(async () => {
+export let syncAirtable = (async () => {
   console.log(`[syncAirtable] start with bills`)
   await (new Sync(
     SYNC_BILL_CONFIG,
@@ -466,4 +464,4 @@ const SYNC_ARTICLE_SNIPPET_CONFIG: SyncConfig = {
   )).sync();
 
   return;
-})();
+});

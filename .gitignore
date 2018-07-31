@@ -16,3 +16,6 @@ jspm_packages
 
 # mongoDB data
 dbData/
+
+*.dontcommit*
+tmp.*

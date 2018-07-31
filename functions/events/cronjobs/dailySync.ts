@@ -1,5 +1,6 @@
-import { Context, Callback, APIGatewayEvent } from 'aws-lambda'
-import { TrackerSync } from '../../../scripts/dataSync/syncTrackers'
+import { Context, Callback, APIGatewayEvent } from 'aws-lambda';
+import { TrackerSync } from '../../../scripts/dataSync/syncTrackers';
+import { syncAirtable } from '../../../scripts/dataSync/syncAirtable';
 import { CongressGovHelper } from '../../../libs/congressGov/CongressGovHelper';
 import Response from '../../../libs/utils/Response'
 import { AllInfoSync } from '../../../scripts/dataSync/syncAllInfo';
@@ -16,6 +17,7 @@ class DailySyncHandler {
     let promises = []
     promises.push(DailySyncHandler.syncTrackers())
     promises.push(DailySyncHandler.syncAllInfo())
+    promises.push(DailySyncHandler.syncAirtable())
 
     Promise.all(promises).then(out => {
       let err = out[0] || out[1]
@@ -59,6 +61,19 @@ class DailySyncHandler {
           resolve(err)
         })
     })
+  }
+
+  public static syncAirtable (): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await syncAirtable();
+        resolve();
+      } catch (err) {
+        console.log(`[DailySyncHandler::syncAirtable()] failed. err = `
+          + `${JSON.stringify(err, null, 2)}`);
+        reject(err);
+      }
+    });
   }
 }
 
