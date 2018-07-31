@@ -31,7 +31,7 @@ class DailySyncHandler {
     })
   }
 
-  private static syncTrackers (): Promise<void> {
+  public static syncTrackers (): Promise<void> {
     return new Promise((resolve, reject) => {
       let sync = new TrackerSync()
       sync.init()
@@ -47,7 +47,7 @@ class DailySyncHandler {
     })
   }
 
-  private static syncAllInfo (): Promise<void> {
+  public static syncAllInfo (): Promise<void> {
     return new Promise((resolve, reject) => {
       let sync = new AllInfoSync()
       let currentCongress = CongressGovHelper.CURRENT_CONGRESS

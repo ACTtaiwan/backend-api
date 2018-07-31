@@ -8,8 +8,6 @@ import { RoleManager } from '../../libs/dataManager/RoleManager';
 import * as mongoDbLib from '../../libs/mongodbLib'
 import { MongoDbConfig } from '../../config/mongodb'
 
-var awsConfig = require('../../config/aws.json');
-
 /**
  *  sync for sponsors & co-sponsors
  */
@@ -21,6 +19,11 @@ export class SponsorSync {
   private readonly congressGovAllInfoParser = new CongressGovAllInfoParser()
 
   private roleMapSearchId = (bioGuideId: string, chamber: models.ChamberType) => bioGuideId + '-' + chamber
+
+  public constructor (
+    private writeToDb: boolean = true
+  ) {
+  }
 
   public get billTable (): mongoDbLib.BillTable {
     return this.tblBill
@@ -60,7 +63,7 @@ export class SponsorSync {
     }
   }
 
-  public async batchSyncForCongress (congress: number, bills: dbLib.BillEntity[], writeToDb: boolean = true) {
+  public async batchSyncForCongress (congress: number, bills: dbLib.BillEntity[]) {
     const roleMap = await this.buildRoleMapOfCongress(congress)
 
     let queryRole = (sponsor: models.CongressGovSponsor, bill: dbLib.BillEntity, cosponsorDate?: number) => {
@@ -101,7 +104,7 @@ export class SponsorSync {
 
       const sponsor = await this.congressGovSponsorParser.getSponsorBioGuideId(path)
       const role = await queryRole(sponsor, bill)
-      writeToDb && (await this.tblBill.updateSponsor(bill.id, role))
+      this.writeToDb && (await this.tblBill.updateSponsorRoleId(bill.id, role.id))
 
       console.log(`\n${billDisplay} -- Updating co-sponsors --\n`)
       const allInfo = await this.congressGovAllInfoParser.getAllInfo(path)
@@ -116,14 +119,14 @@ export class SponsorSync {
 
         const cosponsorRole = await queryRole(item.cosponsor, bill, item.dateCosponsored)
         if (cosponsorRole) {
-          entity.role = cosponsorRole
+          entity.roleId = cosponsorRole.id
         }
 
         if (!_.isEmpty(entity)) {
           cosponsorEntities.push(entity)
         }
       }
-      writeToDb && (await this.tblBill.updateCoSponsors(bill.id, cosponsorEntities))
+      this.writeToDb && (await this.tblBill.updateCoSponsors(bill.id, cosponsorEntities))
 
       console.log('\n\n')
     }
@@ -158,13 +161,13 @@ export class SponsorSync {
   }
 }
 
-let sync = new SponsorSync()
-// sync.syncSponsorForAllBills()
+let sync = new SponsorSync(true)
+sync.init().then(() => sync.syncSponsorForAllBills(115, 115, 115))
 
 let patch = async (billId: string) => {
   await sync.init()
   const bill = await sync.billTable.getBillById(billId)
-  await sync.batchSyncForCongress(bill.congress, [bill], /* writeToDb */ true)
+  await sync.batchSyncForCongress(bill.congress, [bill])
 }
 
-patch('df717157-4d7b-4a55-acf4-eae451f2ff64')
+// patch('df717157-4d7b-4a55-acf4-eae451f2ff64')

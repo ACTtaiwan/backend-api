@@ -16,8 +16,9 @@ export class CongressGovAllInfoParser {
     return new Promise((resolve, reject) => {
       console.log(`[CongressGovAllInfoParser::getAllInfo()] ready to fetch url = ${url}`)
       this.dataProvider.fetchBillAllInfoHtml(url).then($ => {
-        console.log(`[CongressGovAllInfoParser::getAllInfo()] fetched done. Start parsing tracker`)
+        console.log(`[CongressGovAllInfoParser::getAllInfo()] fetched done. Start parsing all`)
         let obj = this.parseAll($)
+        console.log(`[CongressGovAllInfoParser::getAllInfo()] Parse done`)
         resolve(obj)
       }).catch(error => {
         reject(error)

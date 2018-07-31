@@ -136,7 +136,15 @@ export class BillStaticInfoBucket extends S3Bucket {
   public getEntity (congress: number, billType: models.BillTypeCode, billNumber: number)
   : Promise<BillStaticInfo> {
     const s3BucketKey = this.s3BucketKey(congress, billType, billNumber)
-    return super.getObject(s3BucketKey).then(out => (out && out.Body) ? JSON.parse(out.Body.toString()) : null)
+    return super.getObject(s3BucketKey)
+      .then(out => (out && out.Body) ? JSON.parse(out.Body.toString()) : null)
+      .catch(err => {
+        if (err && err.statusCode === 404) {
+          console.log(`[BillStaticInfoBucket::getEntity()] S3 entity not found. {congress=${congress}, billType=${billType}, billNumber=${billNumber}}`)
+          return null
+        }
+        throw err
+      })
   }
 
   public deleteEntity (congress: number, billType: models.BillTypeCode, billNumber: number)
