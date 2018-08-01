@@ -5,6 +5,7 @@ import * as airtable from '../../libs/airtable';
 import { BillTypeCode, ChamberType } from '../../libs/congressGov/CongressGovModels';
 import Utility from '../../libs/utils/Utility';
 import { MongoDBManager } from '../../libs/mongodbLib';
+import { logger } from '../../libs/utils/Logger';
 
 type Entity = {[key: string]: any};
 
@@ -21,6 +22,10 @@ abstract class MongoTable implements Table {
   protected _manager: MongoDBManager;
   protected _handle: mongoDbLib.MongoDBTable;
   protected _mockWrite: boolean;
+  public constructor (protected _logPrefix: string = '') {}
+  protected log (message: string) {
+    logger.log(this._logPrefix + message);
+  }
   public async connect (config: MongoTableConfig): Promise<void> {
     this._manager = await mongoDbLib.MongoDBManager.instance;
     this._handle = this._manager.getTable(config.tableName);
@@ -34,12 +39,11 @@ abstract class MongoTable implements Table {
       return;
     }
     _.each(entities, e => {
-      console.log('insert');
-      console.log(e);
+      this.log(`insertPlan ${JSON.stringify(e)}`);
     });
     if (!this._mockWrite) {
       let result = await this._handle.addItems(entities);
-      console.log(`i: count=${result.result.n}/${entities.length}`);
+      this.log(`inserted: count=${result.result.n}/${entities.length}`);
     }
   }
   public async update (entities: Entity[]): Promise<void> {
@@ -47,8 +51,7 @@ abstract class MongoTable implements Table {
       return;
     }
     _.each(entities, e => {
-      console.log(`update ${e['id']}`);
-      console.log(e);
+      this.log(`updatePlan ${JSON.stringify(e['id'])} ${JSON.stringify(e)}`);
     });
     if (!this._mockWrite) {
       await Promise.all(_.map(entities, async ent => {
@@ -58,20 +61,26 @@ abstract class MongoTable implements Table {
             return {result: {}};
           }
         );
-        console.log(`u: ${ent['id']} ${result.result.ok ? 'ok' : 'failed'}`);
+        this.log(`updated: ${ent['id']} ${result.result.ok ? 'ok' : 'failed'}`);
       }));
     }
   }
   public abstract getEntityMatchKey (e: Entity): string;
 }
 
-class MongoBillTable extends MongoTable {
+class MongoBillsTable extends MongoTable {
   public getEntityMatchKey (e: Entity): string {
     if (!e['congress'] || !e['billType'] || !e['billType']['code']
         || !e['billNumber']) {
       return;
     }
     return _.join([e['congress'], e['billType']['code'], e['billNumber']]);
+  }
+}
+
+class MongoTagsTable extends MongoTable {
+  public getEntityMatchKey (e: Entity): string {
+    return e['tag'];
   }
 }
 
@@ -101,7 +110,7 @@ abstract class AirtableTable implements Table {
   public abstract getEntityMatchKey (e: Entity): string;
 }
 
-class AirtableBillTable extends AirtableTable {
+class AirtableBillsTable extends AirtableTable {
   public getEntityMatchKey (e: Entity): string {
     if (!e['congress'] || !e['bill type'] || !e['bill type'][0]
         || !e['bill type'][0]['Code'] || !e['bill number']) {
@@ -112,6 +121,12 @@ class AirtableBillTable extends AirtableTable {
       SyncUtils.billTypeDisplayToCode(e['bill type'][0]['Code']),
       e['bill number'],
     ]);
+  }
+}
+
+class AirtableTagsTable extends AirtableTable {
+  public getEntityMatchKey (e: Entity): string {
+    return e['Name'];
   }
 }
 
@@ -163,7 +178,12 @@ class Sync {
     protected _config: SyncConfig,
     protected _sourceTable: Table,
     protected _targetTable: Table,
+    protected _logPrefix: string = '',
   ) {}
+
+  protected log (message: string) {
+    logger.log(this._logPrefix + message);
+  }
 
   private _getTargetFields (): string[] {
     return _.map(this._config.syncEntityConfig, (_, field) => field);
@@ -216,14 +236,14 @@ class Sync {
         SyncUtils.syncEntity(this._config.syncEntityConfig, ent, {})[0],
       ).value();
     // 4. commit update/insert to the target table
-    console.log('u:', updatingEntities.length);
-    console.log('i:', insertingEntities.length);
+    this.log(`updateCount: ${updatingEntities.length}`);
+    this.log(`insertCount: ${insertingEntities.length}`);
     await Promise.all([
       this._targetTable.update(updatingEntities),
       this._targetTable.insert(insertingEntities),
     ]);
 
-    console.log('done');
+    this.log('done');
   }
 }
 
@@ -385,10 +405,10 @@ const SYNC_BILL_CONFIG: SyncConfig = {
       sync: SyncUtils.syncEntityArray,
       config: {
         'tag': 'Name',
-        'shortName': 'Short Name',
-        'name_zh': 'Name (zh)',
-        'shortName_zh': 'Short Name (zh)',
-        'notes': 'Notes',
+        // 'shortName': 'Short Name',
+        // 'name_zh': 'Name (zh)',
+        // 'shortName_zh': 'Short Name (zh)',
+        // 'notes': 'Notes',
       },
     },
     'relevance': {
@@ -414,6 +434,24 @@ const SYNC_BILL_CONFIG: SyncConfig = {
       },
     },
     'status': 'status',
+  },
+};
+
+const SYNC_TAG_CONFIG: SyncConfig = {
+  sourceTable: {
+    dbId: 'appp9kTQYOdrmDGuS',
+    entityType: 'Tag',
+  },
+  targetTable: {
+    tableName: MongoDbConfig.tableNames.TAGS_TABLE_NAME,
+    // mockWrite: true,
+  },
+  syncEntityConfig: {
+    'tag': 'Name',
+    'shortName': 'Short Name',
+    'name_zh': 'Name (zh)',
+    'shortName_zh': 'Short Name (zh)',
+    'notes': 'Notes',
   },
 };
 
@@ -449,19 +487,33 @@ const SYNC_ARTICLE_SNIPPET_CONFIG: SyncConfig = {
  * tester
  */
 export let syncAirtable = (async () => {
-  console.log(`[syncAirtable] start with bills`)
+  let logPrefix = '';
+
+  logPrefix = '[syncAirtable][bills] ';
   await (new Sync(
     SYNC_BILL_CONFIG,
-    new AirtableBillTable(),
-    new MongoBillTable(),
+    new AirtableBillsTable(),
+    new MongoBillsTable(logPrefix),
+    logPrefix,
   )).sync();
 
-  console.log(`[syncAirtable] start with article snippets`)
+  logPrefix = '[syncAirtable][tags] ';
+  await (new Sync(
+    SYNC_TAG_CONFIG,
+    new AirtableTagsTable(),
+    new MongoTagsTable(logPrefix),
+    logPrefix,
+  )).sync();
+
+  logPrefix = '[syncAirtable][articleSnippets] ';
   await (new Sync(
     SYNC_ARTICLE_SNIPPET_CONFIG,
     new AirtableArticleSnippetsTable(),
-    new MongoArticleSnippetsTable(),
+    new MongoArticleSnippetsTable(logPrefix),
+    logPrefix,
   )).sync();
 
   return;
 });
+
+syncAirtable();
