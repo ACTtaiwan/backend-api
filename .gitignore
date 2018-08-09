@@ -1,5 +1,6 @@
 .DS_Store
 secret.json
+config/debug.json
 # package directories
 node_modules
 jspm_packages

@@ -516,4 +516,4 @@ export let syncAirtable = (async () => {
   return;
 });
 
-syncAirtable();
+// syncAirtable();

@@ -1,4 +1,5 @@
 import * as aws from 'aws-sdk'
+import { debug } from './debug'
 
 export class MongoDbConfig {
   public static readonly tableNames = {
@@ -26,6 +27,9 @@ export class MongoDbConfig {
   }
 
   public static get remoteUrl (): Promise<string> {
+    if (debug && Array.isArray(debug['mongodb']['congress'])) {
+      return Promise.resolve(debug['mongodb']['congress'][0]);
+    }
     if (MongoDbConfig._remoteUrl) {
       return Promise.resolve(MongoDbConfig._remoteUrl)
     } else {
@@ -36,7 +40,9 @@ export class MongoDbConfig {
     }
   }
 
-  private static getKeyFileFromS3 (): Promise<any> {
+  // --------------------------------------------------
+
+  private static async getKeyFileFromS3 (): Promise<any> {
     return new Promise((resolve, reject) => {
       let s3 = new aws.S3()
       var params = {
@@ -49,7 +55,13 @@ export class MongoDbConfig {
           console.log(`[MongoDbConfig::getKeyFileFromS3()] Error = ${JSON.stringify(err, null, 2)}`)
           reject(err)
         } else {
-          console.log(`[MongoDbConfig::getKeyFileFromS3()] OK. data = ${JSON.stringify(data, null, 2)}`)
+          console.log(`[MongoDbConfig::getKeyFileFromS3()] OK. data = ` +
+            `${JSON.stringify(
+              data,
+              (key, val) => key === 'Body' ? '<omitted>' : val,
+              2
+            )}`
+          );
           try {
             let json = JSON.parse(data.Body.toString())
             console.log(`[MongoDbConfig::getKeyFileFromS3()] JSON parse done`)
@@ -61,5 +73,13 @@ export class MongoDbConfig {
         }
       })
     })
+  }
+
+  public static async getUrl (): Promise<string> {
+    if (debug && Array.isArray(debug['mongodb']['urls'])) {
+      return debug['mongodb']['urls'][0];
+    }
+    let s3Credential = await MongoDbConfig.getKeyFileFromS3();
+    return s3Credential.url;
   }
 }
