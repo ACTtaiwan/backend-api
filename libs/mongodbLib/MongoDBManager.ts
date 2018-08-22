@@ -67,8 +67,12 @@ export class MongoDBManager {
       return Promise.resolve();
     } else {
       return MongoDbConfig.connectionUrl
-        .then(dbUrl => mongodb.MongoClient.connect(dbUrl))
-        .then(db => {
+        .then(dbUrl => mongodb.MongoClient.connect(
+          dbUrl,
+          {useNewUrlParser: true},
+        ))
+        .then(client => {
+          let db = client.db('congress');
           console.log(`[MongoDBManager] DB connected`)
           this.db = db;
           const tables = <MongoDBTable[]> [
