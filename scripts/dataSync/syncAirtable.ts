@@ -374,6 +374,7 @@ const SYNC_BILL_CONFIG: SyncConfig = {
       sourceField: 'bill type',
       sync: SyncUtils.syncEntityArrayHead,
       config: {
+        'id': 'db_ID',
         'name': 'Name',
         'code': {
           sourceField: 'Code',

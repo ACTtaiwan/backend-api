@@ -40,6 +40,7 @@ export const SCHEMAS: { [key in EntityType]: Schema } = {
   'BillType': {
     table: 'Bill Types',
     fields: {
+      'db_ID': null,
       'Code': null,
       'Name': null,
       'Description': null,
