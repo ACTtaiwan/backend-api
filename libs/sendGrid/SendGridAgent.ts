@@ -46,7 +46,8 @@ export class SendGridAgent {
     })
   }
 
-  public async subscribe (email: string, firstName?: string, lastName?: string, listId = SendGridAgent.LIST_ID.ACT_CITIZENS) {
+  public async subscribe (email: string, firstName?: string, lastName?: string, list?: 'act' | 'ustw' ) {
+    let listId = SendGridAgent.LIST_ID.ACT_CITIZENS
     return this.addRecipient(email, firstName, lastName)
       .then(recipient_id => this.performRequest(`/contactdb/lists/${listId}/recipients/${recipient_id}`, 'POST'))
       .then(() => new Object())
