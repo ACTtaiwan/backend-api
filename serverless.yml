@@ -274,7 +274,7 @@ functions:
           path: subscribe/newsletter
           method: post
           cors: true
-          authorizer: aws_iam
+          private: true
 
   articleSnippets:
     handler: functions/private/articleSnippets/articleSnippetsHandler.main
