@@ -1,10 +1,10 @@
-import { MongoGraph } from '../MongoGraph';
 import * as _ from 'lodash';
 import { expect } from 'chai';
 import 'mocha';
+import { IDataGraph, DataGraph } from '../DataGraph';
 
 describe('MongoGraphTest', async function () {
-  let g: MongoGraph;
+  let g: IDataGraph;
 
   const ENT_TYPE1 = 'test_type1';
   const ENT_TYPE2 = 'test_type2';
@@ -33,11 +33,12 @@ describe('MongoGraphTest', async function () {
   ];
 
   before(async function () {
-    g = await MongoGraph.new(
-      'mongodb://localhost:27017',
-      'test_mongograph',
-      'test_entities',
+    g = await DataGraph.create(
+      'MongoGraph', 
+      'test_mongograph', 
+      'test_entities', 
       'test_assocs',
+      'mongodb://localhost:27017',
     );
     if (!g) {
       this.skip();

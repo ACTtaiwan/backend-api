@@ -1,44 +1,20 @@
 import { MongoClient, Db, Collection } from 'mongodb';
+import { IDataGraph, TEntType, TEntData, TId, TEnt, TEntQuery, TAssocQuery,
+  TEntUpdate, TAssocType, TAssocData, TAssoc } from './DataGraph';
 
-type TId = string;
-
-type TEntType = string;
-type TEntData = { [key: string]: any }; // underscore fields ignored
-type TEnt = {
-  _id: TId;
-  _type: TEntType;
-  [key: string]: any;
-}
-type TEntQuery = Object;
-type TEntUpdate = {
-  _id: TId;
-  [key: string]: any;
-}
-
-type TAssocType = string;
-type TAssocData = { [key: string]: any };  // underscore fields ignored
-type TAssoc = {
-  _id: TId;
-  _type: TAssocType;
-  _id1: TId;
-  _id2: TId;
-  [key: string]: any;
-}
-type TAssocQuery = Object;
-
-export class MongoGraph {
+export class MongoGraph implements IDataGraph {
   // factory method
   public static async new (
-    url: string,
     dbName: string,
     entityCollectionName: string,
-    assocCollectionName: string
+    assocCollectionName: string,
+    url: string,
   ): Promise<MongoGraph> {
     let instance = new MongoGraph(
-      url,
       dbName,
       entityCollectionName,
       assocCollectionName,
+      url,
     );
     return await instance._init();
   }
@@ -49,10 +25,10 @@ export class MongoGraph {
   protected _assocs: Collection;
 
   protected constructor (
-    protected _url: string,
     protected _dbName: string,
     protected _entityCollectionName: string,
     protected _assocCollectionName: string,
+    protected _url: string,
   ) {}
 
   protected async _init (): Promise<MongoGraph> {
@@ -82,32 +58,9 @@ export class MongoGraph {
     return;
   }
 
-  /**
-   * 
-   * @param type Entity type
-   * @param entQuery Example:
-   * {
-   *    field1: value1,
-   *    field2: [value2, value3, value4],
-   *    ...
-   * }
-   * Returned entities satisfy: 
-   *    field1 = value1 AND field2 = value2 OR value3 OR value4
-   * Field name could also be a json 'path' that refers to a deep field
-   * @param assocQuery Example:
-   * {
-   *    _type: assoc_type,         // required
-   *    _id1: [value1, value2],    // or _id2; value could be a single value
-   * }
-   * Returned entities satisfy the condition that there exists an assoc where: 
-   *  1. _type = assoc_type
-   *  2. _id1 = value1 OR value2
-   *  3. _id2 = self
-   * Fields _id1 and _id2 cannot both appear.
-   */
   public async findEntities (
-    type: TEntType, 
-    entQuery?: TEntQuery, 
+    type: TEntType,
+    entQuery?: TEntQuery,
     assocQuery?: TAssocQuery,
     fields?: string[],
   ): Promise<TEntData[]> {
@@ -123,18 +76,18 @@ export class MongoGraph {
   }
 
   public async insertAssoc (
-    type: TAssocType, 
-    id1: TId, 
-    id2: TId, 
-    data?: TAssocData
+    type: TAssocType,
+    id1: TId,
+    id2: TId,
+    data?: TAssocData,
   ): Promise<TId> {
     return;
   }
 
   public async findAssocs (
-    type: TAssocType, 
-    id1?: TId, 
-    id2?: TId, 
+    type: TAssocType,
+    id1?: TId,
+    id2?: TId,
     data?: TAssocData,
     fields?: string[],
   ): Promise<TAssoc[]> {
@@ -153,15 +106,15 @@ export class MongoGraph {
     return;
   }
 
-  public async dropDb () {
+  public async dropDb (): Promise<any> {
     if (this._client && this._db) {
-      await this._db.dropDatabase();
+      return await this._db.dropDatabase();
     }
   }
 
-  public close () {
+  public async close (): Promise<void> {
     if (this._client) {
-      this._client.close();
+      await this._client.close();
     }
   }
 }
