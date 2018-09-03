@@ -1,15 +1,15 @@
 import * as _ from 'lodash';
 import { expect } from 'chai';
 import 'mocha';
-import { IDataGraph, DataGraph } from '../DataGraph';
+import { IDataGraph, DataGraph, TType } from '../DataGraph';
 
 describe('MongoGraphTest', async function () {
   let g: IDataGraph;
 
-  const ENT_TYPE1 = 'test_type1';
-  const ENT_TYPE2 = 'test_type2';
-  const ASSOC_TYPE1 = 'test_type3';
-  const ASSOC_TYPE2 = 'test_type4';
+  const ENT_TYPE1 = TType.TestEntType1;
+  const ENT_TYPE2 = TType.TestEntType2;
+  const ASSOC_TYPE1 = TType.TestAssocType1;
+  const ASSOC_TYPE2 = TType.TestAssocType2;
   let data = [
     { a: 1, b: 'bbb', c: false },
     { a: 999, c: Date.now()},
@@ -47,7 +47,7 @@ describe('MongoGraphTest', async function () {
 
   after(async function () {
     if (g) {
-      await g.dropDb();
+      // await g.dropDb();
       g.close();
     }
   });
@@ -89,14 +89,16 @@ describe('MongoGraphTest', async function () {
     );
   }
 
-  describe('Insert', async function () {
+  describe.only('Insert', async function () {
     before(function () {
       if (!g) {
         this.skip();
       }
     });
 
-    afterEach(dropDb);
+    beforeEach(dropDb);
+
+    after(dropDb);
 
     it('#insert ents', async function () {
       let ids = await insertTestEntData();
@@ -175,7 +177,7 @@ describe('MongoGraphTest', async function () {
 
     it('#find ents, specifying returned fields', async function () {
       let found =
-        await g.findEntities('test_ent_type1', { a: 999 }, undefined, ['c']);
+        await g.findEntities(ENT_TYPE1, { a: 999 }, undefined, ['c']);
       expect(found).to.have.lengthOf(1);
       expect(found).to.deep.include(_.pick(ents[1], ['_id', 'c']));
       expect(found[0]).to.not.have.any.keys(['a', 'b']);

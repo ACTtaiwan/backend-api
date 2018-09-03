@@ -1,14 +1,17 @@
 import { MongoGraph } from './MongoGraph';
-import { MongoDbConfig } from '../../../config/mongodb';
 
-export type TId = string;
+export type TId = string; // uuid
+export const enum TType {
+  TestEntType1 = 0,
+  TestEntType2 = 1,
+  TestAssocType1 = 1000,
+  TestAssocType2 = 1001,
+};
 
-export type TEntType = string;
-export type TEntData = { [key: string]: any }; // underscore fields ignored
-export type TEnt = {
+export type TEntData = Object;
+export interface TEnt extends TEntData {
   _id: TId;
-  _type: TEntType;
-  [key: string]: any;
+  _type: TType;
 }
 export type TEntQuery = Object;
 export type TEntUpdate = {
@@ -16,11 +19,10 @@ export type TEntUpdate = {
   [key: string]: any;
 }
 
-export type TAssocType = string;
 export type TAssocData = { [key: string]: any };  // underscore fields ignored
 export type TAssoc = {
   _id: TId;
-  _type: TAssocType;
+  _type: TType;
   _id1: TId;
   _id2: TId;
   [key: string]: any;
@@ -28,7 +30,7 @@ export type TAssoc = {
 export type TAssocQuery = Object;
 
 export interface IDataGraph {
-  insertEntities (type: TEntType, ents: TEntData[]): Promise<TId[]>;
+  insertEntities (type: TType, ents: TEntData[]): Promise<TId[]>;
   loadEntity (id: TId, fields?: string[]): Promise<TEnt>;
   /**
    *
@@ -54,17 +56,17 @@ export interface IDataGraph {
    * Fields _id1 and _id2 cannot both appear.
    */
   findEntities (
-    type: TEntType,
+    type: TType,
     entQuery?: TEntQuery,
     assocQuery?: TAssocQuery,
     fields?: string[],
   ): Promise<TEntData[]>;
   updateEntities (updates: TEntUpdate[]): Promise<TId[]>;
   deleteEntity (ids: TId[]): Promise<TId[]>;
-  insertAssoc (type: TAssocType, id1: TId, id2: TId, data?: TAssocData)
+  insertAssoc (type: TType, id1: TId, id2: TId, data?: TAssocData)
   : Promise<TId>;
   findAssocs (
-    type: TAssocType,
+    type: TType,
     id1?: TId,
     id2?: TId,
     data?: TAssocData,
@@ -72,7 +74,7 @@ export interface IDataGraph {
   ): Promise<TAssoc[]>;
   findEntityIdsViaAssoc (
     entId: TId,
-    assocType: TAssocType,
+    assocType: TType,
     direction: 'forward' | 'backward',
   ): Promise<TId[]>;
   deleteAssoc (ids: TId[]): Promise<TId[]>;
@@ -88,12 +90,10 @@ export class DataGraph {
     assocTableName = 'assocs',
     connectInfo?: any,
   ): Promise<IDataGraph> {
+    let e: TEnt;
     let g: IDataGraph;
     switch (type) {
       case 'MongoGraph':
-        if (!connectInfo) {
-          connectInfo = await MongoDbConfig.getUrl();
-        }
         g = await MongoGraph.new(
           dbName,
           entTableName,
