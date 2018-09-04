@@ -7,6 +7,8 @@ import { MongoDbConfig } from '../../../config/mongodb';
 import { DataGraphUtils } from './DataGraphUtils';
 
 export class MongoGraph implements IDataGraph {
+  private static readonly ASSOC_LOOKUP_OUTPUT_FIELD = '_assocs';
+
   // factory method
   public static async new (
     dbName: string,
@@ -54,22 +56,35 @@ export class MongoGraph implements IDataGraph {
     return this;
   }
 
-  private static makeId (id?: TId): Binary {
-    let buf: Buffer;
-    if (id) {
-      buf = DataGraphUtils.idToBuffer(id);
-      if (!buf) {
-        console.error(`MongoGraph.makeId(): cannot convert ${id} to ID`);
+  public static encodeId (id: TId): Binary {
+    let buf = DataGraphUtils.idToBuffer(id);
+    if (buf) {
+      return new Binary(buf, Binary.SUBTYPE_UUID);
+    }
+    throw Error(`Cannot encode ID: ${id}`);
+  }
+
+  public static decodeId (bin: Binary): TId {
+    if (bin.sub_type === Binary.SUBTYPE_UUID && bin.buffer) {
+      let id = DataGraphUtils.idFromBuffer(bin.buffer);
+      if (id) {
+        return id;
       }
     }
-    if (!buf) {
-      // if no id or a bad id is specified, generate a new one
-      buf = uuid(null, Buffer.alloc(16));
+    throw Error(`Cannot decode ID: ${bin}`);
+  }
+
+  private static createEncodedId (): Binary {
+    let id = uuid();
+    try {
+      return MongoGraph.encodeId(id);
+    } catch (err) {
+      throw Error(`Cannot create encoded ID: ${id}`);
     }
-    return new Binary(buf, Binary.SUBTYPE_UUID);
   }
 
   /**
+   * Insert records to a mongo collection (table).
    *
    * @param table Collection to insert to.
    * @param essentialData Common properties to be inserted to each record.
@@ -79,16 +94,18 @@ export class MongoGraph implements IDataGraph {
    */
   private static async _insertHelper (
     table: Collection,
-    essentialData: Object,
-    data: Object[]
+    essentialData: object,
+    data: object[]
   ): Promise<TId[]> {
     let objs = _.map(data, d =>
-      _.assign(d, essentialData, { _id: MongoGraph.makeId() }),
+      _.assign(d, essentialData, { _id: MongoGraph.createEncodedId() }),
     );
     let results = await table.insertMany(objs);
-    let insertedIds = _.map(results.insertedIds, binaryId =>
-      DataGraphUtils.idFromBuffer(binaryId['buffer']),
-    );
+    let insertedIds = _.map(results.insertedIds, id => {
+      if (id instanceof Binary) {
+        return MongoGraph.decodeId(id);
+      }
+    });
     return insertedIds;
   }
 
@@ -102,16 +119,116 @@ export class MongoGraph implements IDataGraph {
   }
 
   public async loadEntity (id: TId, fields?: string[]): Promise<TEnt> {
-    return;
+    let ent = await this._entities.findOne(
+      { _id: MongoGraph.encodeId(id) },
+      { projection: MongoGraph.composeProjection(fields) },
+    );
+    return ent;
+  }
+
+  private static composeQuery (
+    condition: object,
+    shouldEncodeIdFields?: string[],
+  ): object {
+    let shouldEncodeId = _.fromPairs(
+      _.map(shouldEncodeIdFields, f => [f, true]),
+    );
+    let result = _.mapValues(condition, (v, k) => {
+      if (Array.isArray(v)) {
+        let arr = Array.from(v);
+        if (shouldEncodeId[k]) {
+          arr = _.map(arr, id => {
+            if (typeof id === 'string') {
+              return MongoGraph.encodeId(id);
+            }
+          });
+        }
+        return { $in: arr };
+      } else {
+        if (shouldEncodeId[k]) {
+          return MongoGraph.encodeId(v);
+        }
+        return v;
+      }
+    });
+
+    return result;
+  }
+
+  private static composeProjection (fields: string[], present = true)
+  : object {
+    if (!fields) {
+      return {};
+    }
+    return _.fromPairs(_.map(fields, f => [f, present]));
+  }
+
+  private composeMatchEntIdViaAssocPipes (q: TAssocQuery): object[] {
+    // determine which assoc field to join with, id1 or id2?
+    let joinIdField, filterIdField;
+    if (q._id1 && q._id2) {
+      throw Error('Invalid TAssocQuery: both _id1 and _id2 are present');
+    } else if (q._id1 && !q._id2) {
+      joinIdField = '_id2';
+      filterIdField = '_id1';
+    } else if (!q._id1 && q._id2) {
+      joinIdField = '_id1';
+      filterIdField = '_id2';
+    } else {
+      throw Error('Invalid TAssocQuery: both _id1 and _id2 are absent');
+    }
+    // join
+    let lookup = { $lookup: {
+        from: this._assocCollectionName,
+        localField: '_id',
+        foreignField: joinIdField,
+        as: MongoGraph.ASSOC_LOOKUP_OUTPUT_FIELD,
+    }};
+
+    // after join, filter by the other id field (id2 or id1) and assoc data
+    let match = MongoGraph.composeQuery(q, [filterIdField]);
+    match = _.set(
+      {},
+      `$match.${MongoGraph.ASSOC_LOOKUP_OUTPUT_FIELD}.$elemMatch`,
+      match,
+    );
+
+    return [lookup, match];
   }
 
   public async findEntities (
     type: TType,
     entQuery?: TEntQuery,
-    assocQuery?: TAssocQuery,
+    assocQueries?: TAssocQuery[],
     fields?: string[],
   ): Promise<TEntData[]> {
-    return;
+    let pipeline = [];
+    // process entQuery
+    entQuery = entQuery || {};
+    entQuery['_type'] = type;
+    pipeline.push({ $match: MongoGraph.composeQuery(entQuery) });
+    // process assocQueries
+    let removeTmpFields = false;
+    _.each(assocQueries, q => {
+      let aggs = this.composeMatchEntIdViaAssocPipes(q);
+      _.each(aggs, agg => {
+        pipeline.push(agg);
+      });
+      removeTmpFields = true;
+    });
+    if (fields) {
+      pipeline.push({ $project: MongoGraph.composeProjection(fields) });
+    }
+    if (removeTmpFields) {
+      pipeline.push({ $project: MongoGraph.composeProjection(
+        [MongoGraph.ASSOC_LOOKUP_OUTPUT_FIELD],
+        false,
+      )});
+    }
+    // execute pipeline
+    // console.log(pipeline);
+    let cursor = await this._entities.aggregate(pipeline);
+    return await cursor.toArray();
   }
 
   public async updateEntities (updates: TEntUpdate[]): Promise<TId[]> {
@@ -128,15 +245,18 @@ export class MongoGraph implements IDataGraph {
     id2: TId,
     data?: TAssocData,
   ): Promise<TId> {
-    return (await MongoGraph._insertHelper(
+    let result = await MongoGraph._insertHelper(
       this._assocs,
       {
         _type: type,
-        _id1: MongoGraph.makeId(id1),
-        _id2: MongoGraph.makeId(id2),
+        _id1: MongoGraph.encodeId(id1),
+        _id2: MongoGraph.encodeId(id2),
       },
       [ data ],
-    ))[0];
+    );
+    if (result && result.length === 1) {
+      return result[0];
+    }
   }
 
   public async findAssocs (
@@ -146,10 +266,24 @@ export class MongoGraph implements IDataGraph {
     data?: TAssocData,
     fields?: string[],
   ): Promise<TAssoc[]> {
-    return;
+    let query = data || {};
+    query['_type'] = type;
+    if (id1) {
+      query['_id1'] = id1;
+    }
+    if (id2) {
+      query['_id2'] = id2;
+    }
+    query = MongoGraph.composeQuery(query, ['_id1', '_id2']);
+
+    let cursor = await this._assocs.find(
+      query,
+      { projection: MongoGraph.composeProjection(fields) }
+    );
+    return await cursor.toArray();
   }
 
-  public async findEntityIdsViaAssoc (
+  public async findAssociatedEntityIds (
     entId: TId,
     assocType: TType,
     direction: 'forward' | 'backward',

@@ -1,9 +1,11 @@
 import * as _ from 'lodash';
-import { v4 as uuid } from 'uuid';
 import { TId } from './DataGraph';
 
 export class DataGraphUtils {
   public static idFromBuffer (idBuf: Buffer): TId {
+    if (!idBuf || idBuf.length !== 16) {
+      return;
+    }
     let strs = _.map(idBuf, byte => {
       let ret = byte.toString(16);
       if (ret.length < 2) {
@@ -20,10 +22,13 @@ export class DataGraphUtils {
   }
 
   public static idToBuffer (id: TId): Buffer {
+    if (!id) {
+      return;
+    }
     let a = _.filter(id.toLowerCase(), c =>
       (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')
     );
-    if (a.length % 2 !== 0) {
+    if (a.length !== 32) {
       return;
     }
     let bytes = _.map(_.chunk(a, 2), b => parseInt(b[0] + b[1], 16));

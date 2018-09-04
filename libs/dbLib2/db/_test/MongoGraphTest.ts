@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import { expect } from 'chai';
 import 'mocha';
 import { IDataGraph, DataGraph, TType } from '../DataGraph';
+import { MongoGraph } from '../MongoGraph';
 
 describe('MongoGraphTest', async function () {
   let g: IDataGraph;
@@ -81,15 +82,15 @@ describe('MongoGraphTest', async function () {
   function mockAllAssocs (ids, assocIds) {
     return _.map(assocData, (d, i) =>
       _.merge({
-        _id: assocIds[i],
+        _id: MongoGraph.encodeId(assocIds[i]),
         _type: d.type,
-        _id1: ids[d.entInd1],
-        _id2: ids[d.entInd2],
+        _id1: MongoGraph.encodeId(ids[d.entInd1]),
+        _id2: MongoGraph.encodeId(ids[d.entInd2]),
       }, d.d)
     );
   }
 
-  describe.only('Insert', async function () {
+  describe('Insert', async function () {
     before(function () {
       if (!g) {
         this.skip();
@@ -121,6 +122,7 @@ describe('MongoGraphTest', async function () {
       if (!g) {
         this.skip();
       }
+      dropDb();
       ids = await insertTestEntData();
     });
 
@@ -136,12 +138,13 @@ describe('MongoGraphTest', async function () {
     it('#load ent, specifying fields', async function () {
       let ent0 = await g.loadEntity(ids[0], ['b', 'c']);
       expect(ent0).to.deep.include(_.pick(data[0], ['b', 'c']));
+      expect(ent0).to.not.have.any.keys(['a']);
     });
 
     it('#load nonexisting ent', async function () {
       let ent0 =
         await g.loadEntity('d065cee5-f2cf-4728-b6c4-1fda1698517b', ['b']);
-      expect(ent0).to.be.undefined;
+      expect(ent0).to.not.be.ok;
     });
   });
 
@@ -152,6 +155,7 @@ describe('MongoGraphTest', async function () {
       if (!g) {
         this.skip();
       }
+      dropDb();
       ids = await insertTestEntData();
       [assocIds, ents] = await Promise.all([
         insertTestAssocData(ids),
@@ -203,11 +207,21 @@ describe('MongoGraphTest', async function () {
       expect(found).to.have.lengthOf(0);
     });
 
-    it('#find ents by associated ent ids', async function () {
+    it('#find ents by associated ent ids 0', async function () {
       let found = await g.findEntities(
         ENT_TYPE1,
         undefined,
-        { type: ASSOC_TYPE2, id2: [ids[2], ids[1]] },
+        [{ _type: ASSOC_TYPE2, _id2: ids[2] }],
+      );
+      expect(found).to.have.lengthOf(1);
+      expect(found).to.deep.include(ents[2]);
+    });
+
+    it('#find ents by associated ent ids 1', async function () {
+      let found = await g.findEntities(
+        ENT_TYPE1,
+        undefined,
+        [{ _type: ASSOC_TYPE2, _id2: [ids[2], ids[1]] }],
       );
       expect(found).to.have.lengthOf(2);
       expect(found).to.deep.include(ents[0]);
@@ -215,16 +229,21 @@ describe('MongoGraphTest', async function () {
     });
 
     it('#find ents by associated ent ids 2', async function () {
-      // find ents based on associated ent ids, specifying assoc data and fields
-      // to return
+      // find ents that:
+      // 1. are of type ENT_TYPE1
+      // 2. have property { a: 999 }
+      // 3. have an assoc with ids[5] (as id1), where the assoc:
+      //  3a. of type ASSOC_TYPE1
+      //  3b. has property { d: 'data2' }
+      // finally, return only property c (and _id) of such ents
       let found = await g.findEntities(
         ENT_TYPE1,
         { a: 999 },
-        { _type: ASSOC_TYPE1, _id1: ids[5], d: 'data2' },
+        [{ _type: ASSOC_TYPE1, _id1: ids[5], d: 'data2' }],
         ['c'],
       );
       expect(found).to.have.lengthOf(1);
-      expect(found).to.deep.include(_.pick(ents[1], ['c']));
+      expect(found).to.deep.include(_.pick(ents[1], ['_id', 'c']));
       expect(found[0]).to.not.have.any.keys(['a', 'b']);
     });
 
@@ -232,9 +251,9 @@ describe('MongoGraphTest', async function () {
       let found = await g.findEntities(
         ENT_TYPE1,
         undefined,
-        { _type: ASSOC_TYPE2, _id1: [ids[4], ids[5]] },
+        [{ _type: ASSOC_TYPE2, _id1: [ids[4], ids[5]] }],
       );
-      expect(found).to.have.lengthOf(2);
+      expect(found).to.have.lengthOf(0);
     });
 
     it('#find assocs by type', async function () {
@@ -255,7 +274,7 @@ describe('MongoGraphTest', async function () {
 
     it('#find associated ent ids, forward', async function () {
       let idsFound =
-        await g.findEntityIdsViaAssoc(ids[2], ASSOC_TYPE2, 'forward');
+        await g.findAssociatedEntityIds(ids[2], ASSOC_TYPE2, 'forward');
       expect(idsFound).to.have.lengthOf(2);
       expect(idsFound).to.deep.include(ids[2]);
       expect(idsFound).to.deep.include(ids[3]);
@@ -263,14 +282,14 @@ describe('MongoGraphTest', async function () {
 
     it('#find associated ent ids, backward', async function () {
       let idsFound =
-        await g.findEntityIdsViaAssoc(ids[1], ASSOC_TYPE2, 'backward');
+        await g.findAssociatedEntityIds(ids[1], ASSOC_TYPE2, 'backward');
       expect(idsFound).to.have.lengthOf(1);
       expect(idsFound).to.deep.include(ids[0]);
     });
 
     it('#find associated ent ids, backward, nonexisting', async function () {
       let idsFound =
-        await g.findEntityIdsViaAssoc(ids[3], ASSOC_TYPE1, 'backward');
+        await g.findAssociatedEntityIds(ids[3], ASSOC_TYPE1, 'backward');
       expect(idsFound).to.have.lengthOf(0);
     });
   });
