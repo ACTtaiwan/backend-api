@@ -81,7 +81,7 @@ export interface IDataGraph {
    * not covered in the keys will remain the same.
    */
   updateEntities (updates: TEntUpdate[]): Promise<number>;
-  deleteEntity (ids: TId[]): Promise<TId[]>;
+  deleteEntities (ids: TId[]): Promise<number>;
   insertAssoc (type: TType, id1: TId, id2: TId, data?: TAssocData)
   : Promise<TId>;
   findAssocs (
@@ -107,7 +107,7 @@ export interface IDataGraph {
     assocType: TType,
     direction: 'forward' | 'backward',
   ): Promise<TId[]>;
-  deleteAssoc (ids: TId[]): Promise<TId[]>;
+  deleteAssocs (ids: TId[]): Promise<number>;
   dropDb (): Promise<any>;
   close (): Promise<void>;
 }

@@ -309,7 +309,7 @@ describe('MongoGraphTest', async function () {
       ents = await loadAllEnts(ids);
     });
 
-    // after(dropDb);
+    after(dropDb);
 
     it('update multiple ents', async function () {
       let updates = _.map(ids, (id, i) => ({ _id: id, up: i }));
@@ -335,7 +335,7 @@ describe('MongoGraphTest', async function () {
     });
   });
 
-  describe('Delete', function () {
+  describe.only('Delete', function () {
     let ids, assocIds, ents;
 
     before(function () {
@@ -345,6 +345,7 @@ describe('MongoGraphTest', async function () {
     });
 
     beforeEach(async function () {
+      dropDb();
       ids = await insertTestEntData();
       [assocIds, ents] = await Promise.all([
         insertTestAssocData(ids),
@@ -352,23 +353,25 @@ describe('MongoGraphTest', async function () {
       ]);
     });
 
-    afterEach(dropDb);
+    after(dropDb);
 
-    it('delete assocs', async function () {
+    it.only('delete assocs', async function () {
       let assocs = mockAllAssocs(ids, assocIds);
-      let deleted = await g.deleteAssoc([assocIds[6], assocIds[7]]);
-      expect(deleted).to.have.lengthOf(2);
-      expect(deleted).to.deep.include(assocIds[6]);
-      expect(deleted).to.deep.include(assocIds[7]);
+      let numDeleted = await g.deleteAssocs([assocIds[6], assocIds[7]]);
+      expect(numDeleted).to.eql(2);
       let found = await g.findAssocs(ASSOC_TYPE1);
+      expect(found).to.have.lengthOf(1);
       expect(found).to.deep.include(assocs[8]);
       found = await g.findAssocs(ASSOC_TYPE2);
       expect(found).to.have.lengthOf(6);
+      _.each(_.slice(assocs, 0, 6), assoc => {
+        expect(found).to.deep.include(assoc);
+      });
     });
 
     it('delete ents (side effect delete assocs)', async function () {
       let assocs = mockAllAssocs(ids, assocIds);
-      let deleted = await g.deleteEntity([ids[0]]);
+      let deleted = await g.deleteEntities([ids[0]]);
       expect(deleted).to.eql([ids[0]]);
       let ent0 = await g.loadEntity(ids[0]);
       expect(ent0).to.be.undefined;

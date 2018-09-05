@@ -288,7 +288,7 @@ export class MongoGraph implements IDataGraph {
     return results.modifiedCount;
   }
 
-  public async deleteEntity (ids: TId[]): Promise<TId[]> {
+  public async deleteEntities (ids: TId[]): Promise<number> {
     return;
   }
 
@@ -352,8 +352,12 @@ export class MongoGraph implements IDataGraph {
     return results;
   }
 
-  public async deleteAssoc (ids: TId[]): Promise<TId[]> {
-    return;
+  public async deleteAssocs (ids: TId[]): Promise<number> {
+    let dels = _.map(ids, id => ({
+      deleteMany: { filter: { _id: MongoGraph.encodeId(id) }},
+    }));
+    let results = await this._assocs.bulkWrite(dels);
+    return results.deletedCount;
   }
 
   public async dropDb (): Promise<any> {
