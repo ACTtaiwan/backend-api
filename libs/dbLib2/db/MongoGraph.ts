@@ -1,7 +1,7 @@
 import { MongoClient, Db, Collection, Binary } from 'mongodb';
 import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
-import { IDataGraph, TType, TEntData, TId, TEnt, TEntQuery, TAssocQuery,
+import { IDataGraph, TType, TEntData, TId, TEnt, TEntQuery, TAssocLookupQuery,
   TEntUpdate, TAssocData, TAssoc } from './DataGraph';
 import { MongoDbConfig } from '../../../config/mongodb';
 import { DataGraphUtils } from './DataGraphUtils';
@@ -56,6 +56,9 @@ export class MongoGraph implements IDataGraph {
     return this;
   }
 
+  /**
+   * Encode string uuid into bson binary format
+   */
   public static encodeId (id: TId): Binary {
     let buf = DataGraphUtils.idToBuffer(id);
     if (buf) {
@@ -64,6 +67,9 @@ export class MongoGraph implements IDataGraph {
     throw Error(`Cannot encode ID: ${id}`);
   }
 
+  /**
+   * Decode bson binary-encoded uuid to string
+   */
   public static decodeId (bin: Binary): TId {
     if (bin.sub_type === Binary.SUBTYPE_UUID && bin.buffer) {
       let id = DataGraphUtils.idFromBuffer(bin.buffer);
@@ -74,6 +80,9 @@ export class MongoGraph implements IDataGraph {
     throw Error(`Cannot decode ID: ${bin}`);
   }
 
+  /**
+   * Create a new bson binary-encoded uuid
+   */
   private static createEncodedId (): Binary {
     let id = uuid();
     try {
@@ -87,18 +96,18 @@ export class MongoGraph implements IDataGraph {
    * Insert records to a mongo collection (table).
    *
    * @param table Collection to insert to.
-   * @param essentialData Common properties to be inserted to each record.
+   * @param commonData Common properties to be inserted to each record.
    *  The property name typically starts with an underscore.
    *  The property '_id' is always auto generated.
    * @param data Array of data objects to be inserted.
    */
   private static async _insertHelper (
     table: Collection,
-    essentialData: object,
+    commonData: object,
     data: object[]
   ): Promise<TId[]> {
     let objs = _.map(data, d =>
-      _.assign(d, essentialData, { _id: MongoGraph.createEncodedId() }),
+      _.assign(d, commonData, { _id: MongoGraph.createEncodedId() }),
     );
     let results = await table.insertMany(objs);
     let insertedIds = _.map(results.insertedIds, id => {
@@ -121,12 +130,30 @@ export class MongoGraph implements IDataGraph {
   public async loadEntity (id: TId, fields?: string[]): Promise<TEnt> {
     let ent = await this._entities.findOne(
       { _id: MongoGraph.encodeId(id) },
-      { projection: MongoGraph.composeProjection(fields) },
+      { projection: MongoGraph._composeProjection(fields) },
     );
     return ent;
   }
 
-  private static composeQuery (
+  /**
+   * Given an object with string keys and scalar or array values, compose
+   * a mongo query based on the object. Example:
+   * {
+   *  a: 'z',
+   *  b: [1, 2, 3],
+   * }
+   * will be composed into:
+   * {
+   *  a: 'z',
+   *  b: { $in: [1, 2, 3] },
+   * }
+   * If the name of each key is contained in shouldEncodeIdFields, and the
+   * corresponding value (or array of values) is a string, it will be encoded
+   * into bson binary format.
+   * @param condition
+   * @param shouldEncodeIdFields
+   */
+  private static _composeQuery (
     condition: object,
     shouldEncodeIdFields?: string[],
   ): object {
@@ -155,7 +182,10 @@ export class MongoGraph implements IDataGraph {
     return result;
   }
 
-  private static composeProjection (fields: string[], present = true)
+  /**
+   * Compose a mongo projection.
+   */
+  private static _composeProjection (fields: string[], present = true)
   : object {
     if (!fields) {
       return {};
@@ -163,7 +193,15 @@ export class MongoGraph implements IDataGraph {
     return _.fromPairs(_.map(fields, f => [f, present]));
   }
 
-  private composeMatchEntIdViaAssocPipes (q: TAssocQuery): object[] {
+  /**
+   * Given a TAssocLookupQuery object, returns two mongo aggregate pipes.
+   * The first pipe is a $lookup, which joins the '_id' of entities with
+   * either id1 or id2 of the assocs table. The results are stored as an
+   * array of assocs as the '_assocs' field of each entity.
+   * The second pipe is a $match, which filter the entities by their '_assocs'
+   * fields.
+   */
+  private _composeAssocLookupQueryPipes (q: TAssocLookupQuery): object[] {
     // determine which assoc field to join with, id1 or id2?
     let joinIdField, filterIdField;
     if (q._id1 && q._id2) {
@@ -186,7 +224,7 @@ export class MongoGraph implements IDataGraph {
     }};
 
     // after join, filter by the other id field (id2 or id1) and assoc data
-    let match = MongoGraph.composeQuery(q, [filterIdField]);
+    let match = MongoGraph._composeQuery(q, [filterIdField]);
     match = _.set(
       {},
       `$match.${MongoGraph.ASSOC_LOOKUP_OUTPUT_FIELD}.$elemMatch`,
@@ -199,28 +237,28 @@ export class MongoGraph implements IDataGraph {
   public async findEntities (
     type: TType,
     entQuery?: TEntQuery,
-    assocQueries?: TAssocQuery[],
+    assocLookupQueries?: TAssocLookupQuery[],
     fields?: string[],
   ): Promise<TEntData[]> {
     let pipeline = [];
     // process entQuery
     entQuery = entQuery || {};
     entQuery['_type'] = type;
-    pipeline.push({ $match: MongoGraph.composeQuery(entQuery) });
+    pipeline.push({ $match: MongoGraph._composeQuery(entQuery) });
     // process assocQueries
     let removeTmpFields = false;
-    _.each(assocQueries, q => {
-      let aggs = this.composeMatchEntIdViaAssocPipes(q);
+    _.each(assocLookupQueries, q => {
+      let aggs = this._composeAssocLookupQueryPipes(q);
       _.each(aggs, agg => {
         pipeline.push(agg);
       });
       removeTmpFields = true;
     });
     if (fields) {
-      pipeline.push({ $project: MongoGraph.composeProjection(fields) });
+      pipeline.push({ $project: MongoGraph._composeProjection(fields) });
     }
     if (removeTmpFields) {
-      pipeline.push({ $project: MongoGraph.composeProjection(
+      pipeline.push({ $project: MongoGraph._composeProjection(
         [MongoGraph.ASSOC_LOOKUP_OUTPUT_FIELD],
         false,
       )});
@@ -231,8 +269,23 @@ export class MongoGraph implements IDataGraph {
     return await cursor.toArray();
   }
 
-  public async updateEntities (updates: TEntUpdate[]): Promise<TId[]> {
-    return;
+  private static _composeUpdate (update: TEntUpdate): object {
+    let result = {
+      $set: _.pickBy(update, (v, k) => v !== undefined && k !== '_id'),
+      $unset: _.pickBy(update, (v, k) => v === undefined && k !== '_id'),
+    }
+    return _.pickBy(result, v => v && _.keys(v).length > 0);
+  }
+
+  public async updateEntities (updates: TEntUpdate[]): Promise<number> {
+    let bulkUpdate = _.map(updates, u => ({
+      updateOne: {
+        filter: { _id: MongoGraph.encodeId(u._id) },
+        update: MongoGraph._composeUpdate(u),
+      }
+    }));
+    let results = await this._entities.bulkWrite(bulkUpdate);
+    return results.modifiedCount;
   }
 
   public async deleteEntity (ids: TId[]): Promise<TId[]> {
@@ -274,21 +327,29 @@ export class MongoGraph implements IDataGraph {
     if (id2) {
       query['_id2'] = id2;
     }
-    query = MongoGraph.composeQuery(query, ['_id1', '_id2']);
+    query = MongoGraph._composeQuery(query, ['_id1', '_id2']);
 
     let cursor = await this._assocs.find(
       query,
-      { projection: MongoGraph.composeProjection(fields) }
+      { projection: MongoGraph._composeProjection(fields) }
     );
     return await cursor.toArray();
   }
 
-  public async findAssociatedEntityIds (
+  public async listAssociatedEntityIds (
     entId: TId,
     assocType: TType,
     direction: 'forward' | 'backward',
   ): Promise<TId[]> {
-    return;
+    let results;
+    if (direction === 'forward') {
+      results = await this.findAssocs(assocType, entId, null, null, ['_id2']);
+      results = _.map(results, r => MongoGraph.decodeId(r['_id2']));
+    } else {
+      results = await this.findAssocs(assocType, null, entId, null, ['_id1']);
+      results = _.map(results, r => MongoGraph.decodeId(r['_id1']));
+    }
+    return results;
   }
 
   public async deleteAssoc (ids: TId[]): Promise<TId[]> {

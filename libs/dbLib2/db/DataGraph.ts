@@ -31,7 +31,7 @@ export type TAssoc = {
   _id2: TId;
   [key: string]: any;
 }
-export type TAssocQuery = {
+export type TAssocLookupQuery = {
   _type: TType;
   _id1?: TId | TId[];
   _id2?: TId | TId[];
@@ -53,7 +53,7 @@ export interface IDataGraph {
    * Returned entities satisfy:
    *    field1 = value1 AND field2 = value2 OR value3 OR value4
    * Field name could also be a json 'path' that refers to a deep field
-   * @param assocQueries Example:
+   * @param assocLookupQueries Example:
    * {
    *    _type: assoc_type,         // required
    *    _id1: [value1, value2],    // or _id2; value could be a single value
@@ -69,10 +69,18 @@ export interface IDataGraph {
   findEntities (
     type: TType,
     entQuery?: TEntQuery,
-    assocQueries?: TAssocQuery[],
+    assocLookupQueries?: TAssocLookupQuery[],
     fields?: string[],
   ): Promise<TEntData[]>;
-  updateEntities (updates: TEntUpdate[]): Promise<TId[]>;
+  /**
+   * Update a set of entities
+   *
+   * @param updates Each element contains an entity _id and a set of
+   * key-value pairs. The entity specified by _id will replace its properties
+   * matching the keys with the corresponding values. Properties that are
+   * not covered in the keys will remain the same.
+   */
+  updateEntities (updates: TEntUpdate[]): Promise<number>;
   deleteEntity (ids: TId[]): Promise<TId[]>;
   insertAssoc (type: TType, id1: TId, id2: TId, data?: TAssocData)
   : Promise<TId>;
@@ -83,7 +91,18 @@ export interface IDataGraph {
     data?: TAssocData,
     fields?: string[],
   ): Promise<TAssoc[]>;
-  findAssociatedEntityIds (
+  /**
+   * Convenience function for findAssocs. Returns connected ent IDs only.
+   *
+   * Given entId, list all entity IDs associated with entId by assoc of
+   * type assocType. If direction is 'forward', treat entId as id1.
+   * If 'backward', treat entId as id2.
+   *
+   * @param entId
+   * @param assocType
+   * @param direction
+   */
+  listAssociatedEntityIds (
     entId: TId,
     assocType: TType,
     direction: 'forward' | 'backward',

@@ -274,7 +274,7 @@ describe('MongoGraphTest', async function () {
 
     it('#find associated ent ids, forward', async function () {
       let idsFound =
-        await g.findAssociatedEntityIds(ids[2], ASSOC_TYPE2, 'forward');
+        await g.listAssociatedEntityIds(ids[2], ASSOC_TYPE2, 'forward');
       expect(idsFound).to.have.lengthOf(2);
       expect(idsFound).to.deep.include(ids[2]);
       expect(idsFound).to.deep.include(ids[3]);
@@ -282,14 +282,14 @@ describe('MongoGraphTest', async function () {
 
     it('#find associated ent ids, backward', async function () {
       let idsFound =
-        await g.findAssociatedEntityIds(ids[1], ASSOC_TYPE2, 'backward');
+        await g.listAssociatedEntityIds(ids[1], ASSOC_TYPE2, 'backward');
       expect(idsFound).to.have.lengthOf(1);
       expect(idsFound).to.deep.include(ids[0]);
     });
 
     it('#find associated ent ids, backward, nonexisting', async function () {
       let idsFound =
-        await g.findAssociatedEntityIds(ids[3], ASSOC_TYPE1, 'backward');
+        await g.listAssociatedEntityIds(ids[3], ASSOC_TYPE1, 'backward');
       expect(idsFound).to.have.lengthOf(0);
     });
   });
@@ -304,35 +304,33 @@ describe('MongoGraphTest', async function () {
     });
 
     beforeEach(async function () {
+      dropDb();
       ids = await insertTestEntData();
       ents = await loadAllEnts(ids);
     });
 
-    afterEach(dropDb);
+    // after(dropDb);
 
     it('update multiple ents', async function () {
       let updates = _.map(ids, (id, i) => ({ _id: id, up: i }));
-      let updatedIds = await g.updateEntities(updates);
-      expect(updatedIds).to.have.lengthOf(4);
-      _.each(ids, id => {
-        expect(updatedIds).to.include(id);
-      });
+      let numUpdated = await g.updateEntities(updates);
+      expect(numUpdated).to.eql(updates.length);
       let updatedEnts = await Promise.all(
         _.map(ids, async id => await g.loadEntity(id)),
       );
       _.each(updatedEnts, (ent, i) => {
+        console.log(ent);
         expect(ent).to.deep.include(ents[i]);
         expect(ent).to.deep.include({ up: i });
       })
     });
 
     it('update a single ent, remove/add a field', async function () {
-      let updatedIds = await g.updateEntities([
+      let numUpdated = await g.updateEntities([
         { _id: ids[1], up: undefined, z: '78'}, // remove up, add z
       ]);
-      expect(updatedIds).to.have.lengthOf(1);
-      expect(updatedIds[0]).to.eql(ids[1]);
-      let updatedEnt = await g.loadEntity(updatedIds[0]);
+      expect(numUpdated).to.eql(1);
+      let updatedEnt = await g.loadEntity(ids[1]);
       expect(updatedEnt).to.eql(_.merge(ents[1], { z: '78' }));
     });
   });
