@@ -353,10 +353,8 @@ export class MongoGraph implements IDataGraph {
   }
 
   public async deleteAssocs (ids: TId[]): Promise<number> {
-    let dels = _.map(ids, id => ({
-      deleteMany: { filter: { _id: MongoGraph.encodeId(id) }},
-    }));
-    let results = await this._assocs.bulkWrite(dels);
+    let binIds = _.map(ids, id => MongoGraph.encodeId(id));
+    let results = await this._assocs.deleteMany({ _id: { $in: binIds }});
     return results.deletedCount;
   }
 
