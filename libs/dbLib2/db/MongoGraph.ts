@@ -288,8 +288,15 @@ export class MongoGraph implements IDataGraph {
     return results.modifiedCount;
   }
 
-  public async deleteEntities (ids: TId[]): Promise<number> {
-    return;
+  public async deleteEntities (ids: TId[]): Promise<[number, number]> {
+    let binIds = _.map(ids, id => MongoGraph.encodeId(id));
+    let delEnts = this._entities.deleteMany({ _id: { $in: binIds }});
+    let delAssocs = this._assocs.deleteMany({ $or: [
+      { _id1: { $in: binIds }},
+      { _id2: { $in: binIds }},
+    ]});
+    let results = await Promise.all([delEnts, delAssocs]);
+    return [results[0].deletedCount, results[1].deletedCount];
   }
 
   public async insertAssoc (

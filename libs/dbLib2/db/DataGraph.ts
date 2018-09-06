@@ -81,7 +81,13 @@ export interface IDataGraph {
    * not covered in the keys will remain the same.
    */
   updateEntities (updates: TEntUpdate[]): Promise<number>;
-  deleteEntities (ids: TId[]): Promise<number>;
+  /**
+   * Delete entities specified by ids together with all assocs referring
+   * to them.
+   * @param ids
+   * @returns Number of entities and assocs deleted (tuple)
+   */
+  deleteEntities (ids: TId[]): Promise<[number, number]>;
   insertAssoc (type: TType, id1: TId, id2: TId, data?: TAssocData)
   : Promise<TId>;
   findAssocs (
