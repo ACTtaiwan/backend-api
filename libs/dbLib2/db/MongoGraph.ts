@@ -1,4 +1,4 @@
-import { MongoClient, Db, Collection, Binary } from 'mongodb';
+import { MongoClient, Db, Collection, Binary, Timestamp } from 'mongodb';
 import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { IDataGraph, TType, TEntData, TId, TEnt, TEntQuery, TAssocLookupQuery,
@@ -83,7 +83,7 @@ export class MongoGraph implements IDataGraph {
   /**
    * Create a new bson binary-encoded uuid
    */
-  private static createEncodedId (): Binary {
+  private static _createEncodedId (): Binary {
     let id = uuid();
     try {
       return MongoGraph.encodeId(id);
@@ -106,9 +106,11 @@ export class MongoGraph implements IDataGraph {
     commonData: object,
     data: object[]
   ): Promise<TId[]> {
-    let objs = _.map(data, d =>
-      _.assign(d, commonData, { _id: MongoGraph.createEncodedId() }),
-    );
+    let now = new Timestamp(null, null);
+    let objs = _.map(data, d => _.assign(d, commonData, {
+      _id: MongoGraph._createEncodedId(),
+      _lastModified: now,
+    }));
     let results = await table.insertMany(objs);
     let insertedIds = _.map(results.insertedIds, id => {
       if (id instanceof Binary) {
@@ -269,21 +271,20 @@ export class MongoGraph implements IDataGraph {
     return await cursor.toArray();
   }
 
-  private static _composeUpdate (update: TEntUpdate): object {
-    let result = {
-      $set: _.pickBy(update, (v, k) => v !== undefined && k !== '_id'),
-      $unset: _.pickBy(update, (v, k) => v === undefined && k !== '_id'),
-    }
-    return _.pickBy(result, v => v && _.keys(v).length > 0);
-  }
-
   public async updateEntities (updates: TEntUpdate[]): Promise<number> {
-    let bulkUpdate = _.map(updates, u => ({
-      updateOne: {
-        filter: { _id: MongoGraph.encodeId(u._id) },
-        update: MongoGraph._composeUpdate(u),
+    let now = new Timestamp(null, null);
+    let bulkUpdate = _.map(updates, update => {
+      let id = update._id;
+      delete update._id;
+      update['_lastModified'] = now;
+      let u = {
+        $set: _.pickBy(update),
+        $unset: _.pickBy(update, v => !v),
       }
-    }));
+      return {
+        updateOne: { filter: { _id: MongoGraph.encodeId(id) }, update: u }
+      };
+    });
     let results = await this._entities.bulkWrite(bulkUpdate);
     return results.modifiedCount;
   }
