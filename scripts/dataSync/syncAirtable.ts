@@ -32,7 +32,7 @@ abstract class MongoTable implements Table {
     this._mockWrite = config.mockWrite;
   }
   public async fetch (fields: string[]): Promise<Entity[]> {
-    return this._handle.queryItems({}, fields);
+    return this._handle.queryItems({}, fields, undefined, undefined, true);
   }
   public async insert (entities: Entity[]): Promise<void> {
     if (!entities || entities.length === 0) {

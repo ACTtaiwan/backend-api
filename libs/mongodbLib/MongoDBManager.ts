@@ -160,6 +160,7 @@ export abstract class MongoDBTable<HydrateField = string> extends dbLib.Table<Hy
     attrNamesToGet?: (keyof T)[],
     sort?: any,
     limit?: number,
+    throwsError = false,
   ): Promise<T[]> {
     // if (_.isEmpty(query)) {
     //   console.log(`[MongoDBTable::queryItems()] empty query! Reutrn empty results.`)
@@ -205,7 +206,10 @@ export abstract class MongoDBTable<HydrateField = string> extends dbLib.Table<Hy
         }
       } catch (err) {
         console.log(`[MongoDBTable::queryItems()] DB Error = ${JSON.stringify(err, null, 2)}`)
-        return results
+        if (throwsError) {
+          throw err;
+        }
+        return results;
       }
     }
     return results
