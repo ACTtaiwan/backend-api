@@ -93,12 +93,12 @@ export class MongoGraph implements IDataGraph {
   }
 
   /**
-   * Insert records to a mongo collection (table).
+   * Insert records to a mongo collection (table). For each record (object),
+   * if _id is not specified, a new UUID will be generated. Keys and values in
+   * commonData will be inserted to all records (overwrite if key exists).
    *
    * @param table Collection to insert to.
-   * @param commonData Common properties to be inserted to each record.
-   *  The property name typically starts with an underscore.
-   *  The property '_id' is always auto generated.
+   * @param commonData Common properties to be inserted to all records.
    * @param data Array of data objects to be inserted.
    */
   private static async _insertHelper (
@@ -107,10 +107,11 @@ export class MongoGraph implements IDataGraph {
     data: object[]
   ): Promise<TId[]> {
     let now = new Timestamp(null, null);
-    let objs = _.map(data, d => _.assign(d, commonData, {
-      _id: MongoGraph._createEncodedId(),
-      _lastModified: now,
-    }));
+    let objs = _.map(data, d => _.assign(
+      { _id: MongoGraph._createEncodedId() },
+      d,
+      commonData,
+    ));
     let results = await table.insertMany(objs);
     let insertedIds = _.map(results.insertedIds, id => {
       if (id instanceof Binary) {
@@ -276,13 +277,23 @@ export class MongoGraph implements IDataGraph {
     let bulkUpdate = _.map(updates, update => {
       let id = update._id;
       delete update._id;
-      update['_lastModified'] = now;
-      let u = {
-        $set: _.pickBy(update),
-        $unset: _.pickBy(update, v => !v),
+      if ('_type' in update) {
+        delete update._type;
+      }
+      let u = {};
+      let set = _.pickBy(update, v => v !== undefined);
+      if (_.keys(set).length > 0) {
+        u['$set'] = set;
+      }
+      let unset = _.pickBy(update, v => v === undefined);
+      if (_.keys(unset).length > 0) {
+        u['$unset'] = unset;
       }
       return {
-        updateOne: { filter: { _id: MongoGraph.encodeId(id) }, update: u }
+        updateOne: {
+          filter: { _id: MongoGraph.encodeId(id) },
+          update: _.pickBy(u),
+        },
       };
     });
     let results = await this._entities.bulkWrite(bulkUpdate);
