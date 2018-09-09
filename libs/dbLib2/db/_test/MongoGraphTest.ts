@@ -48,7 +48,6 @@ describe('MongoGraphTest', async function () {
 
   after(async function () {
     if (g) {
-      // await g.dropDb();
       g.close();
     }
   });
@@ -321,7 +320,7 @@ describe('MongoGraphTest', async function () {
       _.each(updatedEnts, (ent, i) => {
         expect(ent).to.deep.include(ents[i]);
         expect(ent).to.deep.include({ up: i });
-      })
+      });
     });
 
     it('update a single ent, remove/add a field', async function () {

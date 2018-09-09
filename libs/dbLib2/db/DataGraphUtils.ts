@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import { TId } from './DataGraph';
+import * as moment from 'moment';
 
 export class DataGraphUtils {
   public static idFromBuffer (idBuf: Buffer): TId {
@@ -35,8 +36,8 @@ export class DataGraphUtils {
     return Buffer.from(bytes);
   }
 
-  public static stripUnderscoreProps (obj: any): any {
-    return _.pickBy(obj, (_, key) => !key.startsWith('_'));
+  public static tsToDate (ts: number): string {
+    return moment(ts).format('YYYY-MM-DD');
   }
 
 }

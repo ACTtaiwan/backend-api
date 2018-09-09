@@ -1,0 +1,49 @@
+{
+    "resource": "/congressional/bills",
+    "path": "/dev/congressional/bills",
+    "httpMethod": "GET",
+    "headers": {
+        "Accept": "application/json, text/plain, */*",
+        "Host": "api.uswatch.tw",
+        "User-Agent": "axios/0.17.1",
+        "X-Amzn-Trace-Id": "Root=1-5b94d13a-67a2243a2155fb6a243da4f6",
+        "X-Forwarded-For": "34.201.36.136",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https"
+    },
+    "queryStringParameters": {
+        "attrNamesToGet": "id,title,congress,billNumber,introducedDate,articles,cosponsors,billType,sponsor,versions,actions,trackers,s3Entity",
+        "id": "2a43f3df-695d-47c7-976c-b738cd2d0cc1"
+    },
+    "pathParameters": null,
+    "stageVariables": null,
+    "requestContext": {
+        "resourceId": "h2y3tt",
+        "resourcePath": "/congressional/bills",
+        "httpMethod": "GET",
+        "extendedRequestId": "M8WhJERCIAMFvNw=",
+        "requestTime": "09/Sep/2018:07:52:26 +0000",
+        "path": "/dev/congressional/bills",
+        "accountId": "537713963720",
+        "protocol": "HTTP/1.1",
+        "stage": "dev",
+        "requestTimeEpoch": 1536479546559,
+        "requestId": "4b472598-b405-11e8-b84a-c14942a0d1c4",
+        "identity": {
+            "cognitoIdentityPoolId": null,
+            "accountId": null,
+            "cognitoIdentityId": null,
+            "caller": null,
+            "sourceIp": "34.201.36.136",
+            "accessKey": null,
+            "cognitoAuthenticationType": null,
+            "cognitoAuthenticationProvider": null,
+            "userArn": null,
+            "userAgent": "axios/0.17.1",
+            "user": null
+        },
+        "apiId": "ufg873mam1"
+    },
+    "body": null,
+    "isBase64Encoded": false
+}

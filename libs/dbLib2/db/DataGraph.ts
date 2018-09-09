@@ -8,6 +8,7 @@ export const enum TType {
   Unknown = 0,
   TestEntType1 = 1,
   TestEntType2 = 2,
+  Bill = 3,
   TestAssocType1 = 1001,
   TestAssocType2 = 1002,
 };
@@ -126,7 +127,6 @@ export class DataGraph {
     assocTableName = 'assocs',
     connectInfo?: any,
   ): Promise<IDataGraph> {
-    let e: TEnt;
     let g: IDataGraph;
     switch (type) {
       case 'MongoGraph':

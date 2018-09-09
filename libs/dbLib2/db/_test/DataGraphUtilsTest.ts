@@ -26,32 +26,4 @@ describe('DataGraphUtilsTest', function () {
     expect(result).to.eql(uuidBuf);
   });
 
-  it('strip underscore properties 1', function () {
-    let obj = { a: 1, b: '_2', _c: 3.3, d: '4' };
-    let objAfter = { a: 1, b: '_2', d: '4' };
-    let result = DataGraphUtils.stripUnderscoreProps(obj);
-    expect(result).to.eql(objAfter);
-  });
-
-  it('strip underscore properties 2', function () {
-    let obj = { _a: 1 };
-    let objAfter = {};
-    let result = DataGraphUtils.stripUnderscoreProps(obj);
-    expect(result).to.eql(objAfter);
-  });
-
-  it('strip underscore properties 3', function () {
-    let obj = { a: 1, b: 'bbb' };
-    let objAfter = { a: 1, b: 'bbb' };
-    let result = DataGraphUtils.stripUnderscoreProps(obj);
-    expect(result).to.eql(objAfter);
-  });
-
-  it('strip underscore properties 4', function () {
-    let obj = { a: 1, _b: { _x: 5, y: 6}, _c: 3.3, d: { aa: 1, bb: 2, _cc: 3 }};
-    let objAfter = { a: 1, d: { aa: 1, bb: 2, _cc: 3 }};
-    let result = DataGraphUtils.stripUnderscoreProps(obj);
-    expect(result).to.eql(objAfter);
-  });
-
 });

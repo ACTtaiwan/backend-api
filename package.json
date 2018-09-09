@@ -6,7 +6,7 @@
   "main": "handler.js",
   "scripts": {
     "deploy": "node_modules/serverless/bin/serverless deploy",
-    "test": "mocha --require ts-node/register --recursive ./libs/**/_test/*.ts",
+    "test": "mocha --require ts-node/register --recursive \"libs/**/_test/*.ts\"",
     "ts-node": "node node_modules/ts-node/dist/bin.js"
   },
   "keywords": [],

@@ -19,7 +19,7 @@ export class MongoDbConfig {
 
   public static get connectionUrl (): Promise<string> {
     // return MongoDbConfig.localUrl
-    return MongoDbConfig.remoteUrl
+    return MongoDbConfig.remoteUrl;
   }
 
   public static get localUrl (): Promise<string> {
