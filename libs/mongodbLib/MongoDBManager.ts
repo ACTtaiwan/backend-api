@@ -162,57 +162,67 @@ export abstract class MongoDBTable<HydrateField = string> extends dbLib.Table<Hy
     limit?: number,
     throwsError = false,
   ): Promise<T[]> {
-    // if (_.isEmpty(query)) {
-    //   console.log(`[MongoDBTable::queryItems()] empty query! Reutrn empty results.`)
-    //   return Promise.resolve([])
-    // }
-
     let prjFields = this.composeProjectFields<T>(attrNamesToGet);
+    // For some unknown reason, the skip()-and-limit() based pagination
+    // did not work with azure cosmosdb. Duplicates were returned at the
+    // beginning of some pages. Here we use sorted-id based pagination.
+    if (!sort) {
+      sort = {};
+    }
+    sort['_id'] = 1;
     let pageSize = MongoDBTable.AZURE_MAX_QUERY_ITEMS;
-    let runQuery = (pageId: number, numItems: number) => {
-      let q = this.getTable<T>().find(query, prjFields);
-      if (sort) {
-        q = q.sort(sort);
-      }
-      return q.limit(numItems)
-        .skip(pageId * pageSize)
-        .toArray()
-        .then(res => this.addBackIdField(res));
+    let runQuery = (maxId: string, numItems: number) => {
+      let q = query;
+      q['_id'] = { $gt: maxId };
+      let cursor = this.getTable<T>().find(q, prjFields).sort(sort)
+        .limit(numItems);
+      return cursor.toArray().then(res => this.addBackIdField(res));
     }
 
+    const NUM_RETRIES = 3;
+    const RETRY_DELAY = 1000; // ms
+
     let results: T[] = [];
-    let pageId = 0;
+    let retryCount = 0;
+    let maxId = '';
     while (true) {
       try {
-        let numItems = limit && limit < pageSize ? limit : pageSize;
-        let batch = await runQuery(pageId, numItems);
-        console.log(`[MongoDBTable::queryItems()] numItems = ${numItems}, `
-          + `pageId = ${pageId}, batch.length = ${batch.length}`);
+        let numItems = (limit && limit < pageSize) ? limit : pageSize;
+        console.log(`[MongoDBTable::queryItems()] getting `
+          + `${numItems} items, maxId=${maxId}`);
+        let batch = await runQuery(maxId, numItems);
+        console.log(`[MongoDBTable::queryItems()] got ${batch.length} items`);
+        retryCount = 0;
         if (batch && batch.length > 0) {
-          results = _.concat(results, batch)
+          maxId = batch[batch.length - 1]['id'];
+          results = _.concat(results, batch);
           if (limit) {
             limit -= batch.length;
             if (limit <= 0) {
-              break;
+              return results;
             }
           }
           if (batch.length < numItems) {
-            break
-          } else {
-            ++pageId
+            return results;
           }
         } else {
-          break
+          return results;
         }
       } catch (err) {
-        console.log(`[MongoDBTable::queryItems()] DB Error = ${JSON.stringify(err, null, 2)}`)
-        if (throwsError) {
-          throw err;
+        if (retryCount >= NUM_RETRIES) {
+          console.log(`[MongoDBTable::queryItems()] DB Error after `
+            + `${NUM_RETRIES} retries: ${JSON.stringify(err, null, 2)}`);
+          if (throwsError) {
+            throw err;
+          }
+          return results;
         }
-        return results;
+        ++retryCount;
+        console.log(`[MongoDBTable::queryItems()] DB Error = `
+          + `${err}.\nRetry ${retryCount} ...`);
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
       }
     }
-    return results
   }
 
   protected queryItemOne<T extends dbLib.TableEntity> (query: any, attrNamesToGet?: (keyof T)[]): Promise<T> {
