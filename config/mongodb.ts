@@ -27,8 +27,8 @@ export class MongoDbConfig {
   }
 
   public static get remoteUrl (): Promise<string> {
-    if (debug && Array.isArray(debug['mongodb']['congress'])) {
-      return Promise.resolve(debug['mongodb']['congress'][0]);
+    if (debug && Array.isArray(debug['mongodb']['urls'])) {
+      return Promise.resolve(debug['mongodb']['urls'][0]);
     }
     if (MongoDbConfig._remoteUrl) {
       return Promise.resolve(MongoDbConfig._remoteUrl)

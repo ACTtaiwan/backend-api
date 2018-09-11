@@ -3,7 +3,7 @@ import * as mongoDbLib from '../../libs/mongodbLib';
 import { MongoDbConfig } from '../../config/mongodb';
 import * as airtable from '../../libs/airtable';
 import { BillTypeCode, ChamberType } from '../../libs/congressGov/CongressGovModels';
-import Utility from '../../libs/utils/Utility';
+import * as moment from 'moment';
 import { MongoDBManager } from '../../libs/mongodbLib';
 import { logger } from '../../libs/utils/Logger';
 
@@ -21,15 +21,16 @@ interface Table<E extends Entity = Entity> {
 abstract class MongoTable implements Table {
   protected _manager: MongoDBManager;
   protected _handle: mongoDbLib.MongoDBTable;
-  protected _mockWrite: boolean;
-  public constructor (protected _logPrefix: string = '') {}
+  public constructor (
+    protected _logPrefix: string = '',
+    protected _mockWrite: boolean = false,
+  ) {}
   protected log (message: string) {
     logger.log(this._logPrefix + message);
   }
   public async connect (config: MongoTableConfig): Promise<void> {
     this._manager = await mongoDbLib.MongoDBManager.instance;
     this._handle = this._manager.getTable(config.tableName);
-    this._mockWrite = config.mockWrite;
   }
   public async fetch (fields: string[]): Promise<Entity[]> {
     return this._handle.queryItems({}, fields);
@@ -164,7 +165,6 @@ interface AirtableTableConfig extends TableConfig {
 
 interface MongoTableConfig extends TableConfig {
   tableName: string;
-  mockWrite?: boolean;
 }
 
 interface SyncConfig {
@@ -343,7 +343,10 @@ class SyncUtils {
 
   public static dateToTimestamp (dateStr: string): number {
     if (dateStr) {
-      return Utility.parseDateTimeStringOfFormat(dateStr).getTime();
+      let date = moment.utc(dateStr + 'T12', 'YYYY-MM-DDTHH');
+      if (date.isValid()) {
+        return date.toDate().getTime();
+      }
     }
   }
 
@@ -359,7 +362,6 @@ const SYNC_BILL_CONFIG: SyncConfig = {
   },
   targetTable: {
     tableName: MongoDbConfig.tableNames.BILLS_TABLE_NAME,
-    // mockWrite: true,
   },
   syncEntityConfig: {
     'congress': {
@@ -445,7 +447,6 @@ const SYNC_TAG_CONFIG: SyncConfig = {
   },
   targetTable: {
     tableName: MongoDbConfig.tableNames.TAGS_TABLE_NAME,
-    // mockWrite: true,
   },
   syncEntityConfig: {
     'tag': 'Name',
@@ -463,7 +464,6 @@ const SYNC_ARTICLE_SNIPPET_CONFIG: SyncConfig = {
   },
   targetTable: {
     tableName: MongoDbConfig.tableNames.ARTICLE_SNIPPETS_TABLE_NAME,
-    // mockWrite: true,
   },
   syncEntityConfig: {
     'readableId': 'Readable ID',
@@ -487,34 +487,39 @@ const SYNC_ARTICLE_SNIPPET_CONFIG: SyncConfig = {
 /**
  * tester
  */
-export let syncAirtable = (async () => {
+export async function syncAirtable (mockWrite = false, jobIndex = -1) {
   let logPrefix = '';
+  let tasks = [];
 
-  logPrefix = '[syncAirtable][bills] ';
-  await (new Sync(
+  tasks.push(new Sync(
     SYNC_BILL_CONFIG,
     new AirtableBillsTable(),
-    new MongoBillsTable(logPrefix),
+    new MongoBillsTable('[syncAirtable][bills] ', mockWrite),
     logPrefix,
-  )).sync();
+  ));
 
-  logPrefix = '[syncAirtable][tags] ';
-  await (new Sync(
+  tasks.push(new Sync(
     SYNC_TAG_CONFIG,
     new AirtableTagsTable(),
-    new MongoTagsTable(logPrefix),
+    new MongoTagsTable('[syncAirtable][tags] ', mockWrite),
     logPrefix,
-  )).sync();
+  ));
 
-  logPrefix = '[syncAirtable][articleSnippets] ';
-  await (new Sync(
+  tasks.push(new Sync(
     SYNC_ARTICLE_SNIPPET_CONFIG,
     new AirtableArticleSnippetsTable(),
-    new MongoArticleSnippetsTable(logPrefix),
+    new MongoArticleSnippetsTable(
+      '[syncAirtable][articleSnippets] ',
+      mockWrite,
+    ),
     logPrefix,
-  )).sync();
+  ));
 
-  return;
-});
-
-// syncAirtable();
+  _.each(tasks, async (task, i) => {
+    if (jobIndex >= 0 && jobIndex !== i) {
+      return;
+    }
+    console.log(`[syncAirtable] starting task ${i}`);
+    await task.sync();
+  });
+}
