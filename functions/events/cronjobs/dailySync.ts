@@ -15,8 +15,8 @@ class DailySyncHandler {
     context.callbackWaitsForEmptyEventLoop = false;
 
     let promises = []
-    promises.push(DailySyncHandler.syncTrackers())
-    promises.push(DailySyncHandler.syncAllInfo())
+    // promises.push(DailySyncHandler.syncTrackers())
+    // promises.push(DailySyncHandler.syncAllInfo())
     promises.push(DailySyncHandler.syncAirtable())
 
     Promise.all(promises).then(out => {
@@ -63,10 +63,10 @@ class DailySyncHandler {
     })
   }
 
-  public static syncAirtable (): Promise<void> {
+  public static syncAirtable (...args): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        await syncAirtable();
+        await syncAirtable(...args);
         resolve();
       } catch (err) {
         console.log(`[DailySyncHandler::syncAirtable()] failed. err = `

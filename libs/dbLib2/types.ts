@@ -1,10 +1,27 @@
-export type Id = string;
-export type EntityType = string;
-export type AssocType = string;
+import { Binary } from 'bson';
 
-export interface IDatabase {
-  query: (table: string, constraints: any, projections: any) => Promise<any[]>;
-  insert: (table: string, docs: any[]) => Promise<Id[]>;
-  update: (table: string, docs: [Id, any][]) => Promise<Id[]>;
-  delete: (table: string, docs: Id[]) => Promise<Id[]>;
+export type Id = string;
+
+export enum EntityTypes {
+  Bill = 'Bill',
+  Person = 'Person',
 }
+export type EntityType = keyof typeof EntityTypes;
+
+// export enum AssocTypes {
+//   PlayRole = 'PlayRole',
+//   SponsorBill = 'SponsorBill',
+//   CosponsorBill = 'CosponsorBill',
+// };
+// export type AssocType = keyof typeof AssocTypes;
+// export enum AssocDirection { In, Out }
+// export interface AssocDefinitions {
+//   [name: string]: {
+//     type: AssocType,
+//     dir: AssocDirection,
+//   },
+// }
+
+
+export type Chamber = 's' | 'h';
+export type SenatorRank = 'senior' | 'junior';

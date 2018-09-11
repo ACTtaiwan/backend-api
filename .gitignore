@@ -20,3 +20,4 @@ dbData/
 
 *.dontcommit*
 tmp.*
+.webpack
