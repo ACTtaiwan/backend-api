@@ -109,6 +109,9 @@ function dedupByNumKeys2 (groups): string[] {
         toDelete.push(record.id);
       }
     });
+    if (_.includes(toDelete, numKeysMaxId)) {
+      throw Error(`duplicate key ${numKeysMaxId}`);
+    }
     return toDelete;
   }));
 }
