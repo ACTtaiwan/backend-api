@@ -73,6 +73,7 @@ export interface IDataGraph {
     entQuery?: TEntQuery,
     assocLookupQueries?: TAssocLookupQuery[],
     fields?: string[],
+    // TODO: support pagination
   ): Promise<TEntData[]>;
   /**
    * Update a set of entities
@@ -98,6 +99,7 @@ export interface IDataGraph {
     id2?: TId,
     data?: TAssocData,
     fields?: string[],
+    // TODO: support pagination
   ): Promise<TAssoc[]>;
   /**
    * Convenience function for findAssocs. Returns connected ent IDs only.
@@ -173,5 +175,32 @@ export class DataGraphUtils {
     }
     let bytes = _.map(_.chunk(a, 2), b => parseInt(b[0] + b[1], 16));
     return Buffer.from(bytes);
+  }
+
+  public static async retry (
+    func: () => Promise<any>,
+    retryCount: number = 3,
+    retryDelay: number | ((retry: number) => number) = 500,
+  ): Promise<any> {
+    let retry = 0;
+    while (true) {
+      try {
+        return await func();
+      } catch (err) {
+        console.error(`[DataGraphUtils.retry()] retry=${retry}, err=${err}`
+          + (err.stack ? `\n${err.stack}` : ''));
+        if (++retry > retryCount) {
+          throw Error(`[DataGraphUtils.retry()] All retries failed`);
+        }
+
+        let delay = 0;
+        if (typeof(retryDelay) !== 'number') {
+          delay = retryDelay(retry);
+        } else {
+          delay = retryDelay;
+        }
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
   }
 }

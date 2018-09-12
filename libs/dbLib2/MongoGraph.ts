@@ -91,6 +91,26 @@ export class MongoGraph implements IDataGraph {
     }
   }
 
+  private static async _batchWriter (
+    writerFunc: (items: object[]) => Promise<any>,
+    items: object[],
+    batchSize: number = 10,
+    retryCount: number = 3,
+    retryDelay: number | ((retry: number) => number) = 1000,
+  ): Promise<any[]> {
+    let batches = _.chunk(items, batchSize);
+    let results = [];
+    for (const batch of batches) {
+      let res = await DataGraphUtils.retry(
+        async () => writerFunc(batch),
+        retryCount,
+        retryDelay,
+      );
+      results.push(res);
+    };
+    return results;
+  }
+
   /**
    * Insert records to a mongo collection (table). For each record (object),
    * if _id is not specified, a new UUID will be generated. Keys and values in
@@ -105,19 +125,26 @@ export class MongoGraph implements IDataGraph {
     commonData: object,
     data: object[]
   ): Promise<TId[]> {
-    let now = new Timestamp(null, null);
     let objs = _.map(data, d => _.assign(
       { _id: MongoGraph._createEncodedId() },
       d,
       commonData,
     ));
-    let results = await table.insertMany(objs);
-    let insertedIds = _.map(results.insertedIds, id => {
+    let results = await MongoGraph._batchWriter(
+      items => table.insertMany(items),
+      objs,
+    );
+    let insertedIds = _.reduce(results, (ids, result) => {
+      if (result && result.insertedIds) {
+        return ids = _.concat(ids, _.values(result.insertedIds));
+      }
+      return ids;
+    }, []);
+    return _.map(insertedIds, id => {
       if (id instanceof Binary) {
         return MongoGraph.decodeId(id);
       }
     });
-    return insertedIds;
   }
 
   public async insertEntities (type: TType, ents: TEntData[])
@@ -266,13 +293,11 @@ export class MongoGraph implements IDataGraph {
       )});
     }
     // execute pipeline
-    // console.log(pipeline);
     let cursor = await this._entities.aggregate(pipeline);
     return await cursor.toArray();
   }
 
   public async updateEntities (updates: TEntUpdate[]): Promise<number> {
-    let now = new Timestamp(null, null);
     let bulkUpdate = _.map(updates, update => {
       let id = update._id;
       delete update._id;
@@ -295,19 +320,39 @@ export class MongoGraph implements IDataGraph {
         },
       };
     });
-    let results = await this._entities.bulkWrite(bulkUpdate);
-    return results.modifiedCount;
+    let results = await MongoGraph._batchWriter(
+      items => this._entities.bulkWrite(items),
+      bulkUpdate,
+    );
+    return _.reduce(
+      results,
+      (count, result) => count += (result && result.modifiedCount) ?
+        result.modifiedCount : 0,
+      0
+    );
   }
 
   public async deleteEntities (ids: TId[]): Promise<[number, number]> {
     let binIds = _.map(ids, id => MongoGraph.encodeId(id));
-    let delEnts = this._entities.deleteMany({ _id: { $in: binIds }});
-    let delAssocs = this._assocs.deleteMany({ $or: [
-      { _id1: { $in: binIds }},
-      { _id2: { $in: binIds }},
-    ]});
-    let results = await Promise.all([delEnts, delAssocs]);
-    return [results[0].deletedCount, results[1].deletedCount];
+    let promiseDeleteEnts = MongoGraph._batchWriter(
+      items => this._entities.deleteMany({ _id: { $in: items }}),
+      binIds,
+    );
+    let promiseDeleteAssosc = MongoGraph._batchWriter(
+      items => this._assocs.deleteMany({ $or: [
+        { _id1: { $in: items }},
+        { _id2: { $in: items }},
+      ]}),
+      binIds,
+    );
+    let resPair = await Promise.all([promiseDeleteEnts, promiseDeleteAssosc]);
+    return <[number, number]>_.map(resPair, results => {
+      return _.reduce(
+        results,
+        (count, r) => count += (r && r.deletedCount) ? r.deletedCount : 0,
+        0,
+      );
+    });
   }
 
   public async insertAssoc (
@@ -372,8 +417,16 @@ export class MongoGraph implements IDataGraph {
 
   public async deleteAssocs (ids: TId[]): Promise<number> {
     let binIds = _.map(ids, id => MongoGraph.encodeId(id));
-    let results = await this._assocs.deleteMany({ _id: { $in: binIds }});
-    return results.deletedCount;
+    let results = await MongoGraph._batchWriter(
+      items => this._assocs.deleteMany({ _id: { $in: items }}),
+      binIds,
+    );
+    return _.reduce(
+      results,
+      (count, result) => count += (result && result.deletedCount) ?
+        result.deletedCount : 0,
+      0,
+    );
   }
 
   public async dropDb (): Promise<any> {
