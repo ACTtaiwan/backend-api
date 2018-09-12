@@ -1,7 +1,7 @@
 import 'mocha';
 import { v4 as uuid } from 'uuid';
 import { expect } from 'chai';
-import { DataGraphUtils } from '../DataGraphUtils';
+import { DataGraphUtils } from '../DataGraph';
 import { Binary } from 'bson';
 import * as _ from 'lodash';
 

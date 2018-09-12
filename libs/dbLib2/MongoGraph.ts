@@ -2,9 +2,8 @@ import { MongoClient, Db, Collection, Binary, Timestamp } from 'mongodb';
 import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { IDataGraph, TType, TEntData, TId, TEnt, TEntQuery, TAssocLookupQuery,
-  TEntUpdate, TAssocData, TAssoc } from './DataGraph';
-import { MongoDbConfig } from '../../../config/mongodb';
-import { DataGraphUtils } from './DataGraphUtils';
+  TEntUpdate, TAssocData, TAssoc, DataGraphUtils } from './DataGraph';
+import { MongoDbConfig } from '../../config/mongodb';
 
 export class MongoGraph implements IDataGraph {
   private static readonly ASSOC_LOOKUP_OUTPUT_FIELD = '_assocs';
