@@ -177,6 +177,13 @@ export class DataGraphUtils {
     return Buffer.from(bytes);
   }
 
+  /**
+   * Runs func(). If throws, retries after delay. Repeats.
+   *
+   * @param retryDelay can be a number specifying milliseconds, or a function
+   * that takes retry counter (1, 2, 3, ...) as input and returns a number.
+   * @returns what func() returns.
+   */
   public static async retry (
     func: () => Promise<any>,
     retryCount: number = 3,
@@ -187,9 +194,10 @@ export class DataGraphUtils {
       try {
         return await func();
       } catch (err) {
+        ++retry;
         console.error(`[DataGraphUtils.retry()] retry=${retry}, err=${err}`
           + (err.stack ? `\n${err.stack}` : ''));
-        if (++retry > retryCount) {
+        if (retry > retryCount) {
           throw Error(`[DataGraphUtils.retry()] All retries failed`);
         }
 
@@ -204,9 +212,13 @@ export class DataGraphUtils {
     }
   }
 
+  /**
+   * Splits items into chunks, and retries func(chunk) for each chunk.
+   * @returns an array of return values from running each chunk.
+   */
   public static async retryInChunks (
-    func: (items: object[]) => Promise<any>,
-    items: object[],
+    func: (chunk: any[]) => Promise<any>,
+    items: any[],
     chunkSize: number = 10,
     retryCount: number = 3,
     retryDelay: number | ((retry: number) => number) = 1000,
@@ -221,6 +233,34 @@ export class DataGraphUtils {
       );
       results.push(res);
     };
+    return results;
+  }
+
+  /**
+   * 0. input = init
+   * 1. output = retry func(input)
+   * 2. input = transform(output)
+   * 3. repeat 1, 2 until input is undefined
+   * @returns an array of output values from func()
+   */
+  public static async retryLoop (
+    func: (item: any) => Promise<any>,
+    transform: (prevOutput: Readonly<any>) => any,
+    init: any,
+    retryCount: number = 3,
+    retryDelay: number | ((retry: number) => number) = 1000,
+  ): Promise<any[]> {
+    let input = init;
+    let results = [];
+    while (input !== undefined) {
+      let output = await DataGraphUtils.retry(
+        async () => func(input),
+        retryCount,
+        retryDelay,
+      );
+      results.push(output);
+      input = transform(output);
+    }
     return results;
   }
 }

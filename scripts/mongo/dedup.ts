@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import { MongoClient } from 'mongodb';
+import { DataGraphUtils } from '../../libs/dbLib2/DataGraph';
 
 async function connect (config): Promise<MongoClient> {
   return await MongoClient.connect(
@@ -13,36 +14,26 @@ async function getAllDocs (
   dbName: string,
   tableName: string,
 ): Promise<object[]> {
-  const CHUNK_SIZE = 950;
-  const NUM_RETRIES = 3;
-  const RETRY_DELAY = 500; // ms
-
+  const CHUNK_SIZE = 500;
   let db = client.db(dbName);
-  let results = [];
-  let offset = 0;
-  let retriesLeft = NUM_RETRIES;
-  while (true) {
-    try {
-      console.log(`Reading ${CHUNK_SIZE} (offset=${offset})`);
-      let chunk = await db.collection(tableName).find()
-        .skip(offset).limit(CHUNK_SIZE).toArray();
-      if (chunk.length > 0) {
-        results.push(chunk);
-        offset += chunk.length;
-      } else {
-        console.log(`Done`);
-        return _.flatten(results);
+
+  let results = await DataGraphUtils.retryLoop(
+    minId => {
+      console.log(`[getAllDocs()] Reading ${dbName}.${tableName}, `
+        + `minId=${minId}`);
+      return db.collection(tableName).find({ _id: { $gt: minId }})
+        .limit(CHUNK_SIZE).sort({ _id: 1 }).toArray()
+    },
+    out => {
+      if (!out || out.length < CHUNK_SIZE) {
+        return;
       }
-      retriesLeft = 3;
-    } catch (err) {
-      console.log(err);
-      console.log(`retries left: ${retriesLeft--}`);
-      if (retriesLeft <= 0) {
-        throw Error('Cannot get data after all retries');
-      }
-      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
-    }
-  }
+      return out[out.length - 1]['_id'];
+    },
+    '',
+  );
+
+  return _.flatten(results);
 }
 
 function group (config, docs: object[]): object {
@@ -192,11 +183,11 @@ async function bulkDelete (
 async function dedup (config) {
   let client = await connect(config);
   let docs = await getAllDocs(client, config.dbName, config.tableName);
-  let groups = group(config.groupKey, docs);
-  // let writes = dedupByNumKeys(groups);
-  // await bulkWrite(client, config.dbName, config.tableName, writes);
-  let deleteIds = dedupByNumKeys2(groups);
-  await bulkDelete(client, config.dbName, config.tableName, deleteIds);
+  // let groups = group(config.groupKey, docs);
+  // // let writes = dedupByNumKeys(groups);
+  // // await bulkWrite(client, config.dbName, config.tableName, writes);
+  // let deleteIds = dedupByNumKeys2(groups);
+  // await bulkDelete(client, config.dbName, config.tableName, deleteIds);
   client.close();
 }
 
