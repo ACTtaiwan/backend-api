@@ -1,8 +1,8 @@
-import { MongoClient, Db, Collection, Binary, Timestamp } from 'mongodb';
+import { MongoClient, Db, Collection, Binary } from 'mongodb';
 import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { IDataGraph, TType, TEntData, TId, TEnt, TEntQuery, TAssocLookupQuery,
-  TEntUpdate, TAssocData, TAssoc, DataGraphUtils } from './DataGraph';
+  TEntUpdate, TAssocData, TAssoc, DataGraphUtils, DataGraph } from './DataGraph';
 import { MongoDbConfig } from '../../config/mongodb';
 
 export class MongoGraph implements IDataGraph {
@@ -91,26 +91,6 @@ export class MongoGraph implements IDataGraph {
     }
   }
 
-  private static async _batchWriter (
-    writerFunc: (items: object[]) => Promise<any>,
-    items: object[],
-    batchSize: number = 10,
-    retryCount: number = 3,
-    retryDelay: number | ((retry: number) => number) = 1000,
-  ): Promise<any[]> {
-    let batches = _.chunk(items, batchSize);
-    let results = [];
-    for (const batch of batches) {
-      let res = await DataGraphUtils.retry(
-        async () => writerFunc(batch),
-        retryCount,
-        retryDelay,
-      );
-      results.push(res);
-    };
-    return results;
-  }
-
   /**
    * Insert records to a mongo collection (table). For each record (object),
    * if _id is not specified, a new UUID will be generated. Keys and values in
@@ -130,7 +110,7 @@ export class MongoGraph implements IDataGraph {
       d,
       commonData,
     ));
-    let results = await MongoGraph._batchWriter(
+    let results = await DataGraphUtils.retryInChunks(
       items => table.insertMany(items),
       objs,
     );
@@ -320,7 +300,7 @@ export class MongoGraph implements IDataGraph {
         },
       };
     });
-    let results = await MongoGraph._batchWriter(
+    let results = await DataGraphUtils.retryInChunks(
       items => this._entities.bulkWrite(items),
       bulkUpdate,
     );
@@ -334,11 +314,11 @@ export class MongoGraph implements IDataGraph {
 
   public async deleteEntities (ids: TId[]): Promise<[number, number]> {
     let binIds = _.map(ids, id => MongoGraph.encodeId(id));
-    let promiseDeleteEnts = MongoGraph._batchWriter(
+    let promiseDeleteEnts = DataGraphUtils.retryInChunks(
       items => this._entities.deleteMany({ _id: { $in: items }}),
       binIds,
     );
-    let promiseDeleteAssosc = MongoGraph._batchWriter(
+    let promiseDeleteAssosc = DataGraphUtils.retryInChunks(
       items => this._assocs.deleteMany({ $or: [
         { _id1: { $in: items }},
         { _id2: { $in: items }},
@@ -417,7 +397,7 @@ export class MongoGraph implements IDataGraph {
 
   public async deleteAssocs (ids: TId[]): Promise<number> {
     let binIds = _.map(ids, id => MongoGraph.encodeId(id));
-    let results = await MongoGraph._batchWriter(
+    let results = await DataGraphUtils.retryInChunks(
       items => this._assocs.deleteMany({ _id: { $in: items }}),
       binIds,
     );

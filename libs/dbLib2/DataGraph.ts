@@ -203,4 +203,24 @@ export class DataGraphUtils {
       }
     }
   }
+
+  public static async retryInChunks (
+    func: (items: object[]) => Promise<any>,
+    items: object[],
+    chunkSize: number = 10,
+    retryCount: number = 3,
+    retryDelay: number | ((retry: number) => number) = 1000,
+  ): Promise<any[]> {
+    let batches = _.chunk(items, chunkSize);
+    let results = [];
+    for (const batch of batches) {
+      let res = await DataGraphUtils.retry(
+        async () => func(batch),
+        retryCount,
+        retryDelay,
+      );
+      results.push(res);
+    };
+    return results;
+  }
 }
