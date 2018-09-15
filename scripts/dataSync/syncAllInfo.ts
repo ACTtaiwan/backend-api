@@ -56,120 +56,138 @@ export class AllInfoSync {
   }
 
   public async batchSyncForCongress (congress: number, currentCongress: number, attrNames: (keyof dbLib.BillEntity)[]) {
-    let hasAttr = (key: keyof dbLib.BillEntity): boolean => _.includes(attrNames, key)
     let bills: dbLib.BillEntity[] = this.congressBillsMap[congress]
     for (let i = 0; i < bills.length; ++i) {
       const bill = bills[i]
-      const path = CongressGovHelper.generateCongressGovBillPath(bill.congress, bill.billType.code, bill.billNumber)
       const billDisplay = dbLib.DbHelper.displayBill(bill)
-
       console.log(`\n[AllInfoSync::batchSyncForCongress()] ${billDisplay} -- Updating all info (${i} / ${bills.length}) --\n`)
+      await this.syncForBill(bill, bills, attrNames)
+    }
+  }
 
-      const allInfo = await this.congressGovAllInfoParser.getAllInfo(path)
-      if (allInfo) {
-        let updateBill = <dbLib.BillEntity>{}
-        let removeAttrs: (keyof dbLib.BillEntity)[] = []
+  public async patchSingleBill (billId: string) {
+    let attrNames: (keyof dbLib.BillEntity)[] = ['detailTitles', 'actions', 'actionsAll', 'committees', 'relatedBills', 'subjects', 's3Entity']
+    let bill = await this.tbl.getBillById(billId)
+    let bills = await this.tbl.getAllBills('id', 'congress', 'billType', 'billNumber', ...attrNames)
+    await this.syncForBill(bill, bills, attrNames)
+    console.log(`[AllInfoSync::patchSingleBill()] Done`)
+  }
 
-        // titles
-        if (hasAttr('detailTitles')) {
-          if (allInfo.titles && !_.isEmpty(allInfo.titles)) {
-            updateBill.detailTitles = allInfo.titles
-          } else if (bill.detailTitles) {
-            removeAttrs.push('detailTitles')
-          }
+  public async syncForBill (bill: dbLib.BillEntity, bills: dbLib.BillEntity[], attrNames: (keyof dbLib.BillEntity)[]) {
+    let hasAttr = (key: keyof dbLib.BillEntity): boolean => _.includes(attrNames, key)
+    const path = CongressGovHelper.generateCongressGovBillPath(bill.congress, bill.billType.code, bill.billNumber)
+    const allInfo = await this.congressGovAllInfoParser.getAllInfo(path)
+    if (allInfo) {
+      let updateBill = <dbLib.BillEntity>{}
+      let removeAttrs: (keyof dbLib.BillEntity)[] = []
+
+      // titles
+      if (hasAttr('detailTitles')) {
+        if (allInfo.titles && !_.isEmpty(allInfo.titles)) {
+          updateBill.detailTitles = allInfo.titles
+        } else if (bill.detailTitles) {
+          removeAttrs.push('detailTitles')
         }
+      }
 
-        // actions overview
-        if (hasAttr('actions')) {
-          if (allInfo.actionsOverview && allInfo.actionsOverview.length > 0) {
-            updateBill.actions = allInfo.actionsOverview
-          } else if (bill.actions) {
-            removeAttrs.push('actions')
-          }
+      // actions overview
+      if (hasAttr('actions')) {
+        if (allInfo.actionsOverview && allInfo.actionsOverview.length > 0) {
+          updateBill.actions = allInfo.actionsOverview
+        } else if (bill.actions) {
+          removeAttrs.push('actions')
         }
+      }
 
-        // actions all
-        if (hasAttr('actionsAll')) {
-          if (allInfo.actionsAll && allInfo.actionsAll.length > 0) {
-            updateBill.actionsAll = allInfo.actionsAll
-          } else if (bill.actionsAll) {
-            removeAttrs.push('actionsAll')
-          }
+      // actions all
+      if (hasAttr('actionsAll')) {
+        if (allInfo.actionsAll && allInfo.actionsAll.length > 0) {
+          updateBill.actionsAll = allInfo.actionsAll
+        } else if (bill.actionsAll) {
+          removeAttrs.push('actionsAll')
         }
+      }
 
-        // committees
-        if (hasAttr('committees')) {
-          if (allInfo.committees && allInfo.committees.length > 0) {
-            updateBill.committees = allInfo.committees
-          } else if (bill.committees) {
-            removeAttrs.push('committees')
-          }
+      // committees
+      if (hasAttr('committees')) {
+        if (allInfo.committees && allInfo.committees.length > 0) {
+          updateBill.committees = allInfo.committees
+        } else if (bill.committees) {
+          removeAttrs.push('committees')
         }
+      }
 
-        // relatedBills
-        if (hasAttr('relatedBills')) {
-          if (allInfo.relatedBills && allInfo.relatedBills.length > 0) {
-            updateBill.relatedBills = allInfo.relatedBills
-            _.each(updateBill.relatedBills, related => {
-              const existingBill = _.find(bills, b => b.congress === related.congress
-                                                  && b.billType.code === related.typeCode
-                                                  && b.billNumber === related.billNumber)
-              if (existingBill) {
-                related.id = existingBill.id
-              }
-            })
-          } else if (bill.relatedBills) {
-            removeAttrs.push('relatedBills')
-          }
-        }
-
-        // subjects
-        if (hasAttr('subjects')) {
-          if (allInfo.subjects && allInfo.subjects.length > 0) {
-            updateBill.subjects = allInfo.subjects
-          } else if (bill.subjects) {
-            removeAttrs.push('subjects')
-          }
-        }
-
-        // s3Entity
-        if (hasAttr('s3Entity')) {
-          if (allInfo.summaryLatest || allInfo.summaryAll) {
-            const staticInfo = <s3Lib.BillStaticInfo> {
-              summaryLatest: allInfo.summaryLatest || {},
-              summaryAll: allInfo.summaryAll || []
+      // relatedBills
+      if (hasAttr('relatedBills')) {
+        if (allInfo.relatedBills && allInfo.relatedBills.length > 0) {
+          updateBill.relatedBills = allInfo.relatedBills
+          _.each(updateBill.relatedBills, related => {
+            const existingBill = _.find(bills, b => b.congress === related.congress
+                                                && b.billType.code === related.typeCode
+                                                && b.billNumber === related.billNumber)
+            if (existingBill) {
+              related.id = existingBill.id
             }
-            let obj = await this.bckt.getEntity(bill.congress, bill.billType.code, bill.billNumber)
-            !obj && console.log(`[AllInfoSync::batchSyncForCongress()] Did not find exisitng S3 object.`)
-            obj && _.isEqual(obj, staticInfo) && console.log(`[AllInfoSync::batchSyncForCongress()] Found S3 same value. Not updating.`)
-            if (!obj || !_.isEqual(obj, staticInfo)) {
-              const url = this.bckt.s3FullUrl(bill.congress, bill.billType.code, bill.billNumber)
-              console.log(`[AllInfoSync::batchSyncForCongress()] Putting S3 object = ${url}`)
-              await this.bckt.putEntity(staticInfo, bill.congress, bill.billType.code, bill.billNumber)
+          })
+        } else if (bill.relatedBills) {
+          removeAttrs.push('relatedBills')
+        }
+      }
+
+      // subjects
+      if (hasAttr('subjects')) {
+        if (allInfo.subjects && allInfo.subjects.length > 0) {
+          updateBill.subjects = allInfo.subjects
+        } else if (bill.subjects) {
+          removeAttrs.push('subjects')
+        }
+      }
+
+      // s3Entity
+      if (hasAttr('s3Entity')) {
+        if (allInfo.summaryLatest || allInfo.summaryAll) {
+          const staticInfo = <s3Lib.BillStaticInfo> {
+            summaryLatest: allInfo.summaryLatest || {},
+            summaryAll: allInfo.summaryAll || []
+          }
+          let obj = await this.bckt.getEntity(bill.congress, bill.billType.code, bill.billNumber)
+          !obj && console.log(`[AllInfoSync::syncForBill()] Did not find exisitng S3 object.`)
+          const url = this.bckt.s3FullUrl(bill.congress, bill.billType.code, bill.billNumber)
+          if (obj && _.isEqual(obj, staticInfo)) {
+            console.log(`[AllInfoSync::syncForBill()] Found S3 same value. Not updating.`)
+            if (!bill.s3Entity) {
+              console.log(`[AllInfoSync::syncForBill()] S3 URL is missing. Set it back.`)
               updateBill.s3Entity = url
             }
-          } else if (bill.s3Entity) {
-            removeAttrs.push('s3Entity')
+          } else {
+            console.log(`[AllInfoSync::syncForBill()] Putting S3 object = ${url}`)
+            await this.bckt.putEntity(staticInfo, bill.congress, bill.billType.code, bill.billNumber)
+            updateBill.s3Entity = url
           }
+        } else if (bill.s3Entity) {
+          removeAttrs.push('s3Entity')
         }
-
-        if (!_.isEmpty(updateBill)) {
-          try {
-            console.log(`[AllInfoSync::batchSyncForCongress()] Writing to database. Object size = ${JSON.stringify(updateBill).length}`)
-            await this.tbl.updateBill(bill.id, updateBill)
-          } catch (error) {
-            let e = (error as aws.AWSError)
-            throw new Error(`DB error = ${JSON.stringify(error, null, 2)}`)
-          }
-        }
-
-        if (removeAttrs.length > 0) {
-          console.log(`[AllInfoSync::batchSyncForCongress()] Removing attributes = ${JSON.stringify(removeAttrs)}`)
-          await this.tbl.deleteAttributesFromBill(bill.id, ...removeAttrs)
-        }
-      } else {
-        console.log(`[AllInfoSync::batchSyncForCongress()] parsing failed\n`)
       }
+
+      if (!_.isEmpty(updateBill)) {
+        try {
+          console.log(`[AllInfoSync::syncForBill()] Writing to database. Object size = ${JSON.stringify(updateBill).length}`)
+          await this.tbl.updateBill(bill.id, updateBill)
+        } catch (error) {
+          let e = (error as aws.AWSError)
+          throw new Error(`DB error = ${JSON.stringify(error, null, 2)}`)
+        }
+      }
+
+      if (removeAttrs.length > 0) {
+        console.log(`[AllInfoSync::syncForBill()] Removing attributes = ${JSON.stringify(removeAttrs)}`)
+        await this.tbl.deleteAttributesFromBill(bill.id, ...removeAttrs)
+      }
+    } else {
+      console.log(`[AllInfoSync::syncForBill()] parsing failed\n`)
     }
   }
 }
+
+// let sync = new AllInfoSync()
+// sync.init().then(() => sync.patchSingleBill('95616e24-6ee1-4949-8f29-a79dfccccc5e'))

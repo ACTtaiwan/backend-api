@@ -161,7 +161,7 @@ export class SponsorSync {
   }
 }
 
-let sync = new SponsorSync(true)
+let sync = new SponsorSync(/* writeToDb */ true)
 sync.init().then(() => sync.syncSponsorForAllBills(115, 115, 115))
 
 let patch = async (billId: string) => {

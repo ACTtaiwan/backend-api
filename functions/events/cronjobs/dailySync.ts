@@ -15,8 +15,8 @@ class DailySyncHandler {
     context.callbackWaitsForEmptyEventLoop = false;
 
     let promises = []
-    // promises.push(DailySyncHandler.syncTrackers())
-    // promises.push(DailySyncHandler.syncAllInfo())
+    promises.push(DailySyncHandler.syncTrackers())
+    promises.push(DailySyncHandler.syncAllInfo())
     promises.push(DailySyncHandler.syncAirtable())
 
     Promise.all(promises).then(out => {

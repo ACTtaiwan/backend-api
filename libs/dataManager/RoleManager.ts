@@ -38,7 +38,7 @@ export class RoleManager {
 
     const bills = await this.tblBill.getAllBills('id', 'congress', 'billNumber', 'billType', 'sponsor', 'cosponsors')
 
-    const billsWithSponsors = _.filter(bills, (b => !!b.sponsor));
+    const billsWithSponsors = _.filter(bills, (b => !!b.sponsorRoleId));
     await this.syncSponsors(billsWithSponsors)
 
     const billsWithCosonsors = _.filter(bills, b => b.cosponsors && b.cosponsors.length > 0)
@@ -106,8 +106,11 @@ export class RoleManager {
   }
 
   private async syncSponsors (billsWithSponsors: dbLib.BillEntity[]) {
-    const sponsorBillMap: {[roleId: string]: dbLib.BillEntity[]} = _.groupBy(billsWithSponsors, x => x.sponsor.id)
+    const sponsorBillMap: {[roleId: string]: dbLib.BillEntity[]} = _.groupBy(billsWithSponsors, (x: dbLib.BillEntity) => x.sponsorRoleId)
     const rolesSponsored: {[roleId: string]: dbLib.RoleEntity} = await this.getRolesSponsored()
+
+    console.log(`[RoleManager::syncSponsors()] sponsorBillMap.length = ${_.keys(sponsorBillMap).length}`)
+    console.log(`[RoleManager::syncSponsors()] rolesSponsored.length = ${_.keys(rolesSponsored).length}`)
 
     let intersectSet = _.intersection(_.keys(sponsorBillMap), _.keys(rolesSponsored))
     let addSet = _.difference(_.keys(sponsorBillMap), intersectSet)
@@ -154,9 +157,10 @@ export class RoleManager {
     const cosponsorBillMap: {[roleId: string]: dbLib.BillEntity[]} = {}
     _.each(billsWithCosonsors, bill => {
       _.each(bill.cosponsors, co => {
-        let arr: dbLib.BillEntity[] = cosponsorBillMap[co.role.id] || []
+        const coRoleId = co.roleId
+        let arr: dbLib.BillEntity[] = cosponsorBillMap[coRoleId] || []
         !_.find(arr, x => x.id === bill.id) && arr.push(bill)
-        cosponsorBillMap[co.role.id] = arr
+        cosponsorBillMap[coRoleId] = arr
       })
     })
     const rolesCosponsored: {[roleId: string]: dbLib.RoleEntity} = await this.getRolesCosponsored()
@@ -219,3 +223,5 @@ export class RoleManager {
   }
 }
 
+// let sync = new RoleManager()
+// sync.init().then(() => sync.rebuildBillIndex())
