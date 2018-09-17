@@ -1,5 +1,7 @@
-import * as aws from 'aws-sdk'
-import { debug } from './debug'
+import * as aws from 'aws-sdk';
+import * as mongodbUri from 'mongodb-uri';
+import { debug } from './debug';
+import { expect } from 'chai';
 
 export class MongoDbConfig {
   public static readonly tableNames = {
@@ -75,11 +77,35 @@ export class MongoDbConfig {
     })
   }
 
-  public static async getUrl (): Promise<string> {
-    if (debug && Array.isArray(debug['mongodb']['urls'])) {
-      return debug['mongodb']['urls'][0];
+  public static async getUriComponents (): Promise<{
+    username: string,
+    password: string,
+    host: string,
+    port: number
+  }> {
+    let ret;
+    if (debug && debug['mongodb']) {
+      ret = debug['mongodb'];
+    } else {
+      ret = await MongoDbConfig.getKeyFileFromS3();
     }
-    let s3Credential = await MongoDbConfig.getKeyFileFromS3();
-    return s3Credential.url;
+    expect(ret).to.have.all.keys('username', 'password', 'host', 'port');
+    return ret;
+  }
+
+  public static async getUrl (): Promise<string> {
+    let urlComponents = await MongoDbConfig.getUriComponents();
+    let ret = {
+      scheme: 'mongodb',
+      username: urlComponents['username'],
+      password: urlComponents['password'],
+      hosts: [
+        {
+          host: urlComponents['host'],
+          port: urlComponents['port']
+        },
+      ],
+    };
+    return mongodbUri.format(ret);
   }
 }
