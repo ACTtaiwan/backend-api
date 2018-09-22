@@ -77,15 +77,15 @@ export class MongoDbConfig {
     })
   }
 
-  public static async getUriComponents (): Promise<{
+  public static async getUriComponents (debugKey = 'mongodb'): Promise<{
     username: string,
     password: string,
     host: string,
     port: number
   }> {
     let ret;
-    if (debug && debug['mongodb']) {
-      ret = debug['mongodb'];
+    if (debug && debug[debugKey]) {
+      ret = debug[debugKey];
     } else {
       ret = await MongoDbConfig.getKeyFileFromS3();
     }
@@ -93,8 +93,8 @@ export class MongoDbConfig {
     return ret;
   }
 
-  public static async getUrl (): Promise<string> {
-    let urlComponents = await MongoDbConfig.getUriComponents();
+  public static async getUrl (debugKey = 'mongodb'): Promise<string> {
+    let urlComponents = await MongoDbConfig.getUriComponents(debugKey);
     let ret = {
       scheme: 'mongodb',
       username: urlComponents['username'],

@@ -40,18 +40,19 @@ describe('DataGraphUtilsTest', function () {
     expect(result).to.be.equal('something');
   });
 
-  it('retry func and evantually failed', async function () {
+  it('retry func and evantually failed', async function (done) {
     let func = async (): Promise<string> => {
-      throw Error('this is an error');
+      throw Error('error test 1');
     }
     expect(DataGraphUtils.retry(func)).to.be.rejected;
+    done();
   });
 
   it('retry func succeeds the second time', async function () {
     let counter = 0;
     let func = async (): Promise<string> => {
       if (counter++ < 2) {
-        throw Error('this is an error');
+        throw Error('error test 2');
       }
       return 'success';
     }

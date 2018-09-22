@@ -7,6 +7,31 @@
 ## Set Up
 `npm install`
 
+## Set Up Debug Mode
+Create file `config/debug.json`. Example:
+
+    {
+        "debug": {
+            "mongodb": {
+                "host": "localhost",
+                "port": 27017,
+                "username": "",
+                "password": ""
+            },
+            "remoteMongodb": {
+                "host": "<host>",
+                "port": <port>,
+                "username": "<username>",
+                "password": "<password>"
+            },
+            "airtable": {
+                "apiKey": "<key>"
+            }
+        }
+    }
+
+(`.gitignore` is set up to not commit this file.)
+
 ## Maintenance
 - Backup remote databases:
 

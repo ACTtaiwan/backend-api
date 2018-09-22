@@ -1,9 +1,10 @@
 import { MongoClient, Db, Collection, Binary } from 'mongodb';
 import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
-import { IDataGraph, TType, TEntData, TId, TEnt, TEntQuery, TAssocLookupQuery,
-  TEntUpdate, TAssocData, TAssoc, DataGraphUtils, DataGraph } from './DataGraph';
+import { IDataGraph, Type, Id, IEnt, IEntQuery, IEntAssocQuery,
+  IUpdate, IAssoc, DataGraphUtils, DataGraph, IAssocQuery, IHasType, IEntInsert, IAssocInsert } from './DataGraph';
 import { MongoDbConfig } from '../../config/mongodb';
+import { expect } from 'chai';
 
 export class MongoGraph implements IDataGraph {
   private static readonly ASSOC_LOOKUP_OUTPUT_FIELD = '_assocs';
@@ -58,61 +59,73 @@ export class MongoGraph implements IDataGraph {
   /**
    * Encode string uuid into bson binary format
    */
-  public static encodeId (id: TId): Binary {
+  public static encodeId (id: Id): Binary {
     let buf = DataGraphUtils.idToBuffer(id);
     if (buf) {
       return new Binary(buf, Binary.SUBTYPE_UUID);
     }
-    throw Error(`Cannot encode ID: ${id}`);
+    throw Error(`[MongoGraph.encodeId()] cannot encode ID: ${id}`);
   }
 
   /**
    * Decode bson binary-encoded uuid to string
    */
-  public static decodeId (bin: Binary): TId {
+  public static decodeId (bin: Binary): Id {
     if (bin.sub_type === Binary.SUBTYPE_UUID && bin.buffer) {
       let id = DataGraphUtils.idFromBuffer(bin.buffer);
       if (id) {
         return id;
       }
     }
-    throw Error(`Cannot decode ID: ${bin}`);
+    throw Error(`[MongoGraph.decodeId()] cannot decode ID: ${bin}`);
   }
 
-  /**
-   * Create a new bson binary-encoded uuid
-   */
-  private static _createEncodedId (): Binary {
-    let id = uuid();
-    try {
-      return MongoGraph.encodeId(id);
-    } catch (err) {
-      throw Error(`Cannot create encoded ID: ${id}`);
-    }
+  private static _encodeIdFields (obj: object): object {
+    return _.mapValues(obj, (v: any, k) => {
+      if (k === '_id' || k === '_id1' || k === '_id2') {
+        if (Array.isArray(v)) {
+          return _.map(v, (id: Id) => MongoGraph.encodeId(id));
+        } else {
+          return MongoGraph.encodeId(v);
+        }
+      }
+      return v;
+    });
+  }
+
+  private static _decodeIdFields (obj: object): object {
+    return _.mapValues(obj, (v: any, k) => {
+      if (k === '_id' || k === '_id1' || k === '_id2') {
+        if (Array.isArray(v)) {
+          return _.map(v, (binId: Binary) => MongoGraph.decodeId(binId));
+        } else {
+          return MongoGraph.decodeId(v);
+        }
+      }
+      return v;
+    });
   }
 
   /**
    * Insert records to a mongo collection (table). For each record (object),
-   * if _id is not specified, a new UUID will be generated. Keys and values in
-   * commonData will be inserted to all records (overwrite if key exists).
+   * if _id is not specified, a new UUID will be generated.
    *
    * @param table Collection to insert to.
-   * @param commonData Common properties to be inserted to all records.
-   * @param data Array of data objects to be inserted.
+   * @param objs Array of data objects to be inserted.
    */
   private static async _insertHelper (
     table: Collection,
-    commonData: object,
-    data: object[]
-  ): Promise<TId[]> {
-    let objs = _.map(data, d => _.assign(
-      { _id: MongoGraph._createEncodedId() },
-      d,
-      commonData,
-    ));
+    objs: IEntInsert[] | IAssocInsert[],
+  ): Promise<Id[]> {
+    let docs = _.map(objs, obj => {
+      if (!obj._id) {
+        obj._id = uuid();
+      }
+      return MongoGraph._encodeIdFields(obj);
+    });
     let results = await DataGraphUtils.retryInChunks(
       items => table.insertMany(items),
-      objs,
+      docs,
     );
     let insertedIds = _.reduce(results, (ids, result) => {
       if (result && result.insertedIds) {
@@ -127,21 +140,30 @@ export class MongoGraph implements IDataGraph {
     });
   }
 
-  public async insertEntities (type: TType, ents: TEntData[])
-  : Promise<TId[]> {
-    return await MongoGraph._insertHelper(
-      this._entities,
-      { _type: type },
-      ents
-    );
+  public async insertEntities (ents: IEntInsert[]): Promise<Id[]> {
+    return await MongoGraph._insertHelper(this._entities, ents);
   }
 
-  public async loadEntity (id: TId, fields?: string[]): Promise<TEnt> {
-    let ent = await this._entities.findOne(
-      { _id: MongoGraph.encodeId(id) },
+  private static async _loadHelper (
+    table: Collection,
+    id: Id,
+    fields?: string[],
+  ): Promise<object> {
+    let ent = await table.findOne(
+      MongoGraph._encodeIdFields({ _id: id }),
       { projection: MongoGraph._composeProjection(fields) },
     );
-    return ent;
+    if (!ent) {
+      return null;
+    }
+    let ret = MongoGraph._decodeIdFields(ent);
+    expect(ret).to.include.all.keys('_id', '_type');
+    return ret;
+  }
+
+  public async loadEntity (id: Id, fields?: string[]): Promise<IEnt> {
+    let ret = await MongoGraph._loadHelper(this._entities, id, fields);
+    return <IEnt>ret;
   }
 
   /**
@@ -156,37 +178,17 @@ export class MongoGraph implements IDataGraph {
    *  a: 'z',
    *  b: { $in: [1, 2, 3] },
    * }
-   * If the name of each key is contained in shouldEncodeIdFields, and the
-   * corresponding value (or array of values) is a string, it will be encoded
-   * into bson binary format.
    * @param condition
-   * @param shouldEncodeIdFields
    */
-  private static _composeQuery (
-    condition: object,
-    shouldEncodeIdFields?: string[],
-  ): object {
-    let shouldEncodeId = _.fromPairs(
-      _.map(shouldEncodeIdFields, f => [f, true]),
-    );
-    let result = _.mapValues(condition, (v, k) => {
+  private static _composeQuery (condition: IHasType): object {
+    let result = _.mapValues(MongoGraph._encodeIdFields(condition), v => {
       if (Array.isArray(v)) {
-        let arr = Array.from(v);
-        if (shouldEncodeId[k]) {
-          arr = _.map(arr, id => {
-            if (typeof id === 'string') {
-              return MongoGraph.encodeId(id);
-            }
-          });
-        }
-        return { $in: arr };
+        return { $in: v };
       } else {
-        if (shouldEncodeId[k]) {
-          return MongoGraph.encodeId(v);
-        }
         return v;
       }
     });
+    expect(result).to.include.all.keys('_type');
 
     return result;
   }
@@ -199,6 +201,9 @@ export class MongoGraph implements IDataGraph {
     if (!fields) {
       return {};
     }
+    if (present) {
+      fields.push('_type'); // always include _type field
+    }
     return _.fromPairs(_.map(fields, f => [f, present]));
   }
 
@@ -210,7 +215,7 @@ export class MongoGraph implements IDataGraph {
    * The second pipe is a $match, which filter the entities by their '_assocs'
    * fields.
    */
-  private _composeAssocLookupQueryPipes (q: TAssocLookupQuery): object[] {
+  private _composeAssocLookupQueryPipes (q: IEntAssocQuery): object[] {
     // determine which assoc field to join with, id1 or id2?
     let joinIdField, filterIdField;
     if (q._id1 && q._id2) {
@@ -233,7 +238,7 @@ export class MongoGraph implements IDataGraph {
     }};
 
     // after join, filter by the other id field (id2 or id1) and assoc data
-    let match = MongoGraph._composeQuery(q, [filterIdField]);
+    let match = MongoGraph._composeQuery(q);
     match = _.set(
       {},
       `$match.${MongoGraph.ASSOC_LOOKUP_OUTPUT_FIELD}.$elemMatch`,
@@ -244,15 +249,12 @@ export class MongoGraph implements IDataGraph {
   }
 
   public async findEntities (
-    type: TType,
-    entQuery?: TEntQuery,
-    assocLookupQueries?: TAssocLookupQuery[],
+    entQuery: IEntQuery,
+    assocLookupQueries?: IEntAssocQuery[],
     fields?: string[],
-  ): Promise<TEntData[]> {
+  ): Promise<IEnt[]> {
     let pipeline = [];
     // process entQuery
-    entQuery = entQuery || {};
-    entQuery['_type'] = type;
     pipeline.push({ $match: MongoGraph._composeQuery(entQuery) });
     // process assocQueries
     let removeTmpFields = false;
@@ -274,16 +276,26 @@ export class MongoGraph implements IDataGraph {
     }
     // execute pipeline
     let cursor = await this._entities.aggregate(pipeline);
-    return await cursor.toArray();
+    return _.map(await cursor.toArray(), e => {
+      let ret = <IEnt>MongoGraph._decodeIdFields(e);
+      expect(ret).to.include.all.keys('_id', '_type');
+      return ret;
+    });
   }
 
-  public async updateEntities (updates: TEntUpdate[]): Promise<number> {
+  private static async _updateHelper (
+    table: Collection,
+    updates: IUpdate[],
+    prohibitedFields?: string[],
+  ): Promise<number> {
     let bulkUpdate = _.map(updates, update => {
       let id = update._id;
       delete update._id;
-      if ('_type' in update) {
-        delete update._type;
-      }
+      _.each(prohibitedFields, f => {
+        if (f in update) {
+          delete update[f];
+        }
+      });
       let u = {};
       let set = _.pickBy(update, v => v !== undefined);
       if (_.keys(set).length > 0) {
@@ -301,7 +313,7 @@ export class MongoGraph implements IDataGraph {
       };
     });
     let results = await DataGraphUtils.retryInChunks(
-      items => this._entities.bulkWrite(items),
+      items => table.bulkWrite(items),
       bulkUpdate,
     );
     return _.reduce(
@@ -310,9 +322,14 @@ export class MongoGraph implements IDataGraph {
         result.modifiedCount : 0,
       0
     );
+
   }
 
-  public async deleteEntities (ids: TId[]): Promise<[number, number]> {
+  public async updateEntities (updates: IUpdate[]): Promise<number> {
+    return await MongoGraph._updateHelper(this._entities, updates, [ '_type' ]);
+  }
+
+  public async deleteEntities (ids: Id[]): Promise<[number, number]> {
     let binIds = _.map(ids, id => MongoGraph.encodeId(id));
     let promiseDeleteEnts = DataGraphUtils.retryInChunks(
       items => this._entities.deleteMany({ _id: { $in: items }}),
@@ -335,67 +352,64 @@ export class MongoGraph implements IDataGraph {
     });
   }
 
-  public async insertAssoc (
-    type: TType,
-    id1: TId,
-    id2: TId,
-    data?: TAssocData,
-  ): Promise<TId> {
-    let result = await MongoGraph._insertHelper(
-      this._assocs,
-      {
-        _type: type,
-        _id1: MongoGraph.encodeId(id1),
-        _id2: MongoGraph.encodeId(id2),
-      },
-      [ data ],
-    );
-    if (result && result.length === 1) {
-      return result[0];
-    }
+  public async insertAssocs (
+    assocs: IAssoc[],
+  ): Promise<Id[]> {
+    return await MongoGraph._insertHelper(this._assocs, assocs);
+  }
+
+  public async loadAssoc (id: Id, fields?: string[]): Promise<IAssoc> {
+    let ret = await MongoGraph._loadHelper(this._assocs, id, fields);
+    return <IAssoc>ret;
   }
 
   public async findAssocs (
-    type: TType,
-    id1?: TId,
-    id2?: TId,
-    data?: TAssocData,
+    query: IAssocQuery,
     fields?: string[],
-  ): Promise<TAssoc[]> {
-    let query = data || {};
-    query['_type'] = type;
-    if (id1) {
-      query['_id1'] = id1;
+  ): Promise<IAssoc[]> {
+    if (fields) {
+      fields.push('_id1', '_id2');
     }
-    if (id2) {
-      query['_id2'] = id2;
-    }
-    query = MongoGraph._composeQuery(query, ['_id1', '_id2']);
-
     let cursor = await this._assocs.find(
-      query,
+      MongoGraph._composeQuery(query),
       { projection: MongoGraph._composeProjection(fields) }
     );
-    return await cursor.toArray();
+    return _.map(await cursor.toArray(), a => {
+      let ret = <IAssoc>MongoGraph._decodeIdFields(a);
+      expect(ret).to.include.all.keys('_id', '_type', '_id1', '_id2');
+      return ret;
+    });
   }
 
   public async listAssociatedEntityIds (
-    entId: TId,
-    assocType: TType,
+    entId: Id,
+    assocType: Type,
     direction: 'forward' | 'backward',
-  ): Promise<TId[]> {
+  ): Promise<Id[]> {
     let results;
+    let q = { _type: assocType };
+    let self, other;
     if (direction === 'forward') {
-      results = await this.findAssocs(assocType, entId, null, null, ['_id2']);
-      results = _.map(results, r => MongoGraph.decodeId(r['_id2']));
+      self = '_id1';
+      other = '_id2';
     } else {
-      results = await this.findAssocs(assocType, null, entId, null, ['_id1']);
-      results = _.map(results, r => MongoGraph.decodeId(r['_id1']));
+      self = '_id2';
+      other = '_id1';
     }
-    return results;
+    q[self] = entId;
+    results = await this.findAssocs(q, [ other ]);
+    return _.map(results, r => r[other]);
   }
 
-  public async deleteAssocs (ids: TId[]): Promise<number> {
+  public async updateAssocs (updates: IUpdate[]): Promise<number> {
+    return await MongoGraph._updateHelper(
+      this._assocs,
+      updates,
+      [ '_type', '_id1', '_id2' ],
+    );
+  }
+
+  public async deleteAssocs (ids: Id[]): Promise<number> {
     let binIds = _.map(ids, id => MongoGraph.encodeId(id));
     let results = await DataGraphUtils.retryInChunks(
       items => this._assocs.deleteMany({ _id: { $in: items }}),

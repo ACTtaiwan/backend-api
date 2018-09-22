@@ -4,8 +4,8 @@
 import * as _ from 'lodash';
 import { MongoGraph } from './MongoGraph';
 
-export type TId = string; // uuid string
-export const enum TType {
+export type Id = string; // uuid string
+export const enum Type {
   Unknown = 0,
   TestEntType1 = 1,
   TestEntType2 = 2,
@@ -13,41 +13,50 @@ export const enum TType {
   TestAssocType1 = 1001,
   TestAssocType2 = 1002,
 };
-
-export type TEntData = object;
-export interface TEnt extends TEntData {
-  _id: TId;
-  _type: TType;
+export interface IHasType {
+  _type: Type;
 }
-export type TEntQuery = object;
-export type TEntUpdate = {
-  _id: TId;
-  [key: string]: any;
+interface IHasId {
+  _id: Id;
 }
-
-export type TAssocData = { [key: string]: any };  // underscore fields ignored
-export type TAssoc = {
-  _id: TId;
-  _type: TType;
-  _id1: TId;
-  _id2: TId;
-  [key: string]: any;
+type IHasIdMaybe = Partial<IHasId>;
+interface IHasIdPair {
+  _id1: Id;
+  _id2: Id;
 }
-export type TAssocLookupQuery = {
-  _type: TType;
-  _id1?: TId | TId[];
-  _id2?: TId | TId[];
-  [key: string]: any;
-};
+type IHasIdPairMaybe = Partial<IHasIdPair>;
+type IHasIdOrIdListPairMaybe = {
+  [ P in keyof IHasIdPair ]?: IHasIdPair[P] | IHasIdPair[P][];
+}
+type IHasData = {
+  [ k: string ]: any;
+}
+export interface IEnt extends IHasType, IHasId {}
+export interface IEntInsert extends IHasType, IHasIdMaybe, IHasData {}
+export interface IEntQuery extends IHasType, IHasIdMaybe, IHasData {}
+export interface IEntAssocQuery extends IHasType, IHasIdOrIdListPairMaybe,
+  IHasData {}
+export interface IUpdate extends IHasId, IHasData {}
+export interface IAssoc extends IHasType, IHasId, IHasIdPair, IHasData {}
+export interface IAssocInsert extends IHasType, IHasIdMaybe, IHasIdPair,
+  IHasData {}
+export interface IAssocQuery extends IHasType, IHasIdMaybe, IHasIdPairMaybe,
+  IHasData {}
 
 export interface IDataGraph {
-  insertEntities (type: TType, ents: TEntData[]): Promise<TId[]>;
-  loadEntity (id: TId, fields?: string[]): Promise<TEnt>;
+  /**
+   * @param ents  If _id is not present, a random one wil be generated.
+   */
+  insertEntities (ents: IEntInsert[]): Promise<Id[]>;
+  /**
+   * @returns null if not found
+   */
+  loadEntity (id: Id, fields?: string[]): Promise<IEnt>;
   /**
    *
-   * @param type Entity type
    * @param entQuery Example:
    * {
+   *    _type: someType, // required
    *    field1: value1,
    *    field2: [value2, value3, value4],
    *    ...
@@ -55,7 +64,7 @@ export interface IDataGraph {
    * Returned entities satisfy:
    *    field1 = value1 AND field2 = value2 OR value3 OR value4
    * Field name could also be a json 'path' that refers to a deep field
-   * @param assocLookupQueries Example:
+   * @param entAssocQueries Example:
    * {
    *    _type: assoc_type,         // required
    *    _id1: [value1, value2],    // or _id2; value could be a single value
@@ -69,12 +78,11 @@ export interface IDataGraph {
    * Fields _id1 and _id2 cannot both appear.
    */
   findEntities (
-    type: TType,
-    entQuery?: TEntQuery,
-    assocLookupQueries?: TAssocLookupQuery[],
+    entQuery: IEntQuery,
+    entAssocQueries?: IEntAssocQuery[],
     fields?: string[],
     // TODO: support pagination
-  ): Promise<TEntData[]>;
+  ): Promise<IEnt[]>;
   /**
    * Update a set of entities
    *
@@ -83,24 +91,25 @@ export interface IDataGraph {
    * matching the keys with the corresponding values. Properties that are
    * not covered in the keys will remain the same.
    */
-  updateEntities (updates: TEntUpdate[]): Promise<number>;
+  updateEntities (updates: IUpdate[]): Promise<number>;
   /**
    * Delete entities specified by ids together with all assocs referring
    * to them.
    * @param ids
    * @returns Number of entities and assocs deleted (tuple)
    */
-  deleteEntities (ids: TId[]): Promise<[number, number]>;
-  insertAssoc (type: TType, id1: TId, id2: TId, data?: TAssocData)
-  : Promise<TId>;
+  deleteEntities (ids: Id[]): Promise<[number, number]>;
+  /**
+   * @param assoc If _id is not specified, a random one will be generated
+   */
+  insertAssocs (assocs: IAssocInsert[]): Promise<Id[]>;
+  loadAssoc (id: Id, fields?: string[]): Promise<IAssoc>;
   findAssocs (
-    type: TType,
-    id1?: TId,
-    id2?: TId,
-    data?: TAssocData,
+    assocQuery: IAssocQuery,
     fields?: string[],
     // TODO: support pagination
-  ): Promise<TAssoc[]>;
+  ): Promise<IAssoc[]>;
+  updateAssocs (updates: IUpdate[]): Promise<number>;
   /**
    * Convenience function for findAssocs. Returns connected ent IDs only.
    *
@@ -113,11 +122,11 @@ export interface IDataGraph {
    * @param direction
    */
   listAssociatedEntityIds (
-    entId: TId,
-    assocType: TType,
+    entId: Id,
+    assocType: Type,
     direction: 'forward' | 'backward',
-  ): Promise<TId[]>;
-  deleteAssocs (ids: TId[]): Promise<number>;
+  ): Promise<Id[]>;
+  deleteAssocs (ids: Id[]): Promise<number>;
   dropDb (): Promise<any>;
   close (): Promise<void>;
 }
@@ -144,7 +153,7 @@ export class DataGraph {
 }
 
 export class DataGraphUtils {
-  public static idFromBuffer (idBuf: Buffer): TId {
+  public static idFromBuffer (idBuf: Buffer): Id {
     if (!idBuf || idBuf.length !== 16) {
       return;
     }
@@ -163,7 +172,7 @@ export class DataGraphUtils {
       + strs[i++] + strs[i++] + strs[i++] + strs[i++] + strs[i++] + strs[i++];
   }
 
-  public static idToBuffer (id: TId): Buffer {
+  public static idToBuffer (id: Id): Buffer {
     if (!id) {
       return;
     }
