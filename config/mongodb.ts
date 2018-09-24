@@ -108,4 +108,12 @@ export class MongoDbConfig {
     };
     return mongodbUri.format(ret);
   }
+
+  public static getReadPageSize (debugKey = 'mongoReadPageSize'): number {
+    if (debug && debug[debugKey]) {
+      return debug[debugKey];
+    } else {
+      return 500;
+    }
+  }
 }

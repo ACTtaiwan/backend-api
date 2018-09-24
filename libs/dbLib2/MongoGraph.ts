@@ -2,9 +2,55 @@ import { MongoClient, Db, Collection, Binary } from 'mongodb';
 import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { IDataGraph, Type, Id, IEnt, IEntQuery, IEntAssocQuery,
-  IUpdate, IAssoc, DataGraphUtils, DataGraph, IAssocQuery, IHasType, IEntInsert, IAssocInsert } from './DataGraph';
+  IUpdate, IAssoc, DataGraphUtils, IAssocQuery, IHasType, IEntInsert,
+  IAssocInsert, ISortField } from './DataGraph';
 import { MongoDbConfig } from '../../config/mongodb';
 import { expect } from 'chai';
+
+class PageCursor {
+  constructor (
+    protected _sortFields: ISortField[],
+    protected _record?: object,
+  ) {
+    this._sortFields = this._sortFields || [];
+    if (
+      this._sortFields.length <= 0 ||
+      this._sortFields[this._sortFields.length - 1].field !== '_id'
+    ) {
+      this._sortFields.push({ field: '_id', order: 'asc' });
+    }
+  }
+
+  public toQuery (): object {
+    if (!this._record) {
+      return {};
+    }
+    let queryPairs = _.map(this._sortFields, sf => {
+      if (!(sf.field in this._record)) {
+        return;
+      }
+      let op;
+      if (sf.order === 'asc') {
+        op = '$gt';
+      } else {
+        op = '$lt';
+      }
+      if (sf.field !== '_id') {
+        op += 'e';
+      }
+      return [ sf.field, { [op]: this._record[sf.field] } ];
+    });
+    queryPairs = _.filter(queryPairs, q => q !== undefined);
+    return _.fromPairs(queryPairs);
+  }
+
+  public toSort (): object {
+    let queryPairs = _.map(this._sortFields, sf =>
+      [ sf.field, sf.order === 'asc' ? 1 : -1 ],
+    );
+    return _.fromPairs(queryPairs);
+  }
+}
 
 export class MongoGraph implements IDataGraph {
   private static readonly ASSOC_LOOKUP_OUTPUT_FIELD = '_assocs';
@@ -179,18 +225,32 @@ export class MongoGraph implements IDataGraph {
    *  b: { $in: [1, 2, 3] },
    * }
    * @param condition
+   * @param cursor Assuming a query returns records that are sorted by one or
+   *  more fields, this parameter is an array of key-value pairs, where the
+   *  keys are the sorting field names, and the values are taken from the
+   *  last (max) record. A paginated query will be generated based on cursor
+   *  information.
    */
-  private static _composeQuery (condition: IHasType): object {
-    let result = _.mapValues(MongoGraph._encodeIdFields(condition), v => {
+  private static _composeQuery (condition: IHasType, cursor?: PageCursor)
+  : object {
+    let query = _.mapValues(MongoGraph._encodeIdFields(condition), v => {
       if (Array.isArray(v)) {
         return { $in: v };
       } else {
         return v;
       }
     });
-    expect(result).to.include.all.keys('_type');
+    if (cursor) {
+      let cursorQuery = cursor.toQuery();
+      _.mergeWith(query, cursorQuery, (v, cv, k) => {
+        if (v !== undefined && cv !== undefined) {
+          return { $and: [{ [k]: v }, { [k]: cv }]};
+        }
+      });
+    }
+    expect(query).to.include.all.keys('_type');
 
-    return result;
+    return query;
   }
 
   /**
@@ -252,31 +312,49 @@ export class MongoGraph implements IDataGraph {
     entQuery: IEntQuery,
     assocLookupQueries?: IEntAssocQuery[],
     fields?: string[],
+    sort?: ISortField[],
+    readPageSize: number = MongoDbConfig.getReadPageSize(),
   ): Promise<IEnt[]> {
-    let pipeline = [];
-    // process entQuery
-    pipeline.push({ $match: MongoGraph._composeQuery(entQuery) });
-    // process assocQueries
-    let removeTmpFields = false;
-    _.each(assocLookupQueries, q => {
-      let aggs = this._composeAssocLookupQueryPipes(q);
-      _.each(aggs, agg => {
-        pipeline.push(agg);
-      });
-      removeTmpFields = true;
-    });
-    if (fields) {
-      pipeline.push({ $project: MongoGraph._composeProjection(fields) });
-    }
-    if (removeTmpFields) {
-      pipeline.push({ $project: MongoGraph._composeProjection(
-        [MongoGraph.ASSOC_LOOKUP_OUTPUT_FIELD],
-        false,
-      )});
-    }
-    // execute pipeline
-    let cursor = await this._entities.aggregate(pipeline);
-    return _.map(await cursor.toArray(), e => {
+    sort = sort || [];
+    sort.push({ field: '_id', order: 'asc' });
+
+    let results = await DataGraphUtils.retryLoop(
+      async cursor => {
+        let pipeline = [];
+        // process entQuery
+        pipeline.push({ $match: MongoGraph._composeQuery(entQuery, cursor) });
+        // process assocQueries
+        let removeTmpFields = false;
+        _.each(assocLookupQueries, q => {
+          let aggs = this._composeAssocLookupQueryPipes(q);
+          _.each(aggs, agg => {
+            pipeline.push(agg);
+          });
+          removeTmpFields = true;
+        });
+        if (fields) {
+          pipeline.push({ $project: MongoGraph._composeProjection(fields) });
+        }
+        if (removeTmpFields) {
+          pipeline.push({ $project: MongoGraph._composeProjection(
+            [MongoGraph.ASSOC_LOOKUP_OUTPUT_FIELD],
+            false,
+          )});
+        }
+        pipeline.push({ $sort: cursor.toSort() });
+        pipeline.push({ $limit: readPageSize });
+
+        return await this._entities.aggregate(pipeline).toArray();
+      },
+      output => { // returns cursor
+        if (output && Array.isArray(output) && output.length === readPageSize) {
+          return new PageCursor(sort, output[output.length - 1]);
+        }
+      },
+      new PageCursor(sort),
+    );
+
+    return _.map(_.flatten(results), e => {
       let ret = <IEnt>MongoGraph._decodeIdFields(e);
       expect(ret).to.include.all.keys('_id', '_type');
       return ret;
@@ -366,15 +444,35 @@ export class MongoGraph implements IDataGraph {
   public async findAssocs (
     query: IAssocQuery,
     fields?: string[],
+    sort?: ISortField[],
+    readPageSize: number = MongoDbConfig.getReadPageSize(),
   ): Promise<IAssoc[]> {
+    sort = sort || [];
+    sort.push({ field: '_id', order: 'asc' });
+
     if (fields) {
       fields.push('_id1', '_id2');
     }
-    let cursor = await this._assocs.find(
-      MongoGraph._composeQuery(query),
-      { projection: MongoGraph._composeProjection(fields) }
+
+    let results = await DataGraphUtils.retryLoop(
+      async cursor => {
+        let q = this._assocs.find(
+          MongoGraph._composeQuery(query, cursor),
+          { projection: MongoGraph._composeProjection(fields) }
+        )
+        .sort(cursor.toSort())
+        .limit(readPageSize);
+        return await q.toArray();
+      },
+      output => {
+        if (output && Array.isArray(output) && output.length === readPageSize) {
+          return new PageCursor(sort, output[output.length - 1]);
+        }
+      },
+      new PageCursor(sort),
     );
-    return _.map(await cursor.toArray(), a => {
+
+    return _.map(_.flatten(results), a => {
       let ret = <IAssoc>MongoGraph._decodeIdFields(a);
       expect(ret).to.include.all.keys('_id', '_type', '_id1', '_id2');
       return ret;

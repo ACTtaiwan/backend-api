@@ -42,6 +42,10 @@ export interface IAssocInsert extends IHasType, IHasIdMaybe, IHasIdPair,
   IHasData {}
 export interface IAssocQuery extends IHasType, IHasIdMaybe, IHasIdPairMaybe,
   IHasData {}
+export interface ISortField {
+  field: string,
+  order: 'asc' | 'desc',
+}
 
 export interface IDataGraph {
   /**
@@ -81,7 +85,7 @@ export interface IDataGraph {
     entQuery: IEntQuery,
     entAssocQueries?: IEntAssocQuery[],
     fields?: string[],
-    // TODO: support pagination
+    sort?: ISortField[],
   ): Promise<IEnt[]>;
   /**
    * Update a set of entities
