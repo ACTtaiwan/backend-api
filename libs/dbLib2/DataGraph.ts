@@ -31,7 +31,7 @@ type IHasIdOrIdListPairMaybe = {
 type IHasData = {
   [ k: string ]: any;
 }
-export interface IEnt extends IHasType, IHasId {}
+export interface IEnt extends IHasType, IHasId, IHasData {}
 export interface IEntInsert extends IHasType, IHasIdMaybe, IHasData {}
 export interface IEntQuery extends IHasType, IHasIdMaybe, IHasData {}
 export interface IEntAssocQuery extends IHasType, IHasIdOrIdListPairMaybe,
@@ -137,7 +137,7 @@ export interface IDataGraph {
 
 export class DataGraph {
   public static async create (
-    type: string,
+    type: 'MongoGraph',
     dbName: string,
     entTableName = 'entities',
     assocTableName = 'assocs',

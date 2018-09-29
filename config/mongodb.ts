@@ -4,6 +4,9 @@ import { debug } from './debug';
 import { expect } from 'chai';
 
 export class MongoDbConfig {
+  public static readonly READ_PAGE_SIZE = 500;
+  public static readonly DB_NAME = 'data';
+
   public static readonly tableNames = {
     'BILLCATEGORIES_TABLE_NAME': 'volunteer.billCategories',
     'BILLS_TABLE_NAME': 'volunteer.bills',
@@ -77,16 +80,20 @@ export class MongoDbConfig {
     })
   }
 
+  private static getDebugValueMaybe (debugKey: string): any {
+    if (debug && debug[debugKey]) {
+      return debug[debugKey];
+    }
+  }
+
   public static async getUriComponents (debugKey = 'mongodb'): Promise<{
     username: string,
     password: string,
     host: string,
     port: number
   }> {
-    let ret;
-    if (debug && debug[debugKey]) {
-      ret = debug[debugKey];
-    } else {
+    let ret = this.getDebugValueMaybe(debugKey);
+    if (ret === undefined) {
       ret = await MongoDbConfig.getKeyFileFromS3();
     }
     expect(ret).to.have.all.keys('username', 'password', 'host', 'port');
@@ -110,10 +117,18 @@ export class MongoDbConfig {
   }
 
   public static getReadPageSize (debugKey = 'mongoReadPageSize'): number {
-    if (debug && debug[debugKey]) {
-      return debug[debugKey];
-    } else {
-      return 500;
+    let ret = MongoDbConfig.getDebugValueMaybe(debugKey);
+    if (ret === undefined) {
+      ret = MongoDbConfig.READ_PAGE_SIZE;
     }
+    return ret;
+  }
+
+  public static getDbName (debugKey = 'mongoDbName'): string {
+    let ret = MongoDbConfig.getDebugValueMaybe(debugKey);
+    if (ret === undefined) {
+      ret = MongoDbConfig.DB_NAME;
+    }
+    return ret;
   }
 }

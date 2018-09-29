@@ -6,6 +6,7 @@ import { IDataGraph, Type, Id, IEnt, IEntQuery, IEntAssocQuery,
   IAssocInsert, ISortField } from './DataGraph';
 import { MongoDbConfig } from '../../config/mongodb';
 import { expect } from 'chai';
+import { Logger } from './Logger';
 
 class PageCursor {
   constructor (
@@ -187,7 +188,11 @@ export class MongoGraph implements IDataGraph {
   }
 
   public async insertEntities (ents: IEntInsert[]): Promise<Id[]> {
-    return await MongoGraph._insertHelper(this._entities, ents);
+    let logger = new Logger('insertEntities', 'MongoGraph');
+    logger.log(`inserting ${ents.length} ents`);
+    let ids = await MongoGraph._insertHelper(this._entities, ents);
+    logger.log(`inserted ${ids.length} ents: ${JSON.stringify(ids)}`);
+    return ids;
   }
 
   private static async _loadHelper (
@@ -277,15 +282,13 @@ export class MongoGraph implements IDataGraph {
    */
   private _composeAssocLookupQueryPipes (q: IEntAssocQuery): object[] {
     // determine which assoc field to join with, id1 or id2?
-    let joinIdField, filterIdField;
+    let joinIdField;
     if (q._id1 && q._id2) {
       throw Error('Invalid TAssocQuery: both _id1 and _id2 are present');
     } else if (q._id1 && !q._id2) {
       joinIdField = '_id2';
-      filterIdField = '_id1';
     } else if (!q._id1 && q._id2) {
       joinIdField = '_id1';
-      filterIdField = '_id2';
     } else {
       throw Error('Invalid TAssocQuery: both _id1 and _id2 are absent');
     }
@@ -315,6 +318,14 @@ export class MongoGraph implements IDataGraph {
     sort?: ISortField[],
     readPageSize: number = MongoDbConfig.getReadPageSize(),
   ): Promise<IEnt[]> {
+    let logger = new Logger('findEntities', 'MongoGraph');
+    logger.log(JSON.stringify({
+      entQuery: entQuery,
+      assocLookupQueries: assocLookupQueries,
+      fields: fields,
+      sort: sort,
+      readPageSize: readPageSize,
+    }));
     sort = sort || [];
     sort.push({ field: '_id', order: 'asc' });
 
@@ -354,11 +365,14 @@ export class MongoGraph implements IDataGraph {
       new PageCursor(sort),
     );
 
-    return _.map(_.flatten(results), e => {
+    let ents = _.map(_.flatten(results), e => {
       let ret = <IEnt>MongoGraph._decodeIdFields(e);
       expect(ret).to.include.all.keys('_id', '_type');
       return ret;
     });
+
+    logger.log(`found ${ents.length}`);
+    return ents;
   }
 
   private static async _updateHelper (
@@ -404,10 +418,21 @@ export class MongoGraph implements IDataGraph {
   }
 
   public async updateEntities (updates: IUpdate[]): Promise<number> {
-    return await MongoGraph._updateHelper(this._entities, updates, [ '_type' ]);
+    let logger = new Logger('updateEntities', 'MongoGraph');
+    logger.log(`updating ${updates.length}: `
+      + JSON.stringify(_.map(updates, u => u._id)));
+    let updateCount = await MongoGraph._updateHelper(
+      this._entities,
+      updates,
+      [ '_type' ],
+    );
+    logger.log(`updated ${updateCount}`);
+    return updateCount;
   }
 
   public async deleteEntities (ids: Id[]): Promise<[number, number]> {
+    let logger = new Logger('deleteEntities', 'MongoGraph');
+    logger.log(`deleting ${ids.length}: ${JSON.stringify(ids)}`);
     let binIds = _.map(ids, id => MongoGraph.encodeId(id));
     let promiseDeleteEnts = DataGraphUtils.retryInChunks(
       items => this._entities.deleteMany({ _id: { $in: items }}),
@@ -421,19 +446,25 @@ export class MongoGraph implements IDataGraph {
       binIds,
     );
     let resPair = await Promise.all([promiseDeleteEnts, promiseDeleteAssosc]);
-    return <[number, number]>_.map(resPair, results => {
+    let [entCount, assocCount] = <[number, number]>_.map(resPair, results => {
       return _.reduce(
         results,
         (count, r) => count += (r && r.deletedCount) ? r.deletedCount : 0,
         0,
       );
     });
+    logger.log(`deleted ${entCount} ents and ${assocCount} assocs`);
+    return [entCount, assocCount];
   }
 
   public async insertAssocs (
     assocs: IAssoc[],
   ): Promise<Id[]> {
-    return await MongoGraph._insertHelper(this._assocs, assocs);
+    let logger = new Logger('insertAssocs', 'MongoGraph');
+    logger.log(`inserting ${assocs.length} assocs`);
+    let ids = await MongoGraph._insertHelper(this._assocs, assocs);
+    logger.log(`inserted ${assocs.length} assocs: ${JSON.stringify(ids)}`);
+    return ids;
   }
 
   public async loadAssoc (id: Id, fields?: string[]): Promise<IAssoc> {
@@ -447,6 +478,13 @@ export class MongoGraph implements IDataGraph {
     sort?: ISortField[],
     readPageSize: number = MongoDbConfig.getReadPageSize(),
   ): Promise<IAssoc[]> {
+    let logger = new Logger('findAssocs', 'MongoGraph');
+    logger.log(JSON.stringify({
+      query: query,
+      fields: fields,
+      sort: sort,
+      readPageSize: readPageSize,
+    }));
     sort = sort || [];
     sort.push({ field: '_id', order: 'asc' });
 
@@ -472,11 +510,13 @@ export class MongoGraph implements IDataGraph {
       new PageCursor(sort),
     );
 
-    return _.map(_.flatten(results), a => {
+    let assocs = _.map(_.flatten(results), a => {
       let ret = <IAssoc>MongoGraph._decodeIdFields(a);
       expect(ret).to.include.all.keys('_id', '_type', '_id1', '_id2');
       return ret;
     });
+    logger.log(`found ${assocs.length}`);
+    return assocs;
   }
 
   public async listAssociatedEntityIds (
@@ -500,29 +540,39 @@ export class MongoGraph implements IDataGraph {
   }
 
   public async updateAssocs (updates: IUpdate[]): Promise<number> {
-    return await MongoGraph._updateHelper(
+    let logger = new Logger('updateAssocs', 'MongoGraph');
+    logger.log(`updating ${updates.length}: `
+      + JSON.stringify(_.map(updates, u => u._id)));
+    let updateCount = await MongoGraph._updateHelper(
       this._assocs,
       updates,
       [ '_type', '_id1', '_id2' ],
     );
+    logger.log(`updated ${updateCount}`);
+    return updateCount;
   }
 
   public async deleteAssocs (ids: Id[]): Promise<number> {
+    let logger = new Logger('deleteAssocs', 'MongoGraph');
+    logger.log(`deleting ${ids.length}: ${JSON.stringify(ids)}`);
     let binIds = _.map(ids, id => MongoGraph.encodeId(id));
     let results = await DataGraphUtils.retryInChunks(
       items => this._assocs.deleteMany({ _id: { $in: items }}),
       binIds,
     );
-    return _.reduce(
+    let count = _.reduce(
       results,
       (count, result) => count += (result && result.deletedCount) ?
         result.deletedCount : 0,
       0,
     );
+    logger.log(`deleted ${count}`);
+    return count;
   }
 
   public async dropDb (): Promise<any> {
     if (this._client && this._db) {
+      Logger.log(`${this._db}`, 'MongoGraph.dropDb');
       return await this._db.dropDatabase();
     }
   }
