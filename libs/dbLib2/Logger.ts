@@ -1,4 +1,5 @@
 import { v4 as uuid } from 'uuid';
+import { inspect } from 'util';
 
 export class Logger {
   protected _id: string;
@@ -11,7 +12,7 @@ export class Logger {
 
   public log (msg: any) {
     if (typeof msg !== 'string') {
-      msg = JSON.stringify(msg, null, 2);
+      msg = inspect(msg, { depth: null, colors: true });
     }
     let prefix = this._className ?
       `${this._className}.${this._methodName}` :

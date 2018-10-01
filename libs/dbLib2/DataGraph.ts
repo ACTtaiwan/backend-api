@@ -136,6 +136,7 @@ export interface IDataGraph {
 }
 
 export class DataGraph {
+  private constructor () {} // prohibits instantiation
   public static async create (
     type: 'MongoGraph',
     dbName: string,
@@ -250,29 +251,29 @@ export class DataGraphUtils {
   }
 
   /**
-   * 0. input = init
-   * 1. output = retry func(input)
-   * 2. input = transform(output)
-   * 3. repeat 1, 2 until input is undefined
+   * 0. context = init
+   * 1. output = retry func(context)
+   * 2. context = updateContext(context, output)
+   * 3. repeat 1, 2 until context is undefined
    * @returns an array of output values from func()
    */
   public static async retryLoop (
-    func: (item: any) => Promise<any>,
-    transform: (prevOutput: Readonly<any>) => any,
+    func: (context: any) => Promise<any>,
+    updateContext: (context: any, prevOutput: Readonly<any>) => any,
     init: any,
     retryCount: number = 3,
     retryDelay: number | ((retry: number) => number) = 1000,
   ): Promise<any[]> {
-    let input = init;
+    let context = init;
     let results = [];
-    while (input !== undefined) {
+    while (context !== undefined) {
       let output = await DataGraphUtils.retry(
-        async () => func(input),
+        async () => func(context),
         retryCount,
         retryDelay,
       );
       results.push(output);
-      input = transform(output);
+      context = updateContext(context, output);
     }
     return results;
   }

@@ -24,7 +24,7 @@ async function getAllDocs (
       return db.collection(tableName).find({ _id: { $gt: minId }})
         .limit(CHUNK_SIZE).sort({ _id: 1 }).toArray()
     },
-    out => {
+    (_minId, out) => {
       if (!out || out.length < CHUNK_SIZE) {
         return;
       }

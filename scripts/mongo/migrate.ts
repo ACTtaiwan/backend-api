@@ -1,14 +1,16 @@
 import * as _ from 'lodash';
-import { connectMongo, readAllDocs, getEntSetDiff } from './utils';
+import { connectMongo, readAllDocs, getEntSetDiff, cliConfirm } from './utils';
 import * as moment from 'moment';
 import { MongoDbConfig } from '../../config/mongodb';
-import { DataGraph, Type, IEnt } from '../../libs/dbLib2/DataGraph';
+import { DataGraph, Type, IEnt, IDataGraph } from '../../libs/dbLib2/DataGraph';
 import { Logger } from '../../libs/dbLib2/Logger';
+import { MongoClient } from 'mongodb';
 
 const config = {
   'dbName': 'congress',
   'billTable': 'volunteer.bills',
   'roleTable': 'volunteer.roles',
+  'personTable': 'volunteer.persons',
 };
 
 let logger = new Logger('migrate.ts');
@@ -39,6 +41,9 @@ function fieldCoverage (items: object[]): object {
  * @returns timestamp at 12pm UTC on the same day
  */
 function calibrateDate (date: number): number {
+  if (!date) {
+    return;
+  }
   // When 12am hits anywhere in the west hemisphere, utc time is between
   // 12am and 12pm on the same day. We take the date part and 'export' it
   // as a string, while discarding the time part.
@@ -53,18 +58,15 @@ function calibrateDate (date: number): number {
   return moment.utc(str + 'T12', 'YYYY-MM-DDTHH').toDate().getTime();
 }
 
-async function main () {
-  let sourceClient = await connectMongo(await MongoDbConfig.getUrl());
-  let g = await DataGraph.create('MongoGraph', MongoDbConfig.getDbName());
-
+async function migrateBills (g: IDataGraph, source: MongoClient) {
   let rawSourceBills = await readAllDocs(
-    sourceClient,
+    source,
     config.dbName,
     config.billTable,
   );
 
   // console.log(fieldCoverage(rawBills));
-  // { _id: '1106 (100.00%)',
+  // + _id: '1106 (100.00%)',
   // + congress: '1106 (100.00%)',
   // + billType: '1106 (100.00%)',
   // + billNumber: '1106 (100.00%)',
@@ -96,10 +98,11 @@ async function main () {
   // + summary_zh: '23 (2.08%)',
   // - insight: '18 (1.63%)',
   // - china: '37 (3.35%)',
-  // - articles: '1 (0.09%)' }
+  // - articles: '1 (0.09%)',
 
-  let srcBills = _.map(rawSourceBills, b => {
-    let data = _.pickBy({
+  let sourceBills = _.map(rawSourceBills, b => {
+    let data;
+    data = _.pickBy({
       _id: b['_id'],
       _type: Type.Bill,
       congress: b['congress'],
@@ -116,15 +119,22 @@ async function main () {
       tags: b['tags'],
       summary: b['summary'],
       summary_zh: b['summary_zh'],
-    }, v => v !== undefined);
+    }, v => true /*v !== undefined*/);
     let bill: IEnt = _.merge(data, { _id: b['_id'], _type: Type.Bill });
     return bill;
   });
 
-  let currBills = await g.findEntities({ _type: Type.Bill });
-  let diff = getEntSetDiff(currBills, srcBills);
-  logger.log(`ent set diff:`);
+  let targetBills = await g.findEntities({ _type: Type.Bill });
+  let diff = getEntSetDiff(targetBills, sourceBills);
+
+  logger.log(`Bill migration plan:`);
   logger.log(diff);
+  let proceed = await cliConfirm();
+  if (!proceed) {
+    logger.log('Abort');
+    return;
+  }
+
   if (diff.insert.length > 0) {
     await g.insertEntities(diff.insert);
   }
@@ -134,7 +144,75 @@ async function main () {
   if (diff.delete.length > 0) {
     await g.deleteEntities(diff.delete);
   }
+}
 
+async function migrateCongressMembers (g: IDataGraph, source: MongoClient) {
+  let rawSourceRoles = await readAllDocs(
+    source,
+    config.dbName,
+    config.roleTable,
+  );
+  // logger.log(fieldCoverage(rawSourceRoles));
+  // + _id: '41706 (100.00%)',
+  // + congressNumbers: '41706 (100.00%)',
+  // + roleType: '41706 (100.00%)', --> redefine: chamber
+  // - roleTypeDisplay: '41706 (100.00%)',
+  // + startDate: '41705 (100.00%)',
+  // + endDate: '41706 (100.00%)',
+  // - createdAt: '41706 (100.00%)',
+  // + party: '41312 (99.06%)',
+  // - title: '41706 (100.00%)',
+  // - titleLong: '41706 (100.00%)',
+  // - lastUpdatedAt: '41706 (100.00%)',
+  // + state: '41706 (100.00%)',
+  // + district: '37308 (89.45%)',
+  // - description: '41706 (100.00%)',
+  // E personId: '41706 (100.00%)',
+  // * website: '3895 (9.34%)',
+  // - senatorClassDisplay: '3615 (8.67%)',
+  // + senatorClass: '3615 (8.67%)', --> retype: number
+  // A billIdCosponsored: '5606 (13.44%)',
+  // A billIdSponsored: '557 (1.34%)',
+  // * office: '1997 (4.79%)',
+  // * phone: '1999 (4.79%)',
+  // - leadershipTitle: '36 (0.09%)',
+  // - senatorRankDisplay: '176 (0.42%)',
+  // - senatorRank: '176 (0.42%)',
+  // - caucus: '3 (0.01%)',
+
+  let rawSourcePersons = await readAllDocs(
+    source,
+    config.dbName,
+    config.personTable,
+  );
+  // logger.log(fieldCoverage(rawSourcePersons));
+  // + _id: '12441 (100.00%)',
+  // + firstname: '12441 (100.00%)',
+  // + middlename: '8549 (68.72%)',
+  // + lastname: '12441 (100.00%)',
+  // + nameMod: '440 (3.54%)',
+  // + profilePictures: '12435 (99.95%)',
+  // + govTrackId: '12437 (99.97%)',
+  // - createdAt: '12441 (100.00%)',
+  // - committeeAssignments: '12440 (99.99%)',
+  // - lastUpdatedAt: '12441 (100.00%)',
+  // + searchName: '12441 (100.00%)',
+  // + bioGuideId: '12425 (99.87%)',
+  // + gender: '12440 (99.99%)',
+  // + birthday: '11886 (95.54%)',
+  // + osId: '1102 (8.86%)',
+  // + pvsId: '970 (7.80%)',
+  // + cspanId: '851 (6.84%)',
+  // + nickname: '257 (2.07%)',
+  // + twitterId: '1 (0.01%)',
+}
+
+async function main () {
+  let sourceClient = await connectMongo(await MongoDbConfig.getUrl());
+  let g = await DataGraph.create('MongoGraph', MongoDbConfig.getDbName());
+
+  // await migrateBills(g, sourceClient);
+  await migrateCongressMembers(g, sourceClient);
 
 
   sourceClient.close();

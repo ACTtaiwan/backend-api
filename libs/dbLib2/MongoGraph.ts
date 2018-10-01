@@ -18,8 +18,13 @@ class PageCursor {
       this._sortFields.length <= 0 ||
       this._sortFields[this._sortFields.length - 1].field !== '_id'
     ) {
+      // always include _id as the last sorting fields (ultimate tie breaker)
       this._sortFields.push({ field: '_id', order: 'asc' });
     }
+  }
+
+  public set record (r: object) {
+    this._record = r;
   }
 
   public toQuery (): object {
@@ -357,9 +362,10 @@ export class MongoGraph implements IDataGraph {
 
         return await this._entities.aggregate(pipeline).toArray();
       },
-      output => { // returns cursor
+      (cursor, output) => { // returns cursor
         if (output && Array.isArray(output) && output.length === readPageSize) {
-          return new PageCursor(sort, output[output.length - 1]);
+          cursor.record = output[output.length - 1];
+          return cursor;
         }
       },
       new PageCursor(sort),
@@ -502,9 +508,10 @@ export class MongoGraph implements IDataGraph {
         .limit(readPageSize);
         return await q.toArray();
       },
-      output => {
+      (cursor, output) => {
         if (output && Array.isArray(output) && output.length === readPageSize) {
-          return new PageCursor(sort, output[output.length - 1]);
+          cursor.record = output[output.length - 1];
+          return cursor;
         }
       },
       new PageCursor(sort),
