@@ -46,4 +46,16 @@ export class CongressUtils {
     throw Error(`Cannot determine congress member title for `
       + `chamber=${chamber}, state=${state}`);
   }
+
+  public static validateState (state: string): string {
+    if (CongressUtils.STATES.has(state)) {
+      return state;
+    }
+    if (CongressUtils.TERRITORIES.has(state)) {
+      return state;
+    }
+    if (state === 'DC' || state === 'PR') {
+      return state;
+    }
+  }
 }

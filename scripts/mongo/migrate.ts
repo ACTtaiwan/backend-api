@@ -5,6 +5,7 @@ import { MongoDbConfig } from '../../config/mongodb';
 import { DataGraph, Type, IEnt, IDataGraph } from '../../libs/dbLib2/DataGraph';
 import { Logger } from '../../libs/dbLib2/Logger';
 import { MongoClient } from 'mongodb';
+import { CongressUtils } from '../../libs/dbLib2/CongressUtils';
 
 const config = {
   'dbName': 'congress',
@@ -49,10 +50,12 @@ function calibrateDate (date: number): number {
   // as a string, while discarding the time part.
   let str = moment.utc(date).format('YYYY-MM-DD');
   // (sanity) throw if detect a change of date, assuming EST timezone
-  let estDateStr = moment.utc(date).utcOffset(-5).format('YYYY-MM-DD');
-  if (str !== estDateStr) {
+  let utcHour = moment.utc(date).hour();
+  let estDateStr;
+  if (utcHour > 0 && str !== estDateStr) {
+    console.log(moment.utc(date).utcOffset(-5));
     throw Error(`Timestamp ${date} converts to ${str}(utc) `
-      + `!= ${estDateStr}(local)`);
+      + `!= ${estDateStr}(est)`);
   }
   // Return a new timestamp at 12pm utc on the same day
   return moment.utc(str + 'T12', 'YYYY-MM-DDTHH').toDate().getTime();
@@ -101,8 +104,7 @@ async function migrateBills (g: IDataGraph, source: MongoClient) {
   // - articles: '1 (0.09%)',
 
   let sourceBills = _.map(rawSourceBills, b => {
-    let data;
-    data = _.pickBy({
+    return {
       _id: b['_id'],
       _type: Type.Bill,
       congress: b['congress'],
@@ -119,9 +121,7 @@ async function migrateBills (g: IDataGraph, source: MongoClient) {
       tags: b['tags'],
       summary: b['summary'],
       summary_zh: b['summary_zh'],
-    }, v => true /*v !== undefined*/);
-    let bill: IEnt = _.merge(data, { _id: b['_id'], _type: Type.Bill });
-    return bill;
+    };
   });
 
   let targetBills = await g.findEntities({ _type: Type.Bill });
@@ -147,39 +147,6 @@ async function migrateBills (g: IDataGraph, source: MongoClient) {
 }
 
 async function migrateCongressMembers (g: IDataGraph, source: MongoClient) {
-  let rawSourceRoles = await readAllDocs(
-    source,
-    config.dbName,
-    config.roleTable,
-  );
-  // logger.log(fieldCoverage(rawSourceRoles));
-  // + _id: '41706 (100.00%)',
-  // + congressNumbers: '41706 (100.00%)',
-  // + roleType: '41706 (100.00%)', --> redefine: chamber
-  // - roleTypeDisplay: '41706 (100.00%)',
-  // + startDate: '41705 (100.00%)',
-  // + endDate: '41706 (100.00%)',
-  // - createdAt: '41706 (100.00%)',
-  // + party: '41312 (99.06%)',
-  // - title: '41706 (100.00%)',
-  // - titleLong: '41706 (100.00%)',
-  // - lastUpdatedAt: '41706 (100.00%)',
-  // + state: '41706 (100.00%)',
-  // + district: '37308 (89.45%)',
-  // - description: '41706 (100.00%)',
-  // E personId: '41706 (100.00%)',
-  // * website: '3895 (9.34%)',
-  // - senatorClassDisplay: '3615 (8.67%)',
-  // + senatorClass: '3615 (8.67%)', --> retype: number
-  // A billIdCosponsored: '5606 (13.44%)',
-  // A billIdSponsored: '557 (1.34%)',
-  // * office: '1997 (4.79%)',
-  // * phone: '1999 (4.79%)',
-  // - leadershipTitle: '36 (0.09%)',
-  // - senatorRankDisplay: '176 (0.42%)',
-  // - senatorRank: '176 (0.42%)',
-  // - caucus: '3 (0.01%)',
-
   let rawSourcePersons = await readAllDocs(
     source,
     config.dbName,
@@ -205,6 +172,149 @@ async function migrateCongressMembers (g: IDataGraph, source: MongoClient) {
   // + cspanId: '851 (6.84%)',
   // + nickname: '257 (2.07%)',
   // + twitterId: '1 (0.01%)',
+  let sourcePersons = _.map(rawSourcePersons, p => {
+    return {
+      _id: p['_id'],
+      _type: Type.Person,
+      firstName: p['firstname'],
+      middleName: p['middlename'],
+      lastName: p['lastname'],
+      nameSuffix: p['nameMod'],
+      nickname: p['nickname'],
+      profilePictures: p['prifilePictures'],
+      gender: p['gender'],
+      birthday: p['birthday'],
+      govTrackId: p['govTrackId'],
+      bioGuideId: p['bioGuideId'],
+      osId: p['osId'],
+      pvsId: p['pvsId'],
+      cspanId: p['cspanId'],
+      twitterId: p['twitterId'],
+    };
+  });
+  let sourcePersonsById = _.keyBy(sourcePersons, p => p._id);
+
+  let rawSourceRoles = await readAllDocs(
+    source,
+    config.dbName,
+    config.roleTable,
+  );
+  // logger.log(fieldCoverage(rawSourceRoles));
+  // E _id: '41706 (100.00%)',
+  // + congressNumbers: '41706 (100.00%)',
+  // + roleType: '41706 (100.00%)', --> redefine: chamber
+  // - roleTypeDisplay: '41706 (100.00%)',
+  // + startDate: '41705 (100.00%)',
+  // + endDate: '41706 (100.00%)',
+  // - createdAt: '41706 (100.00%)',
+  // + party: '41312 (99.06%)',
+  // - title: '41706 (100.00%)',
+  // - titleLong: '41706 (100.00%)',
+  // - lastUpdatedAt: '41706 (100.00%)',
+  // + state: '41706 (100.00%)',
+  // + district: '37308 (89.45%)',
+  // - description: '41706 (100.00%)',
+  // E personId: '41706 (100.00%)',
+  // * website: '3895 (9.34%)',
+  // - senatorClassDisplay: '3615 (8.67%)',
+  // + senatorClass: '3615 (8.67%)', --> retype: number
+  // A billIdCosponsored: '5606 (13.44%)',
+  // A billIdSponsored: '557 (1.34%)',
+  // * office: '1997 (4.79%)',
+  // * phone: '1999 (4.79%)',
+  // - leadershipTitle: '36 (0.09%)',
+  // - senatorRankDisplay: '176 (0.42%)',
+  // - senatorRank: '176 (0.42%)',
+  // - caucus: '3 (0.01%)',
+  _.each(rawSourceRoles, r => {
+    let state = CongressUtils.validateState(r['state']);
+    if (!state) {
+      throw Error(`Invalid state: ${state}`);
+    }
+    let role = _.pickBy({
+      congressNumbers: r['congressNumbers'],
+      chamber: r['roleType'] === 'senator' ? 's' : 'h',
+      startDate: calibrateDate(r['startDate']),
+      endDate: calibrateDate(r['endDate']),
+      party: r['party'],
+      state: state,
+      district: r['district'],
+      senatorClass: r['senatorClass'] ?
+        _.parseInt(_.replace(r['senatorClass'], 'class', '')) :
+        r['senatorClass'],
+      // to be merged at the person level below
+      website: r['website'],
+      office: r['office'],
+      phone: r['phone'],
+    });
+    // insert this role to the corresponding person
+    let p = sourcePersonsById[r['personId']];
+    if (p === undefined) {
+      throw Error(`Person ID ${r['personId']} not found for role ${r['_id']}`);
+    }
+    if (p['congressRoles'] === undefined ||
+        !Array.isArray(p['congressRoles'])) {
+      p['congressRoles'] = [];
+    }
+    p['congressRoles'].push(role);
+  });
+
+  // sort each person's congress roles in reverse chrono order
+  _.each(sourcePersons, p => {
+    p['congressRoles'] = _.sortBy(p['congressRoles'], r => -r['endDate']);
+  });
+
+  // set person's latest contact info
+  _.each(sourcePersons, p => {
+    let website, office, phone;
+    _.each(p['congressRoles'], r => {
+      if (!website && r['website']) {
+        website = r['website'];
+      }
+      delete r['website'];
+      if (!office && r['office']) {
+        office = r['office'];
+      }
+      delete r['office'];
+      if (!phone && r['phone']) {
+        phone = r['phone'];
+      }
+      delete r['phone'];
+    });
+    if (website) {
+      p['website'] = website;
+    }
+    if (office) {
+      p['office'] = office;
+    }
+    if (phone) {
+      p['phone'] = phone;
+    }
+  });
+
+  // logger.log(sourcePersons);
+  // logger.log(sourcePersonsById['e7a99b86-eee5-403a-9ef8-eaf78c1399c2']);
+
+  let targetPersons = await g.findEntities({ _type: Type.Person });
+  let diff = getEntSetDiff(targetPersons, sourcePersons);
+
+  logger.log(`Persons migration plan:`);
+  logger.log(diff);
+  let proceed = await cliConfirm();
+  if (!proceed) {
+    logger.log('Abort');
+    return;
+  }
+
+  if (diff.insert.length > 0) {
+    await g.insertEntities(diff.insert);
+  }
+  if (diff.update.length > 0) {
+    await g.updateEntities(diff.update);
+  }
+  if (diff.delete.length > 0) {
+    await g.deleteEntities(diff.delete);
+  }
 }
 
 async function main () {

@@ -122,6 +122,7 @@ export function getEntSetDiff (
       }
       idsToDelete.delete(s._id);
     } else {
+      s = _.merge(_.pickBy(s), { _id: s._id, _type: s._type });
       results.insert.push(s);
     }
   });

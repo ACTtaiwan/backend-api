@@ -10,6 +10,7 @@ export const enum Type {
   TestEntType1 = 1,
   TestEntType2 = 2,
   Bill = 3,
+  Person = 4,
   TestAssocType1 = 1001,
   TestAssocType2 = 1002,
 };
