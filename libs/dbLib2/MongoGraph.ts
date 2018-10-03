@@ -61,6 +61,9 @@ class PageCursor {
 export class MongoGraph implements IDataGraph {
   private static readonly ASSOC_LOOKUP_OUTPUT_FIELD = '_assocs';
 
+  private _entCache = {};
+  private _assocCache = {};
+
   // factory method
   public static async new (
     dbName: string,
@@ -331,6 +334,18 @@ export class MongoGraph implements IDataGraph {
       sort: sort,
       readPageSize: readPageSize,
     }));
+
+    let cacheKey = JSON.stringify({
+      entQuery: entQuery,
+      assocLookupQueries: assocLookupQueries,
+      fields: fields,
+      sort: sort,
+    });
+    if (this._entCache[cacheKey]) {
+      logger.log(`found cached ${this._entCache[cacheKey].length}`);
+      return this._entCache[cacheKey];
+    }
+
     sort = sort || [];
     sort.push({ field: '_id', order: 'asc' });
 
@@ -378,6 +393,7 @@ export class MongoGraph implements IDataGraph {
     });
 
     logger.log(`found ${ents.length}`);
+    this._entCache[cacheKey] = ents;
     return ents;
   }
 
@@ -491,6 +507,17 @@ export class MongoGraph implements IDataGraph {
       sort: sort,
       readPageSize: readPageSize,
     }));
+
+    let cacheKey = JSON.stringify({
+      query: query,
+      fields: fields,
+      sort: sort,
+    });
+    if (this._assocCache[cacheKey]) {
+      logger.log(`found cached ${this._assocCache[cacheKey].length}`);
+      return this._assocCache[cacheKey];
+    }
+
     sort = sort || [];
     sort.push({ field: '_id', order: 'asc' });
 
@@ -522,7 +549,10 @@ export class MongoGraph implements IDataGraph {
       expect(ret).to.include.all.keys('_id', '_type', '_id1', '_id2');
       return ret;
     });
+
     logger.log(`found ${assocs.length}`);
+    this._assocCache[cacheKey] = assocs;
+
     return assocs;
   }
 

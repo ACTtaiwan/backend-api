@@ -2,12 +2,14 @@ import * as _ from 'lodash';
 import { expect } from 'chai';
 import * as inquirer from 'inquirer';
 import { MongoClient, DeleteWriteOpResultObject } from 'mongodb';
-import { DataGraphUtils, IUpdate, IEnt, IEntInsert, Id } from '../../libs/dbLib2/DataGraph';
+import { DataGraphUtils, IUpdate, IEnt, IEntInsert, Id, IAssocInsert, IAssoc } from '../../libs/dbLib2/DataGraph';
 import { Logger } from '../../libs/dbLib2/Logger';
 
 export async function connectMongo (url): Promise<MongoClient> {
   return await MongoClient.connect(url, { useNewUrlParser: true });
 }
+
+let _cache = {};
 
 export async function readAllDocs (
   client: MongoClient,
@@ -15,6 +17,11 @@ export async function readAllDocs (
   tableName: string,
   limit?: number,
 ): Promise<object[]> {
+  let cacheKey = `${dbName}.${tableName}`;
+  if (_cache[cacheKey]) {
+    return _cache[cacheKey];
+  }
+
   const CHUNK_SIZE = 500;
   let db = client.db(dbName);
 
@@ -44,7 +51,10 @@ export async function readAllDocs (
     { minId: '', limit: limit },
   );
 
-  return _.flatten(results);
+  let ret = _.flatten(results);
+  _cache[cacheKey] = ret;
+
+  return ret;
 }
 
 export async function bulkDelete (
@@ -76,17 +86,17 @@ export async function cliConfirm (msg: string = 'Proceed?'): Promise<boolean> {
   return response['confirm'];
 }
 
-export function getEntUpdateShallow (
-  dst: IEnt,
-  src: IEnt,
+export function getDocUpdateShallow<T extends IEnt | IAssoc> (
+  dst: T,
+  src: T,
 ): IUpdate {
-  expect(dst._id).to.eql(src._id);
-  expect(dst._type).to.eql(src._type);
-
   let update: IUpdate = { _id: dst._id };
   let modified = false;
   _.each(_.keysIn(src), k => {
-    if (_.isEqualWith(src[k], dst[k])) {
+    if (k === '_id') {
+      return;
+    }
+    if (_.isEqual(src[k], dst[k])) {
       return;
     }
     modified = true;
@@ -96,37 +106,50 @@ export function getEntUpdateShallow (
   return modified ? update : undefined;
 }
 
-export interface IEntSetDiff {
-  insert: IEntInsert[],
+export interface IDocSetDiff<T extends IEnt | IAssoc> {
+  insert: T[],
   update: IUpdate[],
   delete: Id[],
 }
 
-export function getEntSetDiff (
-  dst: IEnt[],
-  src: IEnt[],
-): IEntSetDiff {
-  let dstMap = _.keyBy(dst, e => e._id);
-  let idsToDelete = new Set(_.map(dst, e => e._id));
-  let results: IEntSetDiff = {
+export function getDocSetDiff<T extends IEnt | IAssoc> (
+  docType: T extends IEnt ? 'ent' : 'assoc',
+  dst: T[],
+  src: T[],
+): IDocSetDiff<T> {
+  let joinFields;
+  if (docType === 'ent') {
+    joinFields = ['_id', '_type'];
+  } else {
+    joinFields = ['_id1', '_id2', '_type'];
+  }
+  let joinKey = (d: T) => _.join(_.map(joinFields, jf => d[jf]), ':');
+  let dstMap = _.keyBy(dst, joinKey);
+  let dstIdsToDelete = new Set(_.map(dst, e => e._id));
+  let results: IDocSetDiff<T> = {
     insert: [],
     update: [],
     delete: [],
   };
   _.each(src, s => {
-    if (s._id in dstMap) {
-      let d = dstMap[s._id];
-      let update = getEntUpdateShallow(d, s);
+    let sKey = joinKey(s);
+    if (sKey in dstMap) {
+      let d = dstMap[sKey];
+      _.each(joinFields, jf => {
+        // sanity
+        expect(d[jf]).to.eql(s[jf]);
+      });
+      let update = getDocUpdateShallow(d, s);
       if (update) {
         results.update.push(update);
       }
-      idsToDelete.delete(s._id);
+      dstIdsToDelete.delete(d._id);
     } else {
-      s = _.merge(_.pickBy(s), { _id: s._id, _type: s._type });
-      results.insert.push(s);
+      let joinValues = _.mapValues(_.keyBy(joinFields), jf => s[jf]);
+      results.insert.push(<T>_.merge(_.pickBy(s), joinValues));
     }
   });
-  results.delete = Array.from(idsToDelete);
+  results.delete = Array.from(dstIdsToDelete);
 
   return results;
 }

@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { connectMongo, readAllDocs, getEntSetDiff, cliConfirm } from './utils';
+import { connectMongo, readAllDocs, getDocSetDiff, cliConfirm } from './utils';
 import * as moment from 'moment';
 import { MongoDbConfig } from '../../config/mongodb';
 import { DataGraph, Type, IEnt, IDataGraph } from '../../libs/dbLib2/DataGraph';
@@ -51,9 +51,8 @@ function calibrateDate (date: number): number {
   let str = moment.utc(date).format('YYYY-MM-DD');
   // (sanity) throw if detect a change of date, assuming EST timezone
   let utcHour = moment.utc(date).hour();
-  let estDateStr;
+  let estDateStr = moment.utc(date).utcOffset(-5).format('YYYY-MM-DD');
   if (utcHour > 0 && str !== estDateStr) {
-    console.log(moment.utc(date).utcOffset(-5));
     throw Error(`Timestamp ${date} converts to ${str}(utc) `
       + `!= ${estDateStr}(est)`);
   }
@@ -125,7 +124,7 @@ async function migrateBills (g: IDataGraph, source: MongoClient) {
   });
 
   let targetBills = await g.findEntities({ _type: Type.Bill });
-  let diff = getEntSetDiff(targetBills, sourceBills);
+  let diff = getDocSetDiff('ent', targetBills, sourceBills);
 
   logger.log(`Bill migration plan:`);
   logger.log(diff);
@@ -296,7 +295,7 @@ async function migrateCongressMembers (g: IDataGraph, source: MongoClient) {
   // logger.log(sourcePersonsById['e7a99b86-eee5-403a-9ef8-eaf78c1399c2']);
 
   let targetPersons = await g.findEntities({ _type: Type.Person });
-  let diff = getEntSetDiff(targetPersons, sourcePersons);
+  let diff = getDocSetDiff('ent', targetPersons, sourcePersons);
 
   logger.log(`Persons migration plan:`);
   logger.log(diff);
@@ -317,12 +316,86 @@ async function migrateCongressMembers (g: IDataGraph, source: MongoClient) {
   }
 }
 
+async function migrateSponsorship (g: IDataGraph, source: MongoClient) {
+  let rawSourceBills = await readAllDocs(
+    source,
+    config.dbName,
+    config.billTable,
+  );
+  let billIdSet = new Set(_.map(
+    await g.findEntities({ _type: Type.Bill }),
+    b => b._id,
+  ));
+
+  let rawSourceRoles = await readAllDocs(
+    source,
+    config.dbName,
+    config.roleTable,
+  );
+  let rawSourceRolesById = _.keyBy(rawSourceRoles, r => r['_id']);
+
+  let personIdSet = new Set(_.map(
+    await g.findEntities({ _type: Type.Person }),
+    p => p._id,
+  ));
+
+  let sourceSponsorAssocs = [];
+
+  _.each(rawSourceBills, b => {
+    let rId = b['sponsorRoleId'];
+    if (!rId) {
+      return;
+    }
+    let r = rawSourceRolesById[rId];
+    if (!r) {
+      throw Error(`Cannot find sponsor role for bill ${b}`);
+    }
+    let pId = r['personId'];
+    if (!pId) {
+      throw Error(`Cannot find person ID for role ${r}`);
+    }
+    if (!billIdSet.has(b['_id'])) {
+      throw Error(`Bill ID ${b['_id']} does not exist in data graph`);
+    }
+    if (!personIdSet.has(pId)) {
+      throw Error(`Person ID ${pId} does not exist in data graph`);
+    }
+    sourceSponsorAssocs.push({
+      _type: Type.Sponsor,
+      _id1: pId,
+      _id2: b['_id'],
+    });
+  });
+
+  let targetSponsorAssocs = await g.findAssocs({ _type: Type.Sponsor });
+  let diff = getDocSetDiff('assoc', targetSponsorAssocs, sourceSponsorAssocs);
+
+  logger.log(`Persons migration plan:`);
+  logger.log(diff);
+  let proceed = await cliConfirm();
+  if (!proceed) {
+    logger.log('Abort');
+    return;
+  }
+
+  if (diff.insert.length > 0) {
+    await g.insertAssocs(diff.insert);
+  }
+  if (diff.update.length > 0) {
+    await g.updateAssocs(diff.update);
+  }
+  if (diff.delete.length > 0) {
+    await g.deleteAssocs(diff.delete);
+  }
+}
+
 async function main () {
   let sourceClient = await connectMongo(await MongoDbConfig.getUrl());
   let g = await DataGraph.create('MongoGraph', MongoDbConfig.getDbName());
 
-  // await migrateBills(g, sourceClient);
+  await migrateBills(g, sourceClient);
   await migrateCongressMembers(g, sourceClient);
+  await migrateSponsorship(g, sourceClient);
 
 
   sourceClient.close();

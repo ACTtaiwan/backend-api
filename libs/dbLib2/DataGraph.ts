@@ -13,6 +13,8 @@ export const enum Type {
   Person = 4,
   TestAssocType1 = 1001,
   TestAssocType2 = 1002,
+  Sponsor = 1003,
+  Cosponsor = 1004,
 };
 export interface IHasType {
   _type: Type;
