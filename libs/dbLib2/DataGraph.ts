@@ -5,12 +5,13 @@ import * as _ from 'lodash';
 import { MongoGraph } from './MongoGraph';
 
 export type Id = string; // uuid string
-export const enum Type {
+export enum Type {
   Unknown = 0,
   TestEntType1 = 1,
   TestEntType2 = 2,
   Bill = 3,
   Person = 4,
+  MaxEntityType = 1000,
   TestAssocType1 = 1001,
   TestAssocType2 = 1002,
   Sponsor = 1003,
@@ -161,6 +162,10 @@ export class DataGraph {
 }
 
 export class DataGraphUtils {
+  public static isEntityType (t: Type): boolean {
+    return t < Type.MaxEntityType;
+  }
+
   public static idFromBuffer (idBuf: Buffer): Id {
     if (!idBuf || idBuf.length !== 16) {
       return;

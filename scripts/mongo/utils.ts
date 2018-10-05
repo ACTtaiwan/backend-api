@@ -112,17 +112,11 @@ export interface IDocSetDiff<T extends IEnt | IAssoc> {
   delete: Id[],
 }
 
-export function getDocSetDiff<T extends IEnt | IAssoc> (
-  docType: T extends IEnt ? 'ent' : 'assoc',
+export function getDocSetDiff<T extends (IEnt | IAssoc)> (
   dst: T[],
   src: T[],
+  joinFields: string[],
 ): IDocSetDiff<T> {
-  let joinFields;
-  if (docType === 'ent') {
-    joinFields = ['_id', '_type'];
-  } else {
-    joinFields = ['_id1', '_id2', '_type'];
-  }
   let joinKey = (d: T) => _.join(_.map(joinFields, jf => d[jf]), ':');
   let dstMap = _.keyBy(dst, joinKey);
   let dstIdsToDelete = new Set(_.map(dst, e => e._id));

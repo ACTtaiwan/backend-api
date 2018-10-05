@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import { connectMongo, readAllDocs, getDocSetDiff, cliConfirm } from './utils';
 import * as moment from 'moment';
 import { MongoDbConfig } from '../../config/mongodb';
-import { DataGraph, Type, IEnt, IDataGraph } from '../../libs/dbLib2/DataGraph';
+import { DataGraph, Type, IEnt, IDataGraph, DataGraphUtils, IAssoc } from '../../libs/dbLib2/DataGraph';
 import { Logger } from '../../libs/dbLib2/Logger';
 import { MongoClient } from 'mongodb';
 import { CongressUtils } from '../../libs/dbLib2/CongressUtils';
@@ -58,6 +58,60 @@ function calibrateDate (date: number): number {
   }
   // Return a new timestamp at 12pm utc on the same day
   return moment.utc(str + 'T12', 'YYYY-MM-DDTHH').toDate().getTime();
+}
+
+async function migrateEntities (
+  g: IDataGraph,
+  type: Type,
+  sourceData: IEnt[],
+) {
+  let targetData = await g.findEntities({ _type: type });
+  let diff = getDocSetDiff(targetData, sourceData, [ '_id', '_type' ]);
+
+  logger.log(`${Type[type]} migration plan:`);
+  logger.log(diff);
+  let proceed = await cliConfirm();
+  if (!proceed) {
+    logger.log('Abort');
+    return;
+  }
+
+  if (diff.insert.length > 0) {
+    await g.insertEntities(diff.insert);
+  }
+  if (diff.update.length > 0) {
+    await g.updateEntities(diff.update);
+  }
+  if (diff.delete.length > 0) {
+    await g.deleteEntities(diff.delete);
+  }
+}
+
+async function migrateAssocs (
+  g: IDataGraph,
+  type: Type,
+  sourceData: IAssoc[],
+) {
+  let targetData = await g.findAssocs({ _type: type });
+  let diff = getDocSetDiff(targetData, sourceData, [ '_id1', '_id2', '_type']);
+
+  logger.log(`${Type[type]} migration plan:`);
+  logger.log(diff);
+  let proceed = await cliConfirm();
+  if (!proceed) {
+    logger.log('Abort');
+    return;
+  }
+
+  if (diff.insert.length > 0) {
+    await g.insertAssocs(diff.insert);
+  }
+  if (diff.update.length > 0) {
+    await g.updateAssocs(diff.update);
+  }
+  if (diff.delete.length > 0) {
+    await g.deleteAssocs(diff.delete);
+  }
 }
 
 async function migrateBills (g: IDataGraph, source: MongoClient) {
@@ -123,26 +177,7 @@ async function migrateBills (g: IDataGraph, source: MongoClient) {
     };
   });
 
-  let targetBills = await g.findEntities({ _type: Type.Bill });
-  let diff = getDocSetDiff('ent', targetBills, sourceBills);
-
-  logger.log(`Bill migration plan:`);
-  logger.log(diff);
-  let proceed = await cliConfirm();
-  if (!proceed) {
-    logger.log('Abort');
-    return;
-  }
-
-  if (diff.insert.length > 0) {
-    await g.insertEntities(diff.insert);
-  }
-  if (diff.update.length > 0) {
-    await g.updateEntities(diff.update);
-  }
-  if (diff.delete.length > 0) {
-    await g.deleteEntities(diff.delete);
-  }
+  await migrateEntities(g, Type.Bill, sourceBills);
 }
 
 async function migrateCongressMembers (g: IDataGraph, source: MongoClient) {
@@ -291,29 +326,7 @@ async function migrateCongressMembers (g: IDataGraph, source: MongoClient) {
     }
   });
 
-  // logger.log(sourcePersons);
-  // logger.log(sourcePersonsById['e7a99b86-eee5-403a-9ef8-eaf78c1399c2']);
-
-  let targetPersons = await g.findEntities({ _type: Type.Person });
-  let diff = getDocSetDiff('ent', targetPersons, sourcePersons);
-
-  logger.log(`Persons migration plan:`);
-  logger.log(diff);
-  let proceed = await cliConfirm();
-  if (!proceed) {
-    logger.log('Abort');
-    return;
-  }
-
-  if (diff.insert.length > 0) {
-    await g.insertEntities(diff.insert);
-  }
-  if (diff.update.length > 0) {
-    await g.updateEntities(diff.update);
-  }
-  if (diff.delete.length > 0) {
-    await g.deleteEntities(diff.delete);
-  }
+  await migrateEntities(g, Type.Person, sourcePersons);
 }
 
 async function migrateSponsorship (g: IDataGraph, source: MongoClient) {
@@ -340,7 +353,6 @@ async function migrateSponsorship (g: IDataGraph, source: MongoClient) {
   ));
 
   let sourceSponsorAssocs = [];
-
   _.each(rawSourceBills, b => {
     let rId = b['sponsorRoleId'];
     if (!rId) {
@@ -367,35 +379,80 @@ async function migrateSponsorship (g: IDataGraph, source: MongoClient) {
     });
   });
 
-  let targetSponsorAssocs = await g.findAssocs({ _type: Type.Sponsor });
-  let diff = getDocSetDiff('assoc', targetSponsorAssocs, sourceSponsorAssocs);
+  await migrateAssocs(g, Type.Sponsor, sourceSponsorAssocs);
+}
 
-  logger.log(`Persons migration plan:`);
-  logger.log(diff);
-  let proceed = await cliConfirm();
-  if (!proceed) {
-    logger.log('Abort');
-    return;
-  }
+async function migrateCosponsorship (g: IDataGraph, source: MongoClient) {
+  let rawSourceBills = await readAllDocs(
+    source,
+    config.dbName,
+    config.billTable,
+  );
+  let billIdSet = new Set(_.map(
+    await g.findEntities({ _type: Type.Bill }),
+    b => b._id,
+  ));
 
-  if (diff.insert.length > 0) {
-    await g.insertAssocs(diff.insert);
-  }
-  if (diff.update.length > 0) {
-    await g.updateAssocs(diff.update);
-  }
-  if (diff.delete.length > 0) {
-    await g.deleteAssocs(diff.delete);
-  }
+  let rawSourceRoles = await readAllDocs(
+    source,
+    config.dbName,
+    config.roleTable,
+  );
+  let rawSourceRolesById = _.keyBy(rawSourceRoles, r => r['_id']);
+
+  let personIdSet = new Set(_.map(
+    await g.findEntities({ _type: Type.Person }),
+    p => p._id,
+  ));
+
+  let sourceCosponsorAssocs = [];
+  _.each(rawSourceBills, b => {
+    _.each(b['cosponsors'], cosp => {
+      let rId = cosp['roleId'];
+      if (!rId) {
+        // deal with a strange data format
+        rId = cosp['role']['id'];
+        if (!rId) {
+          logger.log(cosp);
+          logger.log(cosp['id']);
+          throw Error(`Cosponsor object does not contain 'roleId' or 'id': `
+            + `${cosp}`);
+        }
+      }
+      let r = rawSourceRolesById[rId];
+      if (!r) {
+        throw Error(`Cannot find cosponsor role for bill ${b}`);
+      }
+      let pId = r['personId'];
+      if (!pId) {
+        throw Error(`Cannot find person ID for role ${r}`);
+      }
+      if (!billIdSet.has(b['_id'])) {
+        throw Error(`Bill ID ${b['_id']} does not exist in data graph`);
+      }
+      if (!personIdSet.has(pId)) {
+        throw Error(`Person ID ${pId} does not exist in data graph`);
+      }
+      sourceCosponsorAssocs.push({
+        _type: Type.Cosponsor,
+        _id1: pId,
+        _id2: b['_id'],
+        date: cosp['dateCosponsored'],
+      });
+    });
+  });
+
+  await migrateAssocs(g, Type.Cosponsor, sourceCosponsorAssocs);
 }
 
 async function main () {
   let sourceClient = await connectMongo(await MongoDbConfig.getUrl());
   let g = await DataGraph.create('MongoGraph', MongoDbConfig.getDbName());
 
-  await migrateBills(g, sourceClient);
-  await migrateCongressMembers(g, sourceClient);
-  await migrateSponsorship(g, sourceClient);
+  // await migrateBills(g, sourceClient);
+  // await migrateCongressMembers(g, sourceClient);
+  // await migrateSponsorship(g, sourceClient);
+  await migrateCosponsorship(g, sourceClient);
 
 
   sourceClient.close();
