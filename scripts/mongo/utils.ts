@@ -112,12 +112,26 @@ export interface IDocSetDiff<T extends IEnt | IAssoc> {
   delete: Id[],
 }
 
+/**
+ * Compare objects in dst and src, and returns the changes, in the form
+ * of insert, update, and delete, to be applied to the dst set, in order to
+ * make dst equal src.
+ *
+ * @param joinFields When comparing objects in dst with those in src, if two
+ * objects have the same values in the fields specified by this param,
+ * they are considered equal.
+ */
 export function getDocSetDiff<T extends (IEnt | IAssoc)> (
   dst: T[],
   src: T[],
   joinFields: string[],
 ): IDocSetDiff<T> {
-  let joinKey = (d: T) => _.join(_.map(joinFields, jf => d[jf]), ':');
+  let joinKey = (d: T) => _.join(_.map(joinFields, jf => {
+    if (d[jf] === undefined) {
+      throw Error(`Join field ${jf} cannot be undefined in ${d}`);
+    }
+    return d[jf];
+  }), ':');
   let dstMap = _.keyBy(dst, joinKey);
   let dstIdsToDelete = new Set(_.map(dst, e => e._id));
   let results: IDocSetDiff<T> = {

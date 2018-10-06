@@ -64,9 +64,10 @@ async function migrateEntities (
   g: IDataGraph,
   type: Type,
   sourceData: IEnt[],
+  joinFields: string[],
 ) {
   let targetData = await g.findEntities({ _type: type });
-  let diff = getDocSetDiff(targetData, sourceData, [ '_id', '_type' ]);
+  let diff = getDocSetDiff(targetData, sourceData, joinFields);
 
   logger.log(`${Type[type]} migration plan:`);
   logger.log(diff);
@@ -112,6 +113,30 @@ async function migrateAssocs (
   if (diff.delete.length > 0) {
     await g.deleteAssocs(diff.delete);
   }
+}
+
+async function migrateTags (g: IDataGraph, source: MongoClient) {
+  let rawSourceBills = await readAllDocs(
+    source,
+    config.dbName,
+    config.billTable,
+  );
+
+  let sourceTags = {};
+  _.each(rawSourceBills, b => {
+    _.each(b['tags'], t => {
+      let name = t['tag'];
+      if (!(name in sourceTags)) {
+        sourceTags[name] = {
+          _id: undefined,
+          _type: Type.Tag,
+          name: name,
+        };
+      }
+    });
+  });
+
+  await migrateEntities(g, Type.Tag, _.values(sourceTags), [ '_type', 'name' ]);
 }
 
 async function migrateBills (g: IDataGraph, source: MongoClient) {
@@ -171,13 +196,12 @@ async function migrateBills (g: IDataGraph, source: MongoClient) {
       versions: b['versions'],
       actions: b['actions'],
       actionsAll: b['actionsAll'],
-      tags: b['tags'],
       summary: b['summary'],
       summary_zh: b['summary_zh'],
     };
   });
 
-  await migrateEntities(g, Type.Bill, sourceBills);
+  await migrateEntities(g, Type.Bill, sourceBills, [ '_id', '_type' ]);
 }
 
 async function migrateCongressMembers (g: IDataGraph, source: MongoClient) {
@@ -326,10 +350,10 @@ async function migrateCongressMembers (g: IDataGraph, source: MongoClient) {
     }
   });
 
-  await migrateEntities(g, Type.Person, sourcePersons);
+  await migrateEntities(g, Type.Person, sourcePersons, [ '_id', '_type' ]);
 }
 
-async function migrateSponsorship (g: IDataGraph, source: MongoClient) {
+async function migrateSponsor (g: IDataGraph, source: MongoClient) {
   let rawSourceBills = await readAllDocs(
     source,
     config.dbName,
@@ -382,7 +406,7 @@ async function migrateSponsorship (g: IDataGraph, source: MongoClient) {
   await migrateAssocs(g, Type.Sponsor, sourceSponsorAssocs);
 }
 
-async function migrateCosponsorship (g: IDataGraph, source: MongoClient) {
+async function migrateCosponsor (g: IDataGraph, source: MongoClient) {
   let rawSourceBills = await readAllDocs(
     source,
     config.dbName,
@@ -445,14 +469,61 @@ async function migrateCosponsorship (g: IDataGraph, source: MongoClient) {
   await migrateAssocs(g, Type.Cosponsor, sourceCosponsorAssocs);
 }
 
+async function migrateHasTag (g: IDataGraph, source: MongoClient) {
+  let rawSourceBills = await readAllDocs(
+    source,
+    config.dbName,
+    config.billTable,
+  );
+  let billIdSet = new Set(_.map(
+    await g.findEntities({ _type: Type.Bill }),
+    b => b._id,
+  ));
+
+  let tags = await g.findEntities({ _type: Type.Tag });
+  let tagsByName = {};
+  _.each(tags, t => {
+    if (!t['name']) {
+      throw Error(`Tag name undefined ${t}`);
+    }
+    if (t['name'] in tagsByName) {
+      throw Error(`Duplicate tag name detected ${t}`);
+    }
+    tagsByName[t['name']] = t;
+  });
+
+  let hasTagAssocs = [];
+  _.each(rawSourceBills, b => {
+    _.each(b['tags'], t => {
+      let tag = tagsByName[t['tag']];
+      if (!tag) {
+        throw Error(`Tag ${t['tag']} not found in data graph`);
+      }
+      if (!billIdSet.has(b['_id'])) {
+        throw Error(`Bill ID ${b['_id']} does not exist in data graph`);
+      }
+      hasTagAssocs.push({
+        _type: Type.HasTag,
+        _id1: b['_id'],
+        _id2: tag['_id'],
+      });
+    });
+  });
+
+  await migrateAssocs(g, Type.HasTag, hasTagAssocs);
+}
+
 async function main () {
   let sourceClient = await connectMongo(await MongoDbConfig.getUrl());
   let g = await DataGraph.create('MongoGraph', MongoDbConfig.getDbName());
 
+  // await migrateTags(g, sourceClient);
   // await migrateBills(g, sourceClient);
   // await migrateCongressMembers(g, sourceClient);
-  // await migrateSponsorship(g, sourceClient);
-  await migrateCosponsorship(g, sourceClient);
+
+  // await migrateSponsor(g, sourceClient);
+  // await migrateCosponsor(g, sourceClient);
+  // await migrateHasTag(g, sourceClient);
 
 
   sourceClient.close();

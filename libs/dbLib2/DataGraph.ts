@@ -11,11 +11,13 @@ export enum Type {
   TestEntType2 = 2,
   Bill = 3,
   Person = 4,
+  Tag = 5,
   MaxEntityType = 1000,
   TestAssocType1 = 1001,
   TestAssocType2 = 1002,
   Sponsor = 1003,
   Cosponsor = 1004,
+  HasTag = 1005,
 };
 export interface IHasType {
   _type: Type;
