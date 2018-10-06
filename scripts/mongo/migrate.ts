@@ -12,6 +12,7 @@ const config = {
   'billTable': 'volunteer.bills',
   'roleTable': 'volunteer.roles',
   'personTable': 'volunteer.persons',
+  'articleSnippetTable': 'site.articleSnippets',
 };
 
 let logger = new Logger('migrate.ts');
@@ -353,6 +354,51 @@ async function migrateCongressMembers (g: IDataGraph, source: MongoClient) {
   await migrateEntities(g, Type.Person, sourcePersons, [ '_id', '_type' ]);
 }
 
+async function migrateArticleSnippets (g: IDataGraph, source: MongoClient) {
+  let rawSourceArticleSnippets = await readAllDocs(
+    source,
+    config.dbName,
+    config.articleSnippetTable,
+  );
+
+  // console.log(fieldCoverage(rawSourceArticleSnippets));
+  // + _id: '20 (100.00%)',
+  // + readableId: '20 (100.00%)',
+  // + headline: '19 (95.00%)',
+  // + subhead: '17 (85.00%)',
+  // + author: '16 (80.00%)',
+  // + intro: '20 (100.00%)',
+  // + url: '20 (100.00%)',
+  // + imageUrl: '20 (100.00%)',
+  // + date: '20 (100.00%)',
+  // - id: '16 (80.00%)',
+  // + sites: '20 (100.00%)',
+
+  let sourceArticleSnippets = _.map(rawSourceArticleSnippets, a => {
+    return {
+      _id: a['_id'],
+      _type: Type.ArticleSnippet,
+      readableId: a['readableId'],
+      headline: a['headline'],
+      subhead: a['subhead'],
+      author: a['author'],
+      intro: a['intro'],
+      url: a['url'],
+      imageUrl: a['imageUrl'],
+      date: a['date'],
+      site: a['site'],
+    };
+  });
+
+  await migrateEntities(
+    g,
+    Type.ArticleSnippet,
+    sourceArticleSnippets,
+    [ '_id', '_type' ],
+  );
+}
+
+
 async function migrateSponsor (g: IDataGraph, source: MongoClient) {
   let rawSourceBills = await readAllDocs(
     source,
@@ -520,6 +566,7 @@ async function main () {
   // await migrateTags(g, sourceClient);
   // await migrateBills(g, sourceClient);
   // await migrateCongressMembers(g, sourceClient);
+  // await migrateArticleSnippets(g, sourceClient);
 
   // await migrateSponsor(g, sourceClient);
   // await migrateCosponsor(g, sourceClient);

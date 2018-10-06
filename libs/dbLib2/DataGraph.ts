@@ -12,6 +12,7 @@ export enum Type {
   Bill = 3,
   Person = 4,
   Tag = 5,
+  ArticleSnippet = 6,
   MaxEntityType = 1000,
   TestAssocType1 = 1001,
   TestAssocType2 = 1002,
