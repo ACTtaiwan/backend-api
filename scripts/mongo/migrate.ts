@@ -1,11 +1,12 @@
 import * as _ from 'lodash';
-import { connectMongo, readAllDocs, getDocSetDiff, cliConfirm } from './utils';
+import { connectMongo, readAllDocs } from './utils';
 import * as moment from 'moment';
 import { MongoDbConfig } from '../../config/mongodb';
-import { DataGraph, Type, IEnt, IDataGraph, DataGraphUtils, IAssoc } from '../../libs/dbLib2/DataGraph';
+import { DataGraph, Type } from '../../libs/dbLib2/DataGraph';
 import { Logger } from '../../libs/dbLib2/Logger';
 import { MongoClient } from 'mongodb';
 import { CongressUtils } from '../../libs/dbLib2/CongressUtils';
+import { DataManager } from '../../libs/dbLib2/DataManager';
 
 const config = {
   'dbName': 'congress',
@@ -61,62 +62,7 @@ function calibrateDate (date: number): number {
   return moment.utc(str + 'T12', 'YYYY-MM-DDTHH').toDate().getTime();
 }
 
-async function migrateEntities (
-  g: IDataGraph,
-  type: Type,
-  sourceData: IEnt[],
-  joinFields: string[],
-) {
-  let targetData = await g.findEntities({ _type: type });
-  let diff = getDocSetDiff(targetData, sourceData, joinFields);
-
-  logger.log(`${Type[type]} migration plan:`);
-  logger.log(diff);
-  let proceed = await cliConfirm();
-  if (!proceed) {
-    logger.log('Abort');
-    return;
-  }
-
-  if (diff.insert.length > 0) {
-    await g.insertEntities(diff.insert);
-  }
-  if (diff.update.length > 0) {
-    await g.updateEntities(diff.update);
-  }
-  if (diff.delete.length > 0) {
-    await g.deleteEntities(diff.delete);
-  }
-}
-
-async function migrateAssocs (
-  g: IDataGraph,
-  type: Type,
-  sourceData: IAssoc[],
-) {
-  let targetData = await g.findAssocs({ _type: type });
-  let diff = getDocSetDiff(targetData, sourceData, [ '_id1', '_id2', '_type']);
-
-  logger.log(`${Type[type]} migration plan:`);
-  logger.log(diff);
-  let proceed = await cliConfirm();
-  if (!proceed) {
-    logger.log('Abort');
-    return;
-  }
-
-  if (diff.insert.length > 0) {
-    await g.insertAssocs(diff.insert);
-  }
-  if (diff.update.length > 0) {
-    await g.updateAssocs(diff.update);
-  }
-  if (diff.delete.length > 0) {
-    await g.deleteAssocs(diff.delete);
-  }
-}
-
-async function migrateTags (g: IDataGraph, source: MongoClient) {
+async function migrateTags (m: DataManager, source: MongoClient) {
   let rawSourceBills = await readAllDocs(
     source,
     config.dbName,
@@ -137,10 +83,10 @@ async function migrateTags (g: IDataGraph, source: MongoClient) {
     });
   });
 
-  await migrateEntities(g, Type.Tag, _.values(sourceTags), [ '_type', 'name' ]);
+  await m.importDataset(Type.Tag, _.values(sourceTags), [ 'name' ], true);
 }
 
-async function migrateBills (g: IDataGraph, source: MongoClient) {
+async function migrateBills (m: DataManager, source: MongoClient) {
   let rawSourceBills = await readAllDocs(
     source,
     config.dbName,
@@ -202,10 +148,10 @@ async function migrateBills (g: IDataGraph, source: MongoClient) {
     };
   });
 
-  await migrateEntities(g, Type.Bill, sourceBills, [ '_id', '_type' ]);
+  await m.importDataset(Type.Bill, sourceBills, [ '_id' ], true);
 }
 
-async function migrateCongressMembers (g: IDataGraph, source: MongoClient) {
+async function migratePersons (m: DataManager, source: MongoClient) {
   let rawSourcePersons = await readAllDocs(
     source,
     config.dbName,
@@ -240,7 +186,7 @@ async function migrateCongressMembers (g: IDataGraph, source: MongoClient) {
       lastName: p['lastname'],
       nameSuffix: p['nameMod'],
       nickname: p['nickname'],
-      profilePictures: p['prifilePictures'],
+      profilePictures: p['profilePictures'],
       gender: p['gender'],
       birthday: p['birthday'],
       govTrackId: p['govTrackId'],
@@ -351,10 +297,10 @@ async function migrateCongressMembers (g: IDataGraph, source: MongoClient) {
     }
   });
 
-  await migrateEntities(g, Type.Person, sourcePersons, [ '_id', '_type' ]);
+  await m.importDataset(Type.Person, sourcePersons, [ '_id' ], true);
 }
 
-async function migrateArticleSnippets (g: IDataGraph, source: MongoClient) {
+async function migrateArticleSnippets (m: DataManager, source: MongoClient) {
   let rawSourceArticleSnippets = await readAllDocs(
     source,
     config.dbName,
@@ -390,23 +336,23 @@ async function migrateArticleSnippets (g: IDataGraph, source: MongoClient) {
     };
   });
 
-  await migrateEntities(
-    g,
+  await m.importDataset(
     Type.ArticleSnippet,
     sourceArticleSnippets,
-    [ '_id', '_type' ],
+    [ '_id' ],
+    true,
   );
 }
 
 
-async function migrateSponsor (g: IDataGraph, source: MongoClient) {
+async function migrateSponsor (m: DataManager, source: MongoClient) {
   let rawSourceBills = await readAllDocs(
     source,
     config.dbName,
     config.billTable,
   );
   let billIdSet = new Set(_.map(
-    await g.findEntities({ _type: Type.Bill }),
+    await m.loadAll(Type.Bill),
     b => b._id,
   ));
 
@@ -418,7 +364,7 @@ async function migrateSponsor (g: IDataGraph, source: MongoClient) {
   let rawSourceRolesById = _.keyBy(rawSourceRoles, r => r['_id']);
 
   let personIdSet = new Set(_.map(
-    await g.findEntities({ _type: Type.Person }),
+    await m.loadAll(Type.Person),
     p => p._id,
   ));
 
@@ -449,17 +395,22 @@ async function migrateSponsor (g: IDataGraph, source: MongoClient) {
     });
   });
 
-  await migrateAssocs(g, Type.Sponsor, sourceSponsorAssocs);
+  await m.importDataset(
+    Type.Sponsor,
+    sourceSponsorAssocs,
+    [ '_id1', '_id2' ],
+    true,
+  );
 }
 
-async function migrateCosponsor (g: IDataGraph, source: MongoClient) {
+async function migrateCosponsor (m: DataManager, source: MongoClient) {
   let rawSourceBills = await readAllDocs(
     source,
     config.dbName,
     config.billTable,
   );
   let billIdSet = new Set(_.map(
-    await g.findEntities({ _type: Type.Bill }),
+    await m.loadAll(Type.Bill),
     b => b._id,
   ));
 
@@ -471,7 +422,7 @@ async function migrateCosponsor (g: IDataGraph, source: MongoClient) {
   let rawSourceRolesById = _.keyBy(rawSourceRoles, r => r['_id']);
 
   let personIdSet = new Set(_.map(
-    await g.findEntities({ _type: Type.Person }),
+    await m.loadAll(Type.Person),
     p => p._id,
   ));
 
@@ -512,21 +463,26 @@ async function migrateCosponsor (g: IDataGraph, source: MongoClient) {
     });
   });
 
-  await migrateAssocs(g, Type.Cosponsor, sourceCosponsorAssocs);
+  await m.importDataset(
+    Type.Cosponsor,
+    sourceCosponsorAssocs,
+    [ '_id1', '_id2' ],
+    true,
+  );
 }
 
-async function migrateHasTag (g: IDataGraph, source: MongoClient) {
+async function migrateHasTag (m: DataManager, source: MongoClient) {
   let rawSourceBills = await readAllDocs(
     source,
     config.dbName,
     config.billTable,
   );
   let billIdSet = new Set(_.map(
-    await g.findEntities({ _type: Type.Bill }),
+    await m.loadAll(Type.Bill),
     b => b._id,
   ));
 
-  let tags = await g.findEntities({ _type: Type.Tag });
+  let tags = await m.loadAll(Type.Tag);
   let tagsByName = {};
   _.each(tags, t => {
     if (!t['name']) {
@@ -556,25 +512,32 @@ async function migrateHasTag (g: IDataGraph, source: MongoClient) {
     });
   });
 
-  await migrateAssocs(g, Type.HasTag, hasTagAssocs);
+  await m.importDataset(
+    Type.HasTag,
+    hasTagAssocs,
+    [ '_id1', '_id2' ],
+    true,
+  );
 }
 
 async function main () {
   let sourceClient = await connectMongo(await MongoDbConfig.getUrl());
-  let g = await DataGraph.create('MongoGraph', MongoDbConfig.getDbName());
+  let g = await DataGraph.get('MongoGraph', MongoDbConfig.getDbName());
+  let m = new DataManager(g);
 
-  // await migrateTags(g, sourceClient);
-  // await migrateBills(g, sourceClient);
-  // await migrateCongressMembers(g, sourceClient);
-  // await migrateArticleSnippets(g, sourceClient);
+  await migrateTags(m, sourceClient);
+  await migrateBills(m, sourceClient);
+  await migratePersons(m, sourceClient);
+  await migrateArticleSnippets(m, sourceClient);
 
-  // await migrateSponsor(g, sourceClient);
-  // await migrateCosponsor(g, sourceClient);
-  // await migrateHasTag(g, sourceClient);
+  await migrateSponsor(m, sourceClient);
+  await migrateCosponsor(m, sourceClient);
+  await migrateHasTag(m, sourceClient);
 
-
+  DataGraph.cleanup();
   sourceClient.close();
-  g.close();
+
+  logger.log('Done');
 }
 
 main();

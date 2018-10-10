@@ -2,6 +2,7 @@
  * Abstract definition of data graph. See MongoGraph for MongoDb implementation.
  */
 import * as _ from 'lodash';
+import * as inquirer from 'inquirer';
 import { MongoGraph } from './MongoGraph';
 
 export type Id = string; // uuid string
@@ -52,6 +53,14 @@ export interface IAssocQuery extends IHasType, IHasIdMaybe, IHasIdPairMaybe,
 export interface ISortField {
   field: string,
   order: 'asc' | 'desc',
+}
+
+export function isIEntInsert (obj: any): obj is IEntInsert {
+  return '_type' in obj;
+}
+
+export function isIAssocInsert (obj: any): obj is IAssocInsert {
+  return '_type' in obj && '_id1' in obj && '_id2' in obj;
 }
 
 export interface IDataGraph {
@@ -143,29 +152,55 @@ export interface IDataGraph {
 }
 
 export class DataGraph {
+  protected static _cache: { [key: string]: IDataGraph } = {};
+
   private constructor () {} // prohibits instantiation
-  public static async create (
+
+  public static async get (
     type: 'MongoGraph',
     dbName: string,
     entTableName = 'entities',
     assocTableName = 'assocs',
     connectInfo?: any,
   ): Promise<IDataGraph> {
+    let cacheKey = JSON.stringify({
+      type: type,
+      dbName: dbName,
+      entTableName: entTableName,
+      assocTableName: assocTableName,
+      connectInfo: connectInfo,
+    });
+    if (cacheKey in DataGraph._cache) {
+      return DataGraph._cache[cacheKey];
+    }
+
+    let g: IDataGraph;
     switch (type) {
       case 'MongoGraph':
-        return await MongoGraph.new(
+        g = await MongoGraph.new(
           dbName,
           entTableName,
           assocTableName,
           connectInfo,
         );
+        break;
+    }
+    if (g) {
+      DataGraph._cache[cacheKey] = g;
+      return g;
     }
     throw Error(`[DataGraph.create()] Invalid type ${type}`);
+  }
+
+  public static cleanup () {
+    _.each(_.values(DataGraph._cache), g => {
+      g.close();
+    });
   }
 }
 
 export class DataGraphUtils {
-  public static isEntityType (t: Type): boolean {
+  public static typeIsEnt (t: Type): boolean {
     return t < Type.MaxEntityType;
   }
 
