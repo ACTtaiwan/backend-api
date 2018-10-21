@@ -73,6 +73,12 @@ export class FullTextSync {
     }
   }
 
+  public async syncBillById (billId: string): Promise<void> {
+    let bill = await this.tblBill.getBillById(billId)
+    await this.syncBill(bill)
+    console.log(`[FullTextSync::syncBillById()] Done.`)
+  }
+
   public async syncBill (bill: dbLib.BillEntity): Promise<void> {
     const billDisplay = dbLib.DbHelper.displayBill(bill)
     console.log(`\n---------------------------------- Updating ${billDisplay} ----------------------------------\n\n`)
@@ -154,7 +160,8 @@ export class FullTextSync {
 
 let sync = new FullTextSync(false)
 sync.init()
-  .then(() => sync.syncAllBills(CongressGovHelper.CURRENT_CONGRESS, CongressGovHelper.CURRENT_CONGRESS))
+  // .then(() => sync.syncAllBills(CongressGovHelper.CURRENT_CONGRESS, CongressGovHelper.CURRENT_CONGRESS))
+  .then(() => sync.syncBillById('cbcb5e56-b764-468f-9564-3fe0fdeae4a2'))
 
 // problems:
 //   [106-s-1059 (154155dd-0d68-4a15-ae54-98f747fdef66)] Error: [FullTextSync::updateMongoDb()] can not find bill version for code = pwh
