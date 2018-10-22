@@ -34,7 +34,7 @@ describe('MongoGraphTest', async function () {
   ];
 
   before(async function () {
-    g = await DataGraph.create(
+    g = await DataGraph.get(
       'MongoGraph',
       'test_mongograph',
       'test_entities',
