@@ -40,3 +40,8 @@ Create file `config/debug.json`. Example:
 - Restore databases from archive:
 
     `npm run ts-node scripts/dumpDb/restoreMongo.ts <ARCHIVE_NAME>`
+
+## Test lambda endpoints
+See files in `testLambda/`. Must be run under root directory.
+
+Example: `testLambda/testV2Bills.sh testLambda/bills.json`

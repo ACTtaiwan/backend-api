@@ -1,0 +1,11 @@
+{
+    "resource": "/v2/bill",
+    "path": "/dev/v2/bill",
+    "httpMethod": "GET",
+    "queryStringParameters": {
+        "congress": "115,114",
+        "field": "_id,congress,billType,billNumber"
+    },
+    "pathParameters": null,
+    "stageVariables": null
+}

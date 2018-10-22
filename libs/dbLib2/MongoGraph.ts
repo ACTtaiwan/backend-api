@@ -335,6 +335,16 @@ export class MongoGraph implements IDataGraph {
     sort = sort || [];
     sort.push({ field: '_id', order: 'asc' });
 
+    // explicitly include sort fields in projection; otherwise won't sort
+    if (fields) {
+      let fset = new Set(fields);
+      _.each(sort, s => {
+        if (!(s.field in fset)) {
+          fields.push(s.field);
+        }
+      });
+    }
+
     let results = await DataGraphUtils.retryLoop(
       async cursor => {
         let pipeline = [];
@@ -498,6 +508,14 @@ export class MongoGraph implements IDataGraph {
 
     if (fields) {
       fields.push('_id1', '_id2');
+
+      // explicitly include sort fields in projection; otherwise won't sort
+      let fset = new Set(fields);
+      _.each(sort, s => {
+        if (!(s.field in fset)) {
+          fields.push(s.field);
+        }
+      });
     }
 
     let results = await DataGraphUtils.retryLoop(

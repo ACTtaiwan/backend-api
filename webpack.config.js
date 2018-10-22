@@ -7,6 +7,7 @@ var slsw = require('serverless-webpack')
 process.env.NODE_ENV = 'development'
 
 module.exports = {
+  mode: 'development',
   // Use all js files in project root (except
   // the webpack config) as an entry
   entry: slsw.lib.entries,

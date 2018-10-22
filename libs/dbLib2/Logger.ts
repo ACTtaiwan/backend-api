@@ -11,16 +11,20 @@ export class Logger {
   }
 
   public log (msg: any) {
+    let prefix = (this._className ?
+      `${this._className}.${this._methodName}` :
+      `${this._methodName}`) + this._id;
+    Logger.log(msg, prefix);
+  }
+
+  public static log (msg: any, prefix?: string) {
     if (typeof msg !== 'string') {
       msg = inspect(msg, { depth: null, colors: true });
     }
-    let prefix = this._className ?
-      `${this._className}.${this._methodName}` :
-      `${this._methodName}`;
-    console.log(`[${prefix}:${this._id}] ${msg}`);
-  }
-
-  public static log (msg: string, prefix?: string) {
-    console.log(`[${prefix}] ${msg}`);
+    if (prefix !== undefined) {
+      console.log(`[${prefix}] ${msg}`);
+    } else {
+      console.log(msg);
+    }
   }
 }

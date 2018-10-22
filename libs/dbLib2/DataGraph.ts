@@ -2,8 +2,8 @@
  * Abstract definition of data graph. See MongoGraph for MongoDb implementation.
  */
 import * as _ from 'lodash';
-import * as inquirer from 'inquirer';
 import { MongoGraph } from './MongoGraph';
+import { MongoDbConfig } from '../../config/mongodb';
 
 export type Id = string; // uuid string
 export enum Type {
@@ -190,6 +190,10 @@ export class DataGraph {
       return g;
     }
     throw Error(`[DataGraph.create()] Invalid type ${type}`);
+  }
+
+  public static async getDefault (): Promise<IDataGraph> {
+    return await DataGraph.get('MongoGraph', MongoDbConfig.getDbName());
   }
 
   public static cleanup () {

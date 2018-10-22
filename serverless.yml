@@ -128,7 +128,7 @@ functions:
               paths:
                 id: true
           cors: true
-  
+
   billMgmt-roles:
     handler: functions/private/billManagement/roleHandler.main
     events:
@@ -151,7 +151,7 @@ functions:
             parameters:
               paths:
                 personId: true
-          cors: true  
+          cors: true
       - http:
           path: congressional/roles/person/search/{q}
           method: get
@@ -159,7 +159,7 @@ functions:
             parameters:
               paths:
                 q: true
-          cors: true  
+          cors: true
       - http:
           path: congressional/roles/state/{state}
           method: get
@@ -289,4 +289,34 @@ functions:
               querystrings:
                 before: false
                 limit: false
+          cors: true
+
+  v2Id:
+    handler: functions/private/v2/idHandler.main
+    events:
+      - http:
+          path: v2/{id}
+          method: get
+          request:
+            parameters:
+              path:
+                id: true
+              querystrings:
+                field: false
+          cors: true
+
+  v2Bill:
+    handler: functions/private/v2/billHandler.main
+    events:
+      - http:
+          path: v2/bill
+          method: get
+          request:
+            parameters:
+              querystrings:
+                congress: false
+                sponsor: false
+                cosponsor: false
+                tag: false
+                field: false
           cors: true
