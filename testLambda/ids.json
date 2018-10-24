@@ -1,12 +1,25 @@
 {
-    "resource": "/v2/bill",
-    "path": "/dev/v2/bill",
+    "resource": "/v2",
+    "path": "/dev/v2",
     "httpMethod": "GET",
     "queryStringParameters": {
-        "field": "_id,congress,billType,billNumber"
     },
     "pathParameters": {
-        "id": "fc46042f-989f-49a8-8e00-a5d26c0c3ba1,fc46042f-989f-49a8-8e00-a5d26c0c3ba0,fb9469f8-d30b-4215-a466-84c094dcf678"
+    },
+    "multiValueQueryStringParameters": {
+        "field": [
+            "_id",
+            "congress",
+            "billType",
+            "billNumber",
+            "sponsors",
+            "tags"
+        ],
+        "id": [
+            "fc46042f-989f-49a8-8e00-a5d26c0c3ba1",
+            "fc46042f-989f-49a8-8e00-a5d26c0c3ba0",
+            "fb9469f8-d30b-4215-a466-84c094dcf678"
+        ]
     },
     "stageVariables": null
 }

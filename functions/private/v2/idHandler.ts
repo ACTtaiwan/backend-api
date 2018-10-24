@@ -1,57 +1,94 @@
 import * as _ from 'lodash';
-import { APIGatewayEvent, Context, Callback } from 'aws-lambda';
-import { Logger } from '../../../libs/dbLib2/Logger';
-import Response from '../../../libs/utils/Response';
-import { QueryParamsUtils, QueryParamTypes, QueryParams } from '../../../libs/utils/QueryParamsUtils';
-import { Type, DataGraph } from '../../../libs/dbLib2/DataGraph';
+import { DataGraph, Type, IEnt, IDataGraph } from '../../../libs/dbLib2/DataGraph';
+import { Id } from '../../../libs/dbLib2/types';
+import { translateTypeEnum } from './handlers';
 
-class IdHandler {
-  static readonly PATH_PARAM_TYEPS: QueryParamTypes = {
-    id: 'string[]',
-  };
-
-  static readonly QUERY_PARAM_TYEPS: QueryParamTypes = {
-    field: 'string[]',
-  };
-
-  public static handleRequest (
-    event: APIGatewayEvent,
-    context: Context,
-    callback?: Callback,
-  ) {
-    Logger.log(event, 'v2/idHandler')
-
-    // This freezes node event loop when callback is invoked
-    context.callbackWaitsForEmptyEventLoop = false;
-
-    let pParams = QueryParamsUtils.parse(
-      event.pathParameters,
-      IdHandler.PATH_PARAM_TYEPS,
-    );
-
-    let qParams = QueryParamsUtils.parse(
-      event.queryStringParameters,
-      IdHandler.QUERY_PARAM_TYEPS,
-    );
-
-    IdHandler.run(
-      <string[]>pParams['id'],
-      <string[]>qParams['field'],
-    ).then(res => Response.success(callback, JSON.stringify(res), true))
-      .catch(err => Response.error(callback, JSON.stringify(err), true));
-  }
-
-  protected static async run (
-    ids: string[],
-    fields: string[],
-  ): Promise<any> {
-    let g = await DataGraph.getDefault();
-    let res = await Promise.all(
-      _.map(ids, async id => g.loadEntity(id, fields))
-    );
-
-    return res;
+interface AssocFieldMap {
+  [fieldName: string]: {
+    assocType: Type,
+    direction: 'forward' | 'backward',
   }
 }
 
-export let main = IdHandler.handleRequest
+let ASSOC_FIELD_MAPS: { [entType: number]: AssocFieldMap } = {
+  [Type.Bill]: {
+    sponsors: {
+      assocType: Type.Sponsor,
+      direction: 'backward',
+    },
+    cosponsors: {
+      assocType: Type.Cosponsor,
+      direction: 'backward',
+    },
+    tags: {
+      assocType: Type.HasTag,
+      direction: 'forward',
+    },
+  }
+};
+
+export class IdHandler {
+  public static async run (
+    ids: Id[],
+    fields: string[],
+  ): Promise<any> {
+    let g = await DataGraph.getDefault();
+    let ents = await Promise.all(
+      _.map(ids, async id => g.loadEntity(id, fields))
+    );
+    ents = await IdHandler.resolveAssocFields(g, ents, fields);
+
+    return _.map(ents, translateTypeEnum);
+  }
+
+  /**
+   * Some of `fields` may refer to an assoc, instead of an entity field. All
+   * field names that are mapped to assocs are defined in ASSOC_FIELD_MAPS.
+   * @param ents
+   * @param fields
+   */
+  public static async resolveAssocFields (
+    g: IDataGraph,
+    ents: IEnt[],
+    fields: string[],
+  ): Promise<IEnt[]> {
+    let promises = [];
+    let promiseKeys = [];
+
+    _.each(ents, e => {
+      if (e) {
+        _.each(fields, f => {
+          let assocFieldMap = ASSOC_FIELD_MAPS[e._type];
+          if (assocFieldMap && assocFieldMap[f]) {
+            promises.push(g.listAssociatedEntityIds(
+              e._id,
+              assocFieldMap[f].assocType,
+              assocFieldMap[f].direction,
+            ));
+            promiseKeys.push(`${e._id}.${f}`);
+          }
+        });
+      }
+    });
+
+    let promiseResults = await Promise.all(promises);
+    let resultMap = {};
+    _.each(promiseResults, (r, i) => {
+      resultMap[promiseKeys[i]] = r;
+    });
+
+    ents = _.map(ents, e => {
+      if (e) {
+        _.each(fields, f => {
+          let k = `${e._id}.${f}`;
+          if (k in resultMap) {
+            e[f] = resultMap[k];
+          }
+        });
+      }
+      return e;
+    });
+
+    return ents;
+  }
+}

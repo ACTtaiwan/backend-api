@@ -13,7 +13,7 @@ export class Logger {
   public log (msg: any) {
     let prefix = (this._className ?
       `${this._className}.${this._methodName}` :
-      `${this._methodName}`) + this._id;
+      `${this._methodName}`) + `:${this._id}`;
     Logger.log(msg, prefix);
   }
 

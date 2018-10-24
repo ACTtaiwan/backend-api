@@ -291,32 +291,31 @@ functions:
                 limit: false
           cors: true
 
-  v2Id:
-    handler: functions/private/v2/idHandler.main
+  v2Ids:
+    handler: functions/private/v2/handlers.handleIds
     events:
       - http:
-          path: v2/{id}
+          path: v2
           method: get
           request:
             parameters:
-              path:
-                id: true
               querystrings:
+                id: true
                 field: false
           cors: true
 
-  v2Bill:
-    handler: functions/private/v2/billHandler.main
+  v2Bills:
+    handler: functions/private/v2/handlers.handleBills
     events:
       - http:
-          path: v2/bill
+          path: v2/bills
           method: get
           request:
             parameters:
               querystrings:
-                congress: false
-                sponsor: false
-                cosponsor: false
-                tag: false
+                congress: true
+                sponsorId: false
+                cosponsorId: false
+                tagId: false
                 field: false
           cors: true
