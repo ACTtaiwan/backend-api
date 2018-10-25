@@ -241,11 +241,22 @@ export class MongoGraph implements IDataGraph {
    *  last (max) record. A paginated query will be generated based on cursor
    *  information.
    */
-  private static _composeQuery (condition: IHasType, cursor?: PageCursor)
-  : object {
+  private static _composeQuery (
+    condition: IHasType,
+    cursor?: PageCursor,
+    isNested: boolean = false,
+  ): object {
     let query = _.mapValues(MongoGraph._encodeIdFields(condition), v => {
       if (Array.isArray(v)) {
         return { $in: v };
+      } else if (
+        typeof v === 'object' &&
+        v !== null &&
+        !(<any>v instanceof Binary)
+      ) {
+        // if v is a (non-Binary) object, v represents a nested query
+        let nestedQuery = MongoGraph._composeQuery(v, undefined, true);
+        return { $elemMatch: nestedQuery };
       } else {
         return v;
       }
@@ -258,7 +269,9 @@ export class MongoGraph implements IDataGraph {
         }
       });
     }
-    expect(query).to.include.all.keys('_type');
+    if (!isNested) {
+      expect(query).to.include.all.keys('_type');
+    }
 
     return query;
   }
@@ -278,14 +291,14 @@ export class MongoGraph implements IDataGraph {
   }
 
   /**
-   * Given a TAssocLookupQuery object, returns two mongo aggregate pipes.
+   * Given an IEntAssocQuery object, returns two mongo aggregate pipes.
    * The first pipe is a $lookup, which joins the '_id' of entities with
    * either id1 or id2 of the assocs table. The results are stored as an
    * array of assocs as the '_assocs' field of each entity.
    * The second pipe is a $match, which filter the entities by their '_assocs'
    * fields.
    */
-  private _composeAssocLookupQueryPipes (q: IEntAssocQuery): object[] {
+  private _composeEntAssocQueryPipes (q: IEntAssocQuery): object[] {
     // determine which assoc field to join with, id1 or id2?
     let joinIdField;
     if (q._id1 && q._id2) {
@@ -318,7 +331,7 @@ export class MongoGraph implements IDataGraph {
 
   public async findEntities (
     entQuery: IEntQuery,
-    assocLookupQueries?: IEntAssocQuery[],
+    entAssocQueries?: IEntAssocQuery[],
     fields?: string[],
     sort?: ISortField[],
     readPageSize: number = MongoDbConfig.getReadPageSize(),
@@ -326,7 +339,7 @@ export class MongoGraph implements IDataGraph {
     let logger = new Logger('findEntities', 'MongoGraph');
     logger.log(JSON.stringify({
       entQuery: entQuery,
-      assocLookupQueries: assocLookupQueries,
+      entAssocQueries: entAssocQueries,
       fields: fields,
       sort: sort,
       readPageSize: readPageSize,
@@ -352,8 +365,8 @@ export class MongoGraph implements IDataGraph {
         pipeline.push({ $match: MongoGraph._composeQuery(entQuery, cursor) });
         // process assocQueries
         let removeTmpFields = false;
-        _.each(assocLookupQueries, q => {
-          let aggs = this._composeAssocLookupQueryPipes(q);
+        _.each(entAssocQueries, q => {
+          let aggs = this._composeEntAssocQueryPipes(q);
           _.each(aggs, agg => {
             pipeline.push(agg);
           });
@@ -370,6 +383,7 @@ export class MongoGraph implements IDataGraph {
         }
         pipeline.push({ $sort: cursor.toSort() });
         pipeline.push({ $limit: readPageSize });
+        // console.dir(pipeline, { depth: null});
 
         return await this._entities.aggregate(pipeline).toArray();
       },

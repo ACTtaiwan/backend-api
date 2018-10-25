@@ -1,14 +1,14 @@
 import * as _ from 'lodash';
 import { Type, DataGraph } from '../../../libs/dbLib2/DataGraph';
 import { translateTypeEnum } from './handlers';
-import { IdHandler } from './idHandler';
+import { AssocFieldResolver } from './AssocFieldResolver';
 
 export class BillHandler {
   public static async run (
     congresses: number[],
-    sponsors: string[],
-    cosponsors: string[],
-    tags: string[],
+    sponsorIds: string[],
+    cosponsorIds: string[],
+    tagIds: string[],
     fields: string[],
   ): Promise<any> {
 
@@ -17,22 +17,22 @@ export class BillHandler {
     if (congresses && congresses.length > 0) {
       entQuery['congress'] = congresses;
     }
-    if (sponsors && sponsors.length > 0) {
+    if (sponsorIds && sponsorIds.length > 0) {
       entAssocQueries.push({
         _type: Type.Sponsor,
-        _id1: sponsors,
+        _id1: sponsorIds,
       });
     }
-    if (cosponsors && cosponsors.length > 0) {
+    if (cosponsorIds && cosponsorIds.length > 0) {
       entAssocQueries.push({
         _type: Type.Cosponsor,
-        _id1: cosponsors,
+        _id1: cosponsorIds,
       });
     }
-    if (tags && tags.length > 0) {
+    if (tagIds && tagIds.length > 0) {
       entAssocQueries.push({
         _type: Type.HasTag,
-        _id2: tags,
+        _id2: tagIds,
       });
     }
 
@@ -43,7 +43,7 @@ export class BillHandler {
       fields,
       [{ field: 'introducedDate', order: 'desc'}],
     );
-    ents = await IdHandler.resolveAssocFields(g, ents, fields);
+    ents = await AssocFieldResolver.resolve(g, ents, fields);
 
     return _.map(ents, translateTypeEnum);
   }

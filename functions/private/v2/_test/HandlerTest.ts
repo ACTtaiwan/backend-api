@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import { IdHandler } from '../idHandler';
 import { DataGraph } from '../../../../libs/dbLib2/DataGraph';
 import { BillHandler } from '../BillHandler';
+import { PersonHandler } from '../PersonHandler';
 
 describe('HandlerTest', function () {
   before(function () {
@@ -26,14 +27,15 @@ describe('HandlerTest', function () {
       'congress',
       'billType',
       'billNumber',
-      'sponsors',
-      'cosponsors',
-      'tags',
+      'sponsorIds',
+      'cosponsorIds',
+      'tagIds',
     ];
     let ids = [
       'fc46042f-989f-49a8-8e00-a5d26c0c3ba1',
       'fc46042f-989f-49a8-8e00-a5d26c0c3ba0',
       'fb9469f8-d30b-4215-a466-84c094dcf678',
+      '56a3f0d7-3945-4912-9199-dc86183fa4c6',
     ];
 
     let res = await IdHandler.run(ids, fields);
@@ -46,9 +48,9 @@ describe('HandlerTest', function () {
       'congress',
       'billType',
       'billNumber',
-      'sponsors',
-      'cosponsors',
-      'tags',
+      'sponsorIds',
+      'cosponsorIds',
+      'tagIds',
     ];
     let congresses = [
       115,
@@ -72,5 +74,44 @@ describe('HandlerTest', function () {
       fields
     );
     console.log(res);
+  });
+
+  it.only('persons', async function () {
+    let fields = [
+      '_id',
+      'firstName',
+      'middleName',
+      'lastName',
+      'bioGuideId',
+      // 'congressRoles',
+      'congressRoles.congressNumbers',
+      'congressRoles.state',
+      'congressRoles.district',
+      'cosponsoredBillIds',
+    ];
+    let congresses = [
+      115,
+      // 114,
+    ];
+    let states = [
+      'WA',
+      'MD',
+    ];
+    let districts = [
+      1,
+    ];
+    let billIds = [
+      '15a2ed64-13a6-4b2a-8c8f-2ecd6b99e28e',
+      '1d294066-28b8-4e64-bb95-cbe97ea968bb',
+    ];
+
+    let res = await PersonHandler.run(
+      congresses,
+      states,
+      districts,
+      undefined,
+      fields,
+    );
+    console.dir(res, { depth: null });
   });
 });
