@@ -9,6 +9,8 @@ import { BillHandler } from '../BillHandler';
 import { PersonHandler } from '../PersonHandler';
 
 describe('HandlerTest', function () {
+  this.timeout(15000);
+
   before(function () {
     chai.use(chaiAsPromised);
   });
@@ -87,6 +89,7 @@ describe('HandlerTest', function () {
       'congressRoles.congressNumbers',
       'congressRoles.state',
       'congressRoles.district',
+      'sponsoredBillIds',
       'cosponsoredBillIds',
     ];
     let congresses = [
@@ -107,9 +110,9 @@ describe('HandlerTest', function () {
 
     let res = await PersonHandler.run(
       congresses,
-      states,
-      districts,
       undefined,
+      undefined,
+      billIds,
       fields,
     );
     console.dir(res, { depth: null });

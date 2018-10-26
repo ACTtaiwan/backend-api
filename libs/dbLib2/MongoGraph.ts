@@ -2,8 +2,8 @@ import { MongoClient, Db, Collection, Binary } from 'mongodb';
 import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { IDataGraph, Type, Id, IEnt, IEntQuery, IEntAssocQuery,
-  IUpdate, IAssoc, DataGraphUtils, IAssocQuery, IHasType, IEntInsert,
-  IAssocInsert, ISortField } from './DataGraph';
+  IUpdate, IAssoc, DataGraphUtils, IAssocQuery, IEntInsert,
+  IAssocInsert, ISortField, IHasTypeOrTypes } from './DataGraph';
 import { MongoDbConfig } from '../../config/mongodb';
 import { expect } from 'chai';
 import { Logger } from './Logger';
@@ -242,7 +242,7 @@ export class MongoGraph implements IDataGraph {
    *  information.
    */
   private static _composeQuery (
-    condition: IHasType,
+    condition: IHasTypeOrTypes,
     cursor?: PageCursor,
     isNested: boolean = false,
   ): object {
@@ -291,42 +291,54 @@ export class MongoGraph implements IDataGraph {
   }
 
   /**
-   * Given an IEntAssocQuery object, returns two mongo aggregate pipes.
-   * The first pipe is a $lookup, which joins the '_id' of entities with
-   * either id1 or id2 of the assocs table. The results are stored as an
-   * array of assocs as the '_assocs' field of each entity.
-   * The second pipe is a $match, which filter the entities by their '_assocs'
-   * fields.
+   * Given IEntAssocQuery objects, returns a list of mongo aggregate pipes.
    */
-  private _composeEntAssocQueryPipes (q: IEntAssocQuery): object[] {
-    // determine which assoc field to join with, id1 or id2?
-    let joinIdField;
-    if (q._id1 && q._id2) {
-      throw Error('Invalid TAssocQuery: both _id1 and _id2 are present');
-    } else if (q._id1 && !q._id2) {
-      joinIdField = '_id2';
-    } else if (!q._id1 && q._id2) {
-      joinIdField = '_id1';
-    } else {
-      throw Error('Invalid TAssocQuery: both _id1 and _id2 are absent');
-    }
-    // join
-    let lookup = { $lookup: {
+  private _composePipesForEntAssocQueries (queries: IEntAssocQuery[])
+  : object[] {
+    let res = [];
+    // determine if we need to lookup _id1, _id2, or both from the assoc table
+    let needId1 = false, needId2 = false;
+    _.each(queries, q => {
+      if (q._id1 && q._id2) {
+        throw Error('Invalid TAssocQuery: both _id1 and _id2 are present');
+      } else if (q._id1 && !q._id2) {
+        needId1 = true;
+      } else if (!q._id1 && q._id2) {
+        needId2 = true;
+      } else {
+        throw Error('Invalid TAssocQuery: both _id1 and _id2 are absent');
+      }
+    });
+    // compose lookup pipeline
+    if (needId1) {
+      res.push({ $lookup: {
         from: this._assocCollectionName,
         localField: '_id',
-        foreignField: joinIdField,
-        as: MongoGraph.ASSOC_LOOKUP_OUTPUT_FIELD,
-    }};
+        foreignField: '_id2',
+        as: '_id1',
+      }});
+    }
+    if (needId2) {
+      res.push({ $lookup: {
+        from: this._assocCollectionName,
+        localField: '_id',
+        foreignField: '_id1',
+        as: '_id2',
+      }});
+    }
+    // compose filter (match) pipelines
+    _.each(queries, q => {
+      let f = q._id1 ? '_id1' : '_id2';
+      res.push({ $match: {
+        [f]: { $elemMatch: MongoGraph._composeQuery(q) },
+      }});
+    });
+    // remove tmp fields
+    res.push({
+      $project: MongoGraph._composeProjection(['_id1', '_id2'], false),
+    });
 
-    // after join, filter by the other id field (id2 or id1) and assoc data
-    let match = MongoGraph._composeQuery(q);
-    match = _.set(
-      {},
-      `$match.${MongoGraph.ASSOC_LOOKUP_OUTPUT_FIELD}.$elemMatch`,
-      match,
-    );
-
-    return [lookup, match];
+    return res;
   }
 
   public async findEntities (
@@ -364,22 +376,11 @@ export class MongoGraph implements IDataGraph {
         // process entQuery
         pipeline.push({ $match: MongoGraph._composeQuery(entQuery, cursor) });
         // process assocQueries
-        let removeTmpFields = false;
-        _.each(entAssocQueries, q => {
-          let aggs = this._composeEntAssocQueryPipes(q);
-          _.each(aggs, agg => {
-            pipeline.push(agg);
-          });
-          removeTmpFields = true;
+        _.each(this._composePipesForEntAssocQueries(entAssocQueries), pipe => {
+          pipeline.push(pipe);
         });
         if (fields) {
           pipeline.push({ $project: MongoGraph._composeProjection(fields) });
-        }
-        if (removeTmpFields) {
-          pipeline.push({ $project: MongoGraph._composeProjection(
-            [MongoGraph.ASSOC_LOOKUP_OUTPUT_FIELD],
-            false,
-          )});
         }
         pipeline.push({ $sort: cursor.toSort() });
         pipeline.push({ $limit: readPageSize });

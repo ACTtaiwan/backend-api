@@ -34,11 +34,7 @@ export class PersonHandler {
     let entAssocQueries = [];
     if (billIds && billIds.length > 0) {
       entAssocQueries.push({
-        _type: Type.Sponsor,
-        _id2: billIds,
-      });
-      entAssocQueries.push({
-        _type: Type.Cosponsor,
+        _type: [Type.Sponsor, Type.Cosponsor],
         _id2: billIds,
       });
     }

@@ -21,8 +21,11 @@ export enum Type {
   Cosponsor = 1004,
   HasTag = 1005,
 };
-export interface IHasType {
+interface IHasType {
   _type: Type;
+}
+export interface IHasTypeOrTypes {
+  _type: Type | Type[];
 }
 interface IHasId {
   _id: Id;
@@ -42,8 +45,8 @@ type IHasData = {
 export interface IEnt extends IHasType, IHasId, IHasData {}
 export interface IEntInsert extends IHasType, IHasIdMaybe, IHasData {}
 export interface IEntQuery extends IHasType, IHasIdMaybe, IHasData {}
-export interface IEntAssocQuery extends IHasType, IHasIdOrIdListPairMaybe,
-  IHasData {}
+export interface IEntAssocQuery extends IHasTypeOrTypes,
+  IHasIdOrIdListPairMaybe, IHasData {}
 export interface IUpdate extends IHasId, IHasData {}
 export interface IAssoc extends IHasType, IHasId, IHasIdPair, IHasData {}
 export interface IAssocInsert extends IHasType, IHasIdMaybe, IHasIdPair,
