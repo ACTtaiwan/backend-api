@@ -44,7 +44,11 @@ export class PersonHandler {
       entQuery,
       entAssocQueries,
       fields,
-      // [{ field: 'state', order: 'desc'}],
+      [
+        { field: 'lastName', order: 'asc' },
+        { field: 'firstName', order: 'asc' },
+        { field: 'middleName', order: 'asc' },
+      ],
     );
     ents = await AssocFieldResolver.resolve(g, ents, fields);
 
