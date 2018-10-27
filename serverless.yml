@@ -319,3 +319,19 @@ functions:
                 tagId: false
                 field: false
           cors: true
+
+  v2Persons:
+    handler: functions/private/v2/handlers.handlePersons
+    events:
+      - http:
+          path: v2/persons
+          method: get
+          request:
+            parameters:
+              querystrings:
+                congress: true
+                state: false
+                district: false
+                billId: false
+                field: false
+          cors: true

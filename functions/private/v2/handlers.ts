@@ -4,6 +4,7 @@ import Response from '../../../libs/utils/Response';
 import { IdHandler } from './idHandler';
 import { BillHandler } from './BillHandler';
 import { Type } from '../../../libs/dbLib2/DataGraph';
+import { PersonHandler } from './PersonHandler';
 
 export type QueryParams = { [name: string]: string[] };
 
@@ -43,6 +44,24 @@ export function handleBills (
   let fields: string[] = queryParams['field'];
 
   BillHandler.run(congresses, sponsorIds, cosponsorIds, tagIds, fields)
+    .then(res => Response.success(callback, JSON.stringify(res), true))
+    .catch(err => Response.error(callback, JSON.stringify(err), true));
+}
+
+export function handlePersons (
+  event: APIGatewayEvent,
+  _context: Context,
+  callback?: Callback,
+) {
+  let queryParams: QueryParams = event['multiValueQueryStringParameters'];
+
+  let congresses: number[] = _.map(queryParams['congress'], parseInt);
+  let states: string[] = queryParams['state'];
+  let districts: number[] = _.map(queryParams['state'], parseInt);
+  let billIds: string[] = queryParams['sponsorId'];
+  let fields: string[] = queryParams['field'];
+
+  PersonHandler.run(congresses, states, districts, billIds, fields)
     .then(res => Response.success(callback, JSON.stringify(res), true))
     .catch(err => Response.error(callback, JSON.stringify(err), true));
 }
