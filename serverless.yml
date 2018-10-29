@@ -335,3 +335,19 @@ functions:
                 billId: false
                 field: false
           cors: true
+
+  v2ArticleSnippets:
+    handler: functions/private/v2/handlers.handleArticleSnippets
+    events:
+      - http:
+          path: v2/article_snippets/{site}
+          method: get
+          request:
+            parameters:
+              path:
+                site: true
+              querystrings:
+                before: false
+                limit: false
+                field: false
+          cors: true

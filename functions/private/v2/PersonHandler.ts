@@ -14,21 +14,24 @@ export class PersonHandler {
   ): Promise<any> {
     let entQuery = { _type: Type.Person };
 
-    let entNestedQuery = {};
+    let nestedQuery = {};
     if (congresses && congresses.length > 0) {
-      entNestedQuery['congressNumbers'] = congresses;
+      nestedQuery['congressNumbers'] = congresses;
     }
     if (states && states.length > 0) {
       states = _.filter(_.map(states, CongressUtils.validateState));
       if (states.length > 0) {
-        entNestedQuery['state'] = states;
+        nestedQuery['state'] = states;
       }
     }
     if (districts && districts.length > 0) {
-      entNestedQuery['district'] = districts;
+      nestedQuery['district'] = districts;
     }
-    if (entNestedQuery !== {}) {
-      entQuery['congressRoles'] = entNestedQuery;
+    if (nestedQuery !== {}) {
+      entQuery['congressRoles'] = {
+        _op: 'has_any',
+        _val: nestedQuery,
+      };
     }
 
     let entAssocQueries = [];

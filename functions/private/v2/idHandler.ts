@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
-import { DataGraph, Type, IEnt, IDataGraph } from '../../../libs/dbLib2/DataGraph';
-import { Id } from '../../../libs/dbLib2/types';
+import { DataGraph, Id } from '../../../libs/dbLib2/DataGraph';
 import { translateTypeEnum } from './handlers';
 import { AssocFieldResolver } from './AssocFieldResolver';
 

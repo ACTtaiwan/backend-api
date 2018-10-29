@@ -332,7 +332,7 @@ async function migrateArticleSnippets (m: DataManager, source: MongoClient) {
       url: a['url'],
       imageUrl: a['imageUrl'],
       date: a['date'],
-      site: a['site'],
+      sites: a['sites'],
     };
   });
 

@@ -1,0 +1,22 @@
+{
+    "resource": "/v2/article_snippets",
+    "path": "/dev/v2/article_snippets",
+    "httpMethod": "GET",
+    "multiValueQueryStringParameters": {
+        "before": [
+            "1536861600000"
+        ],
+        "field": [
+            "headline"
+        ],
+        "limit": [
+            "10",
+            "5",
+            "3"
+        ]
+    },
+    "pathParameters": {
+        "site": "act"
+    },
+    "stageVariables": null
+}

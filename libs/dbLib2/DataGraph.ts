@@ -77,34 +77,40 @@ export interface IDataGraph {
   loadEntity (id: Id, fields?: string[]): Promise<IEnt>;
   /**
    *
-   * @param entQuery Example:
+   * @param entQuery is a structure containing a set of conditions:
    * {
-   *    _type: someType, // required
-   *    field1: value1,
-   *    field2: [value2, value3, value4],
+   *    _type: type1,  // or [type1, type2]; required field
+   *    key1: val1,
+   *    key2: [val2, val3],
    *    ...
    * }
-   * Returned entities satisfy:
-   *    field1 = value1 AND field2 = value2 OR value3 OR value4
-   * Field name could also be a json 'path' that refers to a deep field
-   * @param entAssocQueries Example:
+   * The query is evaluated as:
+   *    key1 = val1 AND (key2 = val2 OR key2 = val3).
+   * When not in an array, a value (e.g., val1) can also be a QueryOperator:
    * {
-   *    _type: assoc_type,         // required
-   *    _id1: [value1, value2],    // or _id2; value could be a single value
-   *    ...                        // filter by assoc properties
-   * }
-   * Returned entities satisfy the condition that there exists an assoc where:
-   *  1. _type = assoc_type
-   *  2. _id1 = value1 OR value2
-   *  3. _id2 = self
-   *  4. assoc properties matches (if any)
+   *    _op: '>=',        // an operator
+   *    _val: some_value,
+   * },
+   * where some_value can be a value, a list of values, or a recursive query,
+   * depending on the operator.
+   * Keys can also be a 'path' that refers to a deep field.
+   * @param entAssocQueries are structures identical to entQuery, except that
+   * the top-level query must also contain either an _id1 or _id2 field.
+   * The query filters entities by their assocs. If _id1 is specified, only
+   * entities whose assocs satisfy the following conditions will be returned:
+   * 1. _id1 satisfy the condition
+   * 2. _id2 = each entity itself
+   * 3. other conditions in query are satisfied
+   * Similarly if _id2 is specified.
    * Fields _id1 and _id2 cannot both appear.
+   * All queries in entAssocQueries must be satisfied.
    */
   findEntities (
     entQuery: IEntQuery,
     entAssocQueries?: IEntAssocQuery[],
     fields?: string[],
     sort?: ISortField[],
+    limit?: number,
   ): Promise<IEnt[]>;
   /**
    * Update a set of entities
@@ -128,9 +134,9 @@ export interface IDataGraph {
   insertAssocs (assocs: IAssocInsert[]): Promise<Id[]>;
   loadAssoc (id: Id, fields?: string[]): Promise<IAssoc>;
   findAssocs (
-    assocQuery: IAssocQuery,
+    query: IAssocQuery,
     fields?: string[],
-    // TODO: support pagination
+    sort?: ISortField[],
   ): Promise<IAssoc[]>;
   updateAssocs (updates: IUpdate[]): Promise<number>;
   /**

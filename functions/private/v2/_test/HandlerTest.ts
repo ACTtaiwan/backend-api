@@ -7,6 +7,8 @@ import { IdHandler } from '../idHandler';
 import { DataGraph } from '../../../../libs/dbLib2/DataGraph';
 import { BillHandler } from '../BillHandler';
 import { PersonHandler } from '../PersonHandler';
+import { ArticleSnippetHandler } from '../ArticleSnippetHandler';
+import { Site } from '../handlers';
 
 describe('HandlerTest', function () {
   this.timeout(15000);
@@ -78,7 +80,7 @@ describe('HandlerTest', function () {
     console.log(res);
   });
 
-  it.only('persons', async function () {
+  it.skip('persons', async function () {
     let fields = [
       '_id',
       'firstName',
@@ -110,9 +112,32 @@ describe('HandlerTest', function () {
 
     let res = await PersonHandler.run(
       congresses,
-      undefined,
+      states,
       undefined,
       billIds,
+      fields,
+    );
+    console.dir(res, { depth: null });
+  });
+
+  it.skip('article_snippets', async function () {
+    let fields = [
+      'headline',
+    ];
+    let site = [
+      'act',
+    ];
+    let before = [
+      1536861600000,
+    ];
+    let limit = [
+      5,
+    ];
+
+    let res = await ArticleSnippetHandler.run(
+      <Site>site[site.length - 1],
+      before[before.length - 1],
+      limit[limit.length - 1],
       fields,
     );
     console.dir(res, { depth: null });

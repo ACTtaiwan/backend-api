@@ -8,10 +8,21 @@ import { MongoDbConfig } from '../../config/mongodb';
 import { expect } from 'chai';
 import { Logger } from './Logger';
 
+type QueryOperator = {
+  _op: string;
+  _val: any;
+}
+
+function isQueryOperator (o: any): o is QueryOperator {
+  return typeof o === 'object' && o['_op'] && o['_val'];
+}
+
+
 class PageCursor {
   constructor (
     protected _sortFields: ISortField[],
     protected _record?: object,
+    protected _totalSize: number = 0,
   ) {
     this._sortFields = this._sortFields || [];
     if (
@@ -25,6 +36,14 @@ class PageCursor {
 
   public set record (r: object) {
     this._record = r;
+  }
+
+  public incrementTotalSize (s: number) {
+    this._totalSize += s;
+  }
+
+  public get totalSize (): number {
+    return this._totalSize;
   }
 
   public toQuery (): object {
@@ -132,17 +151,19 @@ export class MongoGraph implements IDataGraph {
     throw Error(`[MongoGraph.decodeId()] cannot decode ID: ${bin}`);
   }
 
-  private static _encodeIdFields (obj: object): object {
-    return _.mapValues(obj, (v: any, k) => {
-      if (k === '_id' || k === '_id1' || k === '_id2') {
-        if (Array.isArray(v)) {
-          return _.map(v, (id: Id) => MongoGraph.encodeId(id));
-        } else {
-          return MongoGraph.encodeId(v);
+  private static _encodeIdFields (input: any, nested = false): object {
+    if (Array.isArray(input)) {
+      return _.map(input, elm => MongoGraph._encodeIdFields(elm, true));
+    } else if (typeof input === 'string') {
+      return MongoGraph.encodeId(input);
+    } else if (typeof input === 'object') {
+      return _.mapValues(input, (v: any, k) => {
+        if (nested || k === '_id' || k === '_id1' || k === '_id2') {
+          return MongoGraph._encodeIdFields(v, true);
         }
-      }
-      return v;
-    });
+        return v;
+      });
+    }
   }
 
   private static _decodeIdFields (obj: object): object {
@@ -222,45 +243,37 @@ export class MongoGraph implements IDataGraph {
     return <IEnt>ret;
   }
 
-  /**
-   * Given an object with string keys and scalar or array values, compose
-   * a mongo query based on the object. Example:
-   * {
-   *  a: 'z',
-   *  b: [1, 2, 3],
-   * }
-   * will be composed into:
-   * {
-   *  a: 'z',
-   *  b: { $in: [1, 2, 3] },
-   * }
-   * @param condition
-   * @param cursor Assuming a query returns records that are sorted by one or
-   *  more fields, this parameter is an array of key-value pairs, where the
-   *  keys are the sorting field names, and the values are taken from the
-   *  last (max) record. A paginated query will be generated based on cursor
-   *  information.
-   */
   private static _composeQuery (
-    condition: IHasTypeOrTypes,
+    condition: object,
     cursor?: PageCursor,
     isNested: boolean = false,
   ): object {
-    let query = _.mapValues(MongoGraph._encodeIdFields(condition), v => {
+    let query: object = _.mapValues(condition, v => {
       if (Array.isArray(v)) {
         return { $in: v };
-      } else if (
-        typeof v === 'object' &&
-        v !== null &&
-        !(<any>v instanceof Binary)
-      ) {
-        // if v is a (non-Binary) object, v represents a nested query
-        let nestedQuery = MongoGraph._composeQuery(v, undefined, true);
-        return { $elemMatch: nestedQuery };
+      } else if (isQueryOperator(v)) {
+        switch (v['_op']) {
+          case 'has_any':
+            return {
+              $elemMatch: MongoGraph._composeQuery(v['_val'], null, true),
+            };
+          case '>':
+            return { $gt: v['_val'] };
+          case '>=':
+            return { $gte: v['_val'] };
+          case '<':
+            return { $lt: v['_val'] };
+          case '<=':
+            return { $lte: v['_val'] };
+          default:
+            throw Error(`Unknown operator ${v['_op']} in ${v}`);
+        }
       } else {
         return v;
       }
     });
+    query = MongoGraph._encodeIdFields(query);
+
     if (cursor) {
       let cursorQuery = cursor.toQuery();
       _.mergeWith(query, cursorQuery, (v, cv, k) => {
@@ -328,15 +341,22 @@ export class MongoGraph implements IDataGraph {
     }
     // compose filter (match) pipelines
     _.each(queries, q => {
-      let f = q._id1 ? '_id1' : '_id2';
-      res.push({ $match: {
-        [f]: { $elemMatch: MongoGraph._composeQuery(q) },
-      }});
+      let f = q['_id1'] ? '_id1' : '_id2';
+      res.push({ $match: { [f]: { $elemMatch: MongoGraph._composeQuery(q) }}});
     });
     // remove tmp fields
-    res.push({
-      $project: MongoGraph._composeProjection(['_id1', '_id2'], false),
-    });
+    let tmpFieldsToRemove = [];
+    if (needId1) {
+      tmpFieldsToRemove.push('_id1');
+    }
+    if (needId2) {
+      tmpFieldsToRemove.push('_id2');
+    }
+    if (tmpFieldsToRemove.length > 0) {
+      res.push({
+        $project: MongoGraph._composeProjection(tmpFieldsToRemove, false),
+      });
+    }
 
     return res;
   }
@@ -346,6 +366,7 @@ export class MongoGraph implements IDataGraph {
     entAssocQueries?: IEntAssocQuery[],
     fields?: string[],
     sort?: ISortField[],
+    limit?: number,
     readPageSize: number = MongoDbConfig.getReadPageSize(),
   ): Promise<IEnt[]> {
     let logger = new Logger('findEntities', 'MongoGraph');
@@ -383,7 +404,10 @@ export class MongoGraph implements IDataGraph {
           pipeline.push({ $project: MongoGraph._composeProjection(fields) });
         }
         pipeline.push({ $sort: cursor.toSort() });
-        pipeline.push({ $limit: readPageSize });
+        pipeline.push({ $limit: limit ?
+          _.min([readPageSize, limit - cursor.totalSize]) :
+          readPageSize,
+        });
         // console.dir(pipeline, { depth: null});
 
         return await this._entities.aggregate(pipeline).toArray();
@@ -391,6 +415,7 @@ export class MongoGraph implements IDataGraph {
       (cursor, output) => { // returns cursor
         if (output && Array.isArray(output) && output.length === readPageSize) {
           cursor.record = output[output.length - 1];
+          cursor.incrementTotalSize(output.length);
           return cursor;
         }
       },

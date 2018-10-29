@@ -175,7 +175,7 @@ describe('MongoGraphTest', async function () {
       ]);
     });
 
-    after(dropDb);
+    // after(dropDb);
 
     it('find ents by type', async function () {
       let found = await g.findEntities({ _type: ENT_TYPE2 });
