@@ -42,13 +42,13 @@ export class SendPulseAgent implements ISubscribeAgent {
     switch (list) {
       case 'ustw':
         listId = SendPulseAgent.LIST_ID.USTW
-        senderEmail = SendPulseAgent.SENDER_EMAIL.ACT_CITIZENS
+        senderEmail = SendPulseAgent.SENDER_EMAIL.USTW
         break;
 
       case 'act':
       default:
         listId = SendPulseAgent.LIST_ID.ACT_CITIZENS
-        senderEmail = SendPulseAgent.SENDER_EMAIL.USTW
+        senderEmail = SendPulseAgent.SENDER_EMAIL.ACT_CITIZENS
     }
     return this.addRecipient(listId, senderEmail, email, firstName, lastName)
   }
