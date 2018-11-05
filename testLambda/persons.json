@@ -1,0 +1,27 @@
+{
+    "resource": "/v2/persons",
+    "path": "/dev/v2/persons",
+    "httpMethod": "GET",
+    "multiValueQueryStringParameters": {
+        "congress": [
+            "115"
+        ],
+        "field": [
+            "firstName",
+            "middleName",
+            "lastName",
+            "bioGuideId",
+            "congressRoles.congressNumbers",
+            "congressRoles.state",
+            "congressRoles.district",
+            "sponsoredBillIds",
+            "cosponsoredBillIds"
+        ],
+        "billId": [
+          "15a2ed64-13a6-4b2a-8c8f-2ecd6b99e28e",
+          "1d294066-28b8-4e64-bb95-cbe97ea968bb"
+        ]
+    },
+    "pathParameters": null,
+    "stageVariables": null
+}

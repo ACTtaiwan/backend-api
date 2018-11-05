@@ -28,7 +28,7 @@ custom:
 provider:
   name: aws
   runtime: nodejs6.10
-  stage: dev
+  stage: prod
   environment:
     VOLUNTEER_USERS_DYNAMODB_TABLE: "volunteer.users"
     VOLUNTEER_BILLS_DYNAMODB_TABLE: "volunteer.bills"
@@ -128,7 +128,7 @@ functions:
               paths:
                 id: true
           cors: true
-  
+
   billMgmt-roles:
     handler: functions/private/billManagement/roleHandler.main
     events:
@@ -151,7 +151,7 @@ functions:
             parameters:
               paths:
                 personId: true
-          cors: true  
+          cors: true
       - http:
           path: congressional/roles/person/search/{q}
           method: get
@@ -159,7 +159,7 @@ functions:
             parameters:
               paths:
                 q: true
-          cors: true  
+          cors: true
       - http:
           path: congressional/roles/state/{state}
           method: get
@@ -289,4 +289,65 @@ functions:
               querystrings:
                 before: false
                 limit: false
+          cors: true
+
+  v2Ids:
+    handler: functions/private/v2/handlers.handleIds
+    events:
+      - http:
+          path: v2
+          method: get
+          request:
+            parameters:
+              querystrings:
+                id: true
+                field: false
+          cors: true
+
+  v2Bills:
+    handler: functions/private/v2/handlers.handleBills
+    events:
+      - http:
+          path: v2/bills
+          method: get
+          request:
+            parameters:
+              querystrings:
+                congress: true
+                sponsorId: false
+                cosponsorId: false
+                tagId: false
+                field: false
+          cors: true
+
+  v2Persons:
+    handler: functions/private/v2/handlers.handlePersons
+    events:
+      - http:
+          path: v2/persons
+          method: get
+          request:
+            parameters:
+              querystrings:
+                congress: true
+                state: false
+                district: false
+                billId: false
+                field: false
+          cors: true
+
+  v2ArticleSnippets:
+    handler: functions/private/v2/handlers.handleArticleSnippets
+    events:
+      - http:
+          path: v2/article_snippets/{site}
+          method: get
+          request:
+            parameters:
+              path:
+                site: true
+              querystrings:
+                before: false
+                limit: false
+                field: false
           cors: true

@@ -1,0 +1,46 @@
+{
+    "resource": "/congressional/billCategories",
+    "path": "/dev/congressional/billCategories",
+    "httpMethod": "GET",
+    "headers": {
+        "Accept": "application/json, text/plain, */*",
+        "Host": "api.uswatch.tw",
+        "User-Agent": "axios/0.17.1",
+        "X-Amzn-Trace-Id": "Root=1-5b955c8b-4894cb8cc5a0760086b78c73",
+        "X-Forwarded-For": "52.90.17.74",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https"
+    },
+    "queryStringParameters": null,
+    "pathParameters": null,
+    "stageVariables": null,
+    "requestContext": {
+        "resourceId": "wrch6g",
+        "resourcePath": "/congressional/billCategories",
+        "httpMethod": "GET",
+        "extendedRequestId": "M9tlwFZYoAMFiLA=",
+        "requestTime": "09/Sep/2018:17:46:51 +0000",
+        "path": "/dev/congressional/billCategories",
+        "accountId": "537713963720",
+        "protocol": "HTTP/1.1",
+        "stage": "dev",
+        "requestTimeEpoch": 1536515211298,
+        "requestId": "551e70aa-b458-11e8-8c5e-831d8008ae49",
+        "identity": {
+            "cognitoIdentityPoolId": null,
+            "accountId": null,
+            "cognitoIdentityId": null,
+            "caller": null,
+            "sourceIp": "52.90.17.74",
+            "accessKey": null,
+            "cognitoAuthenticationType": null,
+            "cognitoAuthenticationProvider": null,
+            "userArn": null,
+            "userAgent": "axios/0.17.1",
+            "user": null
+        },
+        "apiId": "ufg873mam1"
+    },
+    "body": null,
+    "isBase64Encoded": false
+}

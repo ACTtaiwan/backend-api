@@ -1,7 +1,12 @@
-import * as aws from 'aws-sdk'
-import { debug } from './debug'
+import * as aws from 'aws-sdk';
+import * as mongodbUri from 'mongodb-uri';
+import { debug } from './debug';
+import { expect } from 'chai';
 
 export class MongoDbConfig {
+  public static readonly READ_PAGE_SIZE = 500;
+  public static readonly DB_NAME = 'data';
+
   public static readonly tableNames = {
     'BILLCATEGORIES_TABLE_NAME': 'volunteer.billCategories',
     'BILLS_TABLE_NAME': 'volunteer.bills',
@@ -80,11 +85,55 @@ export class MongoDbConfig {
     })
   }
 
-  public static async getUrl (): Promise<string> {
-    if (debug && Array.isArray(debug['mongodb']['urls'])) {
-      return debug['mongodb']['urls'][0];
+  private static getDebugValueMaybe (debugKey: string): any {
+    if (debug && debug[debugKey]) {
+      return debug[debugKey];
     }
-    let s3Credential = await MongoDbConfig.getKeyFileFromS3();
-    return s3Credential.url;
+  }
+
+  public static async getUriComponents (debugKey = 'mongodb'): Promise<{
+    username: string,
+    password: string,
+    host: string,
+    port: number
+  }> {
+    let ret = this.getDebugValueMaybe(debugKey);
+    if (ret === undefined) {
+      ret = await MongoDbConfig.getKeyFileFromS3();
+    }
+    expect(ret).to.have.all.keys('username', 'password', 'host', 'port');
+    return ret;
+  }
+
+  public static async getUrl (debugKey = 'mongodb'): Promise<string> {
+    let urlComponents = await MongoDbConfig.getUriComponents(debugKey);
+    let ret = {
+      scheme: 'mongodb',
+      username: urlComponents['username'],
+      password: urlComponents['password'],
+      hosts: [
+        {
+          host: urlComponents['host'],
+          port: urlComponents['port']
+        },
+      ],
+    };
+    return mongodbUri.format(ret);
+  }
+
+  public static getReadPageSize (debugKey = 'mongoReadPageSize'): number {
+    let ret = MongoDbConfig.getDebugValueMaybe(debugKey);
+    if (ret === undefined) {
+      ret = MongoDbConfig.READ_PAGE_SIZE;
+    }
+    return ret;
+  }
+
+  public static getDbName (debugKey = 'mongoDbName'): string {
+    let ret = MongoDbConfig.getDebugValueMaybe(debugKey);
+    if (ret === undefined) {
+      ret = MongoDbConfig.DB_NAME;
+    }
+    return ret;
   }
 }

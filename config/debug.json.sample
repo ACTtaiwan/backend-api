@@ -1,0 +1,19 @@
+{
+    "debug": {
+        "mongodb": {
+            "host": "localhost",
+            "port": 27017,
+            "username": "",
+            "password": ""
+        },
+        "remoteMongodb": {
+            "host": "",
+            "port": 9999,
+            "username": "",
+            "password": ""
+        },
+        "airtable": {
+            "apiKey": ""
+        }
+    }
+}

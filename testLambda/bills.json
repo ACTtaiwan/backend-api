@@ -1,0 +1,18 @@
+{
+    "resource": "/v2/bills",
+    "path": "/dev/v2/bills",
+    "httpMethod": "GET",
+    "multiValueQueryStringParameters": {
+        "congress": [
+            "115",
+            "114"
+        ],
+        "field": [
+            "congress",
+            "billType",
+            "billNumber"
+        ]
+    },
+    "pathParameters": null,
+    "stageVariables": null
+}

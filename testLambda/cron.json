@@ -1,0 +1,13 @@
+{
+    "version": "0",
+    "id": "10954a25-c707-53b4-5d0b-90a8bfedb350",
+    "detail-type": "Scheduled Event",
+    "source": "aws.events",
+    "account": "537713963720",
+    "time": "2018-09-10T12:00:00Z",
+    "region": "us-east-1",
+    "resources": [
+        "arn:aws:events:us-east-1:537713963720:rule/backend-api-dev-CronjobsEventsRuleSchedule1-1QLGL7HN9D1GA"
+    ],
+    "detail": {}
+}
