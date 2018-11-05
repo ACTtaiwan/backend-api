@@ -33,8 +33,13 @@ export class MongoDbConfig {
     if (MongoDbConfig._remoteUrl) {
       return Promise.resolve(MongoDbConfig._remoteUrl)
     } else {
-      return MongoDbConfig.getKeyFileFromS3().then(json => {
-        MongoDbConfig._remoteUrl = `mongodb://${json.admin_user}:${json.admin_pass}@${json.host}:${json.port}/congress?ssl=true&replicaSet=globaldb`
+      const dbCredJson = 'digiocean_mongodb.json';
+      return MongoDbConfig.getKeyFileFromS3(dbCredJson).then(json => {
+        if (dbCredJson === 'digiocean_mongodb.json') {
+          MongoDbConfig._remoteUrl = `mongodb://${json.admin_user}:${json.admin_pass}@${json.host}:${json.port}/congress?authSource=admin`
+        } else {
+          MongoDbConfig._remoteUrl = `mongodb://${json.admin_user}:${json.admin_pass}@${json.host}:${json.port}/congress?ssl=true&replicaSet=globaldb`
+        }
         return MongoDbConfig._remoteUrl
       })
     }
@@ -42,12 +47,12 @@ export class MongoDbConfig {
 
   // --------------------------------------------------
 
-  private static async getKeyFileFromS3 (): Promise<any> {
+  private static async getKeyFileFromS3 (fileName: string = 'azure_mongodb.json'): Promise<any> {
     return new Promise((resolve, reject) => {
       let s3 = new aws.S3()
       var params = {
         Bucket: 'taiwanwatch-credentials',
-        Key: 'azure_mongodb.json'
+        Key: fileName
        }
       console.log(`[MongoDbConfig::getKeyFileFromS3()] requesting S3`)
       s3.getObject(params, (err, data) => {
