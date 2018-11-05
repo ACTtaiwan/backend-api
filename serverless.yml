@@ -28,7 +28,7 @@ custom:
 provider:
   name: aws
   runtime: nodejs6.10
-  stage: prod
+  stage: dev
   environment:
     VOLUNTEER_USERS_DYNAMODB_TABLE: "volunteer.users"
     VOLUNTEER_BILLS_DYNAMODB_TABLE: "volunteer.bills"

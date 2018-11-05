@@ -52,7 +52,7 @@ export class MongoDbConfig {
 
   // --------------------------------------------------
 
-  private static async getKeyFileFromS3 (fileName: string = 'azure_mongodb.json'): Promise<any> {
+  private static async getKeyFileFromS3 (fileName: string = 'digiocean_mongodb.json'): Promise<any> {
     return new Promise((resolve, reject) => {
       let s3 = new aws.S3()
       var params = {
@@ -105,7 +105,7 @@ export class MongoDbConfig {
     return ret;
   }
 
-  public static async getUrl (debugKey = 'mongodb'): Promise<string> {
+  public static async getUrl (debugKey: 'mongodb' | 'remoteMongodb' = 'mongodb'): Promise<string> {
     let urlComponents = await MongoDbConfig.getUriComponents(debugKey);
     let ret = {
       scheme: 'mongodb',
@@ -117,6 +117,9 @@ export class MongoDbConfig {
           port: urlComponents['port']
         },
       ],
+      options: {
+        authSource: 'admin'
+      }
     };
     return mongodbUri.format(ret);
   }
