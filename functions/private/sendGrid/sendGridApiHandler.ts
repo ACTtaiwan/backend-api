@@ -1,7 +1,8 @@
 import { Context, Callback, APIGatewayEvent } from 'aws-lambda'
 import Response from '../../../libs/utils/Response'
 import * as _ from 'lodash'
-import { SendGridAgent } from '../../../libs/sendGrid/SendGridAgent';
+// import { SendGridAgent } from '../../../libs/subscribe/SendGridAgent';
+import { SendPulseAgent } from '../../../libs/subscribe/SendPulseAgent'
 
 export class SendGridApi {
 
@@ -46,7 +47,7 @@ export class SendGridApiHandler {
       let body = params.body
       if (body) {
         console.log(`[SendGridApiHandler::dispatchEvent()] subscribe email = ${body.email}`)
-        return SendGridAgent.instance.then(agent => agent.subscribe(body.email, body.name, undefined, body.list))
+        return SendPulseAgent.instance.then(agent => agent.subscribe(body.email, body.name, undefined, body.list))
       } else {
         let errObj = {
           error: 'POST body is missing'

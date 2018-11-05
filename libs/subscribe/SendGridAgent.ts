@@ -6,8 +6,9 @@ import * as sgClient from '@sendgrid/client'
 import {ClientRequest} from '@sendgrid/client/src/request'
 import {ClientResponse} from '@sendgrid/client/src/response'
 import * as api from './SendGrid.interface'
+import { ISubscribeAgent } from './Subscribe.interface';
 
-export class SendGridAgent {
+export class SendGridAgent implements ISubscribeAgent {
   private static _instance: SendGridAgent
   private static LIST_ID = {
     'ACT_CITIZENS': 4288426,
