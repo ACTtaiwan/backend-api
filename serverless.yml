@@ -42,6 +42,7 @@ provider:
     VOLUNTEER_SUBMISSIONS_DYNAMODB_TABLE: "volunteer.submissions"
     VOLUNTEER_BILLDOWNLOADTASK_DYNAMODB_TABLE: "volunteer.billDownloadTask"
     VOLUNTEER_BILLS_S3_BUCKET: "volunteer.bills"
+    DB_CONFIG: "remoteMongodb"
   region: us-east-1
   iamRoleStatements:
     - Effect: "Allow"

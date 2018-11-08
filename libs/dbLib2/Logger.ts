@@ -19,7 +19,8 @@ export class Logger {
 
   public static log (msg: any, prefix?: string) {
     if (typeof msg !== 'string') {
-      msg = inspect(msg, { depth: null, colors: true });
+      let colors = process.env.IS_LOCAL ? true : false;
+      msg = inspect(msg, { depth: null, colors: colors });
     }
     if (prefix !== undefined) {
       console.log(`[${prefix}] ${msg}`);
