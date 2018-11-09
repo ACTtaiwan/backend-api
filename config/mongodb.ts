@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk';
 import * as mongodbUri from 'mongodb-uri';
-import { debug } from './debug';
+import { secret } from './secret';
 import { expect } from 'chai';
 
 export class MongoDbConfig {
@@ -32,9 +32,6 @@ export class MongoDbConfig {
   }
 
   public static get remoteUrl (): Promise<string> {
-    if (debug && Array.isArray(debug['mongodb']['urls'])) {
-      return Promise.resolve(debug['mongodb']['urls'][0]);
-    }
     if (MongoDbConfig._remoteUrl) {
       return Promise.resolve(MongoDbConfig._remoteUrl)
     } else {
@@ -85,28 +82,31 @@ export class MongoDbConfig {
     })
   }
 
-  private static getDebugValueMaybe (debugKey: string): any {
-    if (debug && debug[debugKey]) {
-      return debug[debugKey];
+  private static getSecretValueMaybe (key: string): any {
+    if (secret && secret[key]) {
+      return secret[key];
     }
   }
 
-  public static async getUriComponents (debugKey = 'mongodb'): Promise<{
+  public static async getUriComponents (): Promise<{
     username: string,
     password: string,
     host: string,
     port: number
   }> {
-    let ret = this.getDebugValueMaybe(debugKey);
+    let key = process.env.IS_LOCAL
+      ? process.env.LOCAL_DB_CONFIG || 'mongodb'
+      : process.env.DB_CONFIG || 'mongodb';
+    let ret = this.getSecretValueMaybe(key);
     if (ret === undefined) {
-      ret = await MongoDbConfig.getKeyFileFromS3();
+      throw Error('Database config not found');
     }
     expect(ret).to.have.all.keys('username', 'password', 'host', 'port');
     return ret;
   }
 
-  public static async getUrl (debugKey: 'mongodb' | 'remoteMongodb' = 'mongodb'): Promise<string> {
-    let urlComponents = await MongoDbConfig.getUriComponents(debugKey);
+  public static async getUrl (): Promise<string> {
+    let urlComponents = await MongoDbConfig.getUriComponents();
     let ret = {
       scheme: 'mongodb',
       username: urlComponents['username'],
@@ -124,16 +124,16 @@ export class MongoDbConfig {
     return mongodbUri.format(ret);
   }
 
-  public static getReadPageSize (debugKey = 'mongoReadPageSize'): number {
-    let ret = MongoDbConfig.getDebugValueMaybe(debugKey);
+  public static getReadPageSize (key = 'mongoReadPageSize'): number {
+    let ret = MongoDbConfig.getSecretValueMaybe(key);
     if (ret === undefined) {
       ret = MongoDbConfig.READ_PAGE_SIZE;
     }
     return ret;
   }
 
-  public static getDbName (debugKey = 'mongoDbName'): string {
-    let ret = MongoDbConfig.getDebugValueMaybe(debugKey);
+  public static getDbName (key = 'mongoDbName'): string {
+    let ret = MongoDbConfig.getSecretValueMaybe(key);
     if (ret === undefined) {
       ret = MongoDbConfig.DB_NAME;
     }
