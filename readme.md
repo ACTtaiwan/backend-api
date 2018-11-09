@@ -48,9 +48,28 @@ See files in `testLambda/`. Must be run under root directory.
 Example: `testLambda/testV2Bills.sh testLambda/bills.json`
 
 ## Database connection
-Database connection information, including passwords, should be stored in
-`secret.json`. When the code is run locally, db connections are made
-according to values under `mongodb`, unless environment variable
-`LOCAL_DB_CONFIG` is set to something else. Similarly, when the code is run
-remotely (e.g., deployed on AWS), values under `mongodb` are used unless
-environement variable `DB_CONFIG` is set (see also `serverless.yml`).
+Database connection information, including host, port, username, and passwords,
+should be stored in `secret.json`. Different set of connection information
+(e.g., `mongodb`, `remoteMongodb`, etc.) may be used in different environment:
+1. Deployed on AWS: defined by the environment variable `DB_CONFIG` in
+    `serverless.yml`.
+2. Lambda local testing: `mongodb` by default. Can be overridden by
+    an environment variable such as:
+    ```
+    env npm_config_db_config=remoteMongodb testLambda/testV2Ids.sh testLambda/ids.json
+    ```
+3. Running script locally: `mongodb` by default. Can be overridden by
+    an environment variable such as:
+    ```
+    env npm_config_db_config=remoteMongodb npm run ts-node scripts/run.ts
+    ```
+    Alternatively, define the following in `package.json`:
+    ```
+    {
+        ...
+        "config": {
+            "db_config": "remoteMongodb"
+        },
+        ...
+    }
+    ```

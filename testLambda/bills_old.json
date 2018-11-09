@@ -1,0 +1,15 @@
+{
+    "resource": "/congressional/bills",
+    "path": "/congressional/bills",
+    "httpMethod": "GET",
+    "queryStringParameters": {
+        "congress": "115"
+    },
+    "multiValueQueryStringParameters": {
+        "congress": [
+            "115"
+        ]
+    },
+    "pathParameters": null,
+    "stageVariables": null
+}

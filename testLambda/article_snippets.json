@@ -1,6 +1,6 @@
 {
-    "resource": "/v2/article_snippets",
-    "path": "/dev/v2/article_snippets",
+    "resource": "/v2/article_snippets/{site}",
+    "path": "/v2/article_snippets/act",
     "httpMethod": "GET",
     "multiValueQueryStringParameters": {
         "before": [

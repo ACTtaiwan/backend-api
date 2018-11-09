@@ -95,8 +95,8 @@ export class MongoDbConfig {
     port: number
   }> {
     let key = process.env.IS_LOCAL
-      ? process.env.LOCAL_DB_CONFIG || 'mongodb'
-      : process.env.DB_CONFIG || 'mongodb';
+      ? process.env.npm_config_db_config || 'mongodb'
+      : process.env.DB_CONFIG || process.env.npm_config_db_config || 'mongodb';
     let ret = this.getSecretValueMaybe(key);
     if (ret === undefined) {
       throw Error('Database config not found');
