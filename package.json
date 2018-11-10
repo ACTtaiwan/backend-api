@@ -10,6 +10,9 @@
     "testf": "mocha --require ts-node/register --recursive \"functions/**/_test/*.ts\"",
     "ts-node": "node node_modules/ts-node/dist/bin.js"
   },
+  "config": {
+    "db_config": "mongodb"
+  },
   "keywords": [],
   "author": "hsuyachieh@gmail.com",
   "license": "ISC",
