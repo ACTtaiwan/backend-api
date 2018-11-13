@@ -83,7 +83,7 @@ async function migrateTags (m: DataManager, source: MongoClient) {
     });
   });
 
-  await m.importDataset(Type.Tag, _.values(sourceTags), [ 'name' ], true);
+  await m.importDataset(Type.Tag, _.values(sourceTags), [ 'name' ], true, true);
 }
 
 async function migrateBills (m: DataManager, source: MongoClient) {
@@ -148,7 +148,7 @@ async function migrateBills (m: DataManager, source: MongoClient) {
     };
   });
 
-  await m.importDataset(Type.Bill, sourceBills, [ '_id' ], true);
+  await m.importDataset(Type.Bill, sourceBills, [ '_id' ], true, true);
 }
 
 async function migratePersons (m: DataManager, source: MongoClient) {
@@ -297,7 +297,7 @@ async function migratePersons (m: DataManager, source: MongoClient) {
     }
   });
 
-  await m.importDataset(Type.Person, sourcePersons, [ '_id' ], true);
+  await m.importDataset(Type.Person, sourcePersons, [ '_id' ], true, true);
 }
 
 async function migrateArticleSnippets (m: DataManager, source: MongoClient) {
@@ -340,6 +340,7 @@ async function migrateArticleSnippets (m: DataManager, source: MongoClient) {
     Type.ArticleSnippet,
     sourceArticleSnippets,
     [ '_id' ],
+    true,
     true,
   );
 }
@@ -399,6 +400,7 @@ async function migrateSponsor (m: DataManager, source: MongoClient) {
     Type.Sponsor,
     sourceSponsorAssocs,
     [ '_id1', '_id2' ],
+    true,
     true,
   );
 }
@@ -468,6 +470,7 @@ async function migrateCosponsor (m: DataManager, source: MongoClient) {
     sourceCosponsorAssocs,
     [ '_id1', '_id2' ],
     true,
+    true,
   );
 }
 
@@ -516,6 +519,7 @@ async function migrateHasTag (m: DataManager, source: MongoClient) {
     Type.HasTag,
     hasTagAssocs,
     [ '_id1', '_id2' ],
+    true,
     true,
   );
 }

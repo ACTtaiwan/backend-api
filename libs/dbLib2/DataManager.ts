@@ -112,6 +112,7 @@ export class DataManager {
     data: (IEnt | IAssoc)[],
     joinFields: string[],
     cliConfirmation: boolean = false,
+    shouldDelete: boolean = false,
   ) {
     let typeIsEnt = DataGraphUtils.typeIsEnt(type);
     let joinKey = d => _.join(_.map(joinFields, jf => {
@@ -161,8 +162,11 @@ export class DataManager {
         }
       }
     });
+    if (!shouldDelete) {
+      deletes.clear();
+    }
     // show results
-    this._logger.log(`${Type[type]} migration plan:`);
+    this._logger.log(`${Type[type]} import plan:`);
     this._logger.log({
       inserts: typeIsEnt ? insertEnts : insertAssocs,
       updates: updates,
