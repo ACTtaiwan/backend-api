@@ -5,7 +5,7 @@ import * as airtable from '../../libs/airtable';
 import { BillTypeCode, ChamberType } from '../../libs/congressGov/CongressGovModels';
 import * as moment from 'moment';
 import { MongoDBManager } from '../../libs/mongodbLib';
-import { logger } from '../../libs/utils/Logger';
+import { Logger } from '../../libs/dbLib2/Logger';
 
 type Entity = {[key: string]: any};
 
@@ -26,7 +26,7 @@ abstract class MongoTable implements Table {
     protected _mockWrite: boolean = false,
   ) {}
   protected log (message: string) {
-    logger.log(this._logPrefix + message);
+    Logger.log(message, this._logPrefix);
   }
   public async connect (config: MongoTableConfig): Promise<void> {
     this._manager = await mongoDbLib.MongoDBManager.instance;
@@ -182,7 +182,7 @@ class Sync {
   ) {}
 
   protected log (message: string) {
-    logger.log(this._logPrefix + message);
+    Logger.log(message, this._logPrefix);
   }
 
   private _getTargetFields (): string[] {
