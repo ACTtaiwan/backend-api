@@ -94,9 +94,14 @@ export class MongoDbConfig {
     host: string,
     port: number
   }> {
-    let key = process.env.IS_LOCAL
-      ? process.env.npm_config_db_config || 'mongodb'
-      : process.env.DB_CONFIG || process.env.npm_config_db_config || 'mongodb';
+    let key = process.env.IS_LOCAL // for `serverless invoke local`
+      ? process.env.npm_package_config_db_config || // package.json
+        process.env.npm_config_db_config ||
+        'mongodb'
+      : process.env.DB_CONFIG || // for deployment; set in serverless.yml
+        process.env.npm_package_config_db_config || // package.json
+        process.env.npm_config_db_config ||
+        'mongodb';
     let ret = this.getSecretValueMaybe(key);
     if (ret === undefined) {
       throw Error('Database config not found');

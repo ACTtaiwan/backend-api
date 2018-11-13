@@ -94,4 +94,9 @@ export default class Utility {
     let rtn = _.map(arr, (x: string) => postConvert(x.trim()))
     return rtn
   }
+
+  public static isLocalRun (): boolean {
+    return process.env.IS_LOCAL !== undefined ||
+      process.env.DB_CONFIG === undefined;
+  }
 }
