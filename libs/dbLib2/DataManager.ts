@@ -5,11 +5,19 @@ import { Logger } from './Logger';
 
 interface DataCache {
   [type: string]: {
-    hasAll: boolean,
+    valid: boolean,
     data: {
       [id: string]: IEnt | IAssoc, // should cache complete fields
     }
   }
+}
+
+interface JoinedIEnt extends IEnt {
+  _joinedEntry?: IEnt;
+}
+
+interface JoinedIAssoc extends IAssoc {
+  _joinedEntry?: IAssoc;
 }
 
 export class DataManager {
@@ -23,13 +31,16 @@ export class DataManager {
   /**
    * Load all entities (or assocs) of a type.
    */
-  public async loadAll (type: Type): Promise<(IEnt | IAssoc)[]> {
+  public async loadAll (
+    type: Type,
+  ): Promise<(IEnt | IAssoc)[]> {
     let ret: (IEnt | IAssoc)[];
     if (Type[type] in this._cache) {
-      if (this._cache[Type[type]].hasAll) {
+      if (this._cache[Type[type]].valid) {
         ret = _.values(this._cache[Type[type]].data);
       }
     }
+
     if (!ret) {
       // cache miss
       if (DataGraphUtils.typeIsEnt(type)) {
@@ -37,7 +48,14 @@ export class DataManager {
       } else {
         ret = await this._g.findAssocs({ _type: type });
       }
+
+      if (!(Type[type] in this._cache)) {
+        this._cache[Type[type]] = { valid: false, data: {} };
+      }
+      this._cache[Type[type]].data = _.keyBy(ret, v => v._id);
+      this._cache[Type[type]].valid = true;
     }
+
     return ret;
   }
 
@@ -76,6 +94,36 @@ export class DataManager {
   }
 
   /**
+   * For each entry in the input data, find the corresponding entity/assoc
+   * in DataGraph that has the same join field values. If an entity/assoc
+   * is found, put it under the field '_joinedEntry'.
+   */
+  public async loadAllAndJoinWithData (
+    type: Type,
+    data: (IEnt | IAssoc)[],
+    joinFields: string[],
+  ): Promise<(JoinedIEnt | JoinedIAssoc)[]> {
+    let joinKey = d => _.join(_.map(joinFields, jf => {
+      if (d[jf] === undefined) {
+        throw Error(`[DataManager.loadAllAndJoinWithData()] Join field ${jf} `
+          + `cannot be undefined in ${d}`);
+      }
+      return JSON.stringify(d[jf]);
+    }), ':');
+    let targetDataset = await this.loadAll(type);
+    let targetDatasetByJoinKey = _.keyBy<IEnt | IAssoc>(targetDataset, joinKey);
+    data = _.map(data, src => {
+      let key = joinKey(src);
+      if (key in targetDatasetByJoinKey) {
+        src['_joinedEntry'] = targetDatasetByJoinKey[key];
+      }
+      return src;
+    });
+
+    return data;
+  }
+
+  /**
    * Ask for user confirmation in CLI
    * @param msg
    */
@@ -96,56 +144,37 @@ export class DataManager {
   /**
    * Import a dataset into the underlying DataGraph. The source dataset is
    * divided into three sets: update, insert, and delete sets, depending on
-   * whether a match could be found between the source and the
-   * destination dataset (DagaGraph). A match is determined by whether two
-   * records have the same values in all of their fields specified by
-   * joinFields. The three sets will be used to perform update, insert,
-   * and delete operations, respectively, into the entity or assoc collection,
-   * depending on type.
+   * whether each entry has a corresponding DataGraph entry, under
+   * the field _joinedEntry.
+   * The three sets will be used to perform update, insert,
+   * and delete operations, respectively.
    * @param type could be an entity type or an assoc type
-   * @param data source dataset
-   * @param joinFields
-   * @param cliConfirmation
+   * @param data source dataset (joined with target dataset)
    */
-  public async importDataset (
+  public async importJoinedDataset (
     type: Type,
-    data: (IEnt | IAssoc)[],
-    joinFields: string[],
+    data: (JoinedIEnt | JoinedIAssoc)[],
     cliConfirmation: boolean = false,
     shouldDelete: boolean = false,
   ) {
     let typeIsEnt = DataGraphUtils.typeIsEnt(type);
-    let joinKey = d => _.join(_.map(joinFields, jf => {
-      if (d[jf] === undefined) {
-        throw Error(`[DataManager.importDataset()] Join field ${jf} `
-          + `cannot be undefined in ${d}`);
-      }
-      return JSON.stringify(d[jf]);
-    }), ':');
-    // validate data
-    _.each(data, src => {
-      if (!src['_type'] || src['_type'] !== type) {
-        throw Error(`[DataManager.importDataset()] Input data type mismatch: `
-          + `${src['_type']} !== ${type}`);
-      }
-    });
     // load all ents of type
     let targetDataset = await this.loadAll(type);
-    let targetDatasetByJoinKey = _.keyBy<IEnt | IAssoc>(targetDataset, joinKey);
     // compare and divide the source data into three sets
     let insertEnts: IEntInsert[] = [];
     let insertAssocs: IAssocInsert[] = [];
     let updates: IUpdate[] = [];
     let deletes: Set<Id> = new Set(_.map(targetDataset, e => e._id));
     _.each(data, src => {
-      let key = joinKey(src);
-      if (key in targetDatasetByJoinKey) {
-        let dst = targetDatasetByJoinKey[key];
-        let update = DataManager._compareAndPrepShallowUpdate(dst, src);
+      if ('_joinedEntry' in src) {
+        let dst = src._joinedEntry;
+        let srcCopy = _.cloneDeep(src);
+        delete srcCopy._joinedEntry;
+        let update = DataManager._compareAndPrepShallowUpdate(dst, srcCopy);
         if (update) {
           if ('_type' in update || '_id1' in update || '_id2' in update) {
-            throw Error(`[DataManager.importDataset()] Cannot update _type, `
-              + `_id1, or _id2 field: update=${update}`);
+            throw Error(`[DataManager.importJoinedDataset()] Cannot update `
+             + `_type, _id1, or _id2 field: update=${update}`);
           }
           updates.push(update);
         }
@@ -157,8 +186,8 @@ export class DataManager {
         } else if (!typeIsEnt && isIAssocInsert(insert)) {
           insertAssocs.push(insert);
         } else {
-          throw Error(`[DataManager.importDataset()] Data object not valid `
-            + `for insertion: type=${type}, insert=${insert}`);
+          throw Error(`[DataManager.importJoinedDataset()] Data object `
+            + `not valid for insertion: type=${type}, insert=${insert}`);
         }
       }
     });
@@ -182,9 +211,11 @@ export class DataManager {
     }
     if (insertEnts.length > 0) {
       await this._g.insertEntities(insertEnts);
+      this._cache[Type[type]].valid = false;
     }
     if (insertAssocs.length > 0) {
       await this._g.insertAssocs(insertAssocs);
+      this._cache[Type[type]].valid = false;
     }
     if (updates.length > 0) {
       if (typeIsEnt) {
@@ -192,6 +223,7 @@ export class DataManager {
       } else {
         await this._g.updateAssocs(updates);
       }
+      this._cache[Type[type]].valid = false;
     }
     if (deletes.size > 0) {
       if (typeIsEnt) {
@@ -199,6 +231,28 @@ export class DataManager {
       } else {
         await this._g.deleteAssocs(Array.from(deletes));
       }
+      this._cache[Type[type]].valid = false;
     }
   }
+
+  public async importDataset (
+    type: Type,
+    data: (IEnt | IAssoc)[],
+    joinFields: string[],
+    cliConfirmation: boolean = false,
+    shouldDelete: boolean = false,
+  ) {
+    let joinedData = await this.loadAllAndJoinWithData(
+      type,
+      data,
+      joinFields,
+    );
+    await this.importJoinedDataset(
+      type,
+      joinedData,
+      cliConfirmation,
+      shouldDelete,
+    );
+  }
+
 }

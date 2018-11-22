@@ -19,9 +19,9 @@ export class AirtableReader {
   }
 
   /**
-   * @returns a map from id to fields (object)
+   * @returns a map from id to fields
    */
-  public async readTable (tableName: string): Promise<object> {
+  public async readTable (tableName: string): Promise<{[id: string]: object}> {
     if (this._cache && this._cache[tableName]) {
       return this._cache[tableName];
     }
