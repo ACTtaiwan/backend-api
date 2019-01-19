@@ -3,17 +3,25 @@ import { inspect } from 'util';
 
 export class Logger {
   protected _id: string;
+  protected _methodName: string;
+
   constructor (
-    protected _methodName: string,
-    protected _className?: string,
+    protected _className: string = ''
   ) {
     this._id = uuid();
   }
 
+  public in (methodName: string): Logger {
+    let o = new Logger(this._className);
+    o._id = this._id;
+    o._methodName = methodName;
+    return o;
+  }
+
   public log (msg: any) {
-    let prefix = (this._className ?
+    let prefix = (this._methodName ?
       `${this._className}.${this._methodName}` :
-      `${this._methodName}`) + `:${this._id}`;
+      `${this._className}`) + `:${this._id}`;
     Logger.log(msg, prefix);
   }
 

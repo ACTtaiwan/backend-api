@@ -6,12 +6,16 @@ export type CongressMemberTitle = {
 }
 
 export class CongressUtils {
-  static readonly STATES = new Set(['ID', 'VA', 'IN', 'SD', 'ME', 'NV', 'AK',
+  private static readonly STATES = new Set(['ID', 'VA', 'IN', 'SD', 'ME', 'NV', 'AK',
     'WV', 'IA', 'SC', 'WA', 'NH', 'OK', 'LA', 'NY', 'ND', 'NJ', 'MO', 'KS',
     'CT', 'RI', 'UT', 'WY', 'OR', 'AL', 'MN', 'NE', 'TX', 'NC', 'CA', 'OH',
     'KY', 'MT', 'CO', 'MA', 'MD', 'AZ', 'VT', 'NM', 'PA', 'DE', 'TN', 'WI',
     'MS', 'GA', 'AR', 'FL', 'HI', 'MI', 'IL']);
-  static readonly TERRITORIES = new Set(['MP', 'GU', 'AS', 'VI', 'PI', 'DK']);
+  private static readonly TERRITORIES = new Set(['MP', 'GU', 'AS', 'VI', 'PI', 'DK']);
+
+  public static get ALL_STATE_CODE (): string[] {
+    return [...Array.from(CongressUtils.STATES), ...Array.from(CongressUtils. TERRITORIES), 'PR', 'DC'];
+  }
 
   public static getMemberTitle (chamber: Chamber, state: string)
   : CongressMemberTitle {

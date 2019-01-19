@@ -214,7 +214,7 @@ export class MongoGraph implements IDataGraph {
   }
 
   public async insertEntities (ents: IEntInsert[]): Promise<Id[]> {
-    let logger = new Logger('insertEntities', 'MongoGraph');
+    let logger = new Logger('MongoGraph').in('insertEntities');
     logger.log(`inserting ${ents.length} ents`);
     let ids = await MongoGraph._insertHelper(this._entities, ents);
     logger.log(`inserted ${ids.length} ents: ${JSON.stringify(ids)}`);
@@ -369,7 +369,7 @@ export class MongoGraph implements IDataGraph {
     limit?: number,
     readPageSize: number = MongoDbConfig.getReadPageSize(),
   ): Promise<IEnt[]> {
-    let logger = new Logger('findEntities', 'MongoGraph');
+    let logger = new Logger('MongoGraph').in('findEntities');
     logger.log(JSON.stringify({
       entQuery: entQuery,
       entAssocQueries: entAssocQueries,
@@ -475,7 +475,7 @@ export class MongoGraph implements IDataGraph {
   }
 
   public async updateEntities (updates: IUpdate[]): Promise<number> {
-    let logger = new Logger('updateEntities', 'MongoGraph');
+    let logger = new Logger('MongoGraph').in('updateEntities');
     logger.log(`updating ${updates.length}: `
       + JSON.stringify(_.map(updates, u => u._id)));
     let updateCount = await MongoGraph._updateHelper(
@@ -488,7 +488,7 @@ export class MongoGraph implements IDataGraph {
   }
 
   public async deleteEntities (ids: Id[]): Promise<[number, number]> {
-    let logger = new Logger('deleteEntities', 'MongoGraph');
+    let logger = new Logger('MongoGraph').in('deleteEntities');
     logger.log(`deleting ${ids.length}: ${JSON.stringify(ids)}`);
     let binIds = _.map(ids, id => MongoGraph.encodeId(id));
     let promiseDeleteEnts = DataGraphUtils.retryInChunks(
@@ -517,7 +517,7 @@ export class MongoGraph implements IDataGraph {
   public async insertAssocs (
     assocs: IAssoc[],
   ): Promise<Id[]> {
-    let logger = new Logger('insertAssocs', 'MongoGraph');
+    let logger = new Logger('MongoGraph').in('insertAssocs');
     logger.log(`inserting ${assocs.length} assocs`);
     let ids = await MongoGraph._insertHelper(this._assocs, assocs);
     logger.log(`inserted ${assocs.length} assocs: ${JSON.stringify(ids)}`);
@@ -535,7 +535,7 @@ export class MongoGraph implements IDataGraph {
     sort?: ISortField[],
     readPageSize: number = MongoDbConfig.getReadPageSize(),
   ): Promise<IAssoc[]> {
-    let logger = new Logger('findAssocs', 'MongoGraph');
+    let logger = new Logger('MongoGraph').in('findAssocs');
     logger.log(JSON.stringify({
       query: query,
       fields: fields,
@@ -608,7 +608,7 @@ export class MongoGraph implements IDataGraph {
   }
 
   public async updateAssocs (updates: IUpdate[]): Promise<number> {
-    let logger = new Logger('updateAssocs', 'MongoGraph');
+    let logger = new Logger('MongoGraph').in('updateAssocs');
     logger.log(`updating ${updates.length}: `
       + JSON.stringify(_.map(updates, u => u._id)));
     let updateCount = await MongoGraph._updateHelper(
@@ -621,7 +621,7 @@ export class MongoGraph implements IDataGraph {
   }
 
   public async deleteAssocs (ids: Id[]): Promise<number> {
-    let logger = new Logger('deleteAssocs', 'MongoGraph');
+    let logger = new Logger('MongoGraph').in('deleteAssocs');
     logger.log(`deleting ${ids.length}: ${JSON.stringify(ids)}`);
     let binIds = _.map(ids, id => MongoGraph.encodeId(id));
     let results = await DataGraphUtils.retryInChunks(

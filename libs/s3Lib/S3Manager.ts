@@ -61,6 +61,16 @@ export abstract class S3Bucket {
     })
   }
 
+  protected hasObject (s3BucketKey: string): Promise<boolean> {
+    let params: aws.S3.HeadObjectRequest = {
+      Bucket: this.bucketName,
+      Key: s3BucketKey
+    }
+    return new Promise((resolve, reject) => {
+      this.s3.headObject(params, (err, data) => resolve(!(err && err.code === 'NotFound')))
+    })
+  }
+
   protected getObject (s3BucketKey: string): Promise<aws.S3.GetObjectOutput> {
     let params: aws.S3.GetObjectRequest = {
       Bucket: this.bucketName,
@@ -260,11 +270,22 @@ export class PersonBucket extends S3Bucket {
   private readonly mimeType = 'image/jpeg'
   private readonly fileSuffix = '.jpg'
 
+  public getUrl (prefix: string, res: ProfilePictureResolution): string {
+    const s3BucketKey = this.s3BucketKey(prefix, res)
+    return S3BucketHelper.generateFullUrl(this.bucketName, s3BucketKey)
+  }
+
+  public hasProfilePicture (prefix: string, res: ProfilePictureResolution)
+  : Promise<boolean> {
+    const s3BucketKey = this.s3BucketKey(prefix, res)
+    return super.hasObject(s3BucketKey)
+  }
+
   public putProfilePicture (prefix: string, content: aws.S3.Body, res: ProfilePictureResolution)
   : Promise<string> {
     const s3BucketKey = this.s3BucketKey(prefix, res)
-    return super.putObject(content, s3BucketKey, this.mimeType).then(() =>
-      S3BucketHelper.generateFullUrl(this.bucketName, s3BucketKey))
+    return super.putObject(content, s3BucketKey, this.mimeType)
+      .then(() => this.getUrl(prefix, res))
   }
 
   public s3BucketKey (prefix: string, res: ProfilePictureResolution): string {

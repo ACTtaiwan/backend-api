@@ -41,6 +41,11 @@ export class CongressGovHelper {
     return url
   }
 
+  public static generateCongressGovMemberUrl (bioGuideId: string): string {
+    const url = CongressGovHelper.CONGRESS_GOV_HOST + '/member/m/' + bioGuideId
+    return url
+  }
+
   public static pathToFullUrl (path: string): string {
     const host = CongressGovHelper.CONGRESS_GOV_HOST
     return (path && path.startsWith(host)) ? path : host + path
