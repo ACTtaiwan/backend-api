@@ -6,38 +6,44 @@ import { MongoDbConfig } from '../../config/mongodb'
 export class CongressGovDataProvider {
   public static readonly EXPIRE_IN_MIN_BASIC_INFO: number = 60 * 24 * 1 // 1 day
   public static readonly EXPIRE_IN_MIN_ALL_INFO: number = 60 * 24 * 1 // 1 day
+  public static readonly EXPIRE_IN_MIN_MEMBER: number = 60 * 24 * 1 // 1 day
   public static readonly EXPIRE_IN_MIN_TEXT: number = -1; // never
 
   public fetchBillInfoHtml (url: string): Promise<any> {
     console.log(`[CongressGovDataProvider::fetchBillInfoHtml()] start, url = ${url}`)
-    return this.fetchBillHtml(url, CongressGovDataProvider.EXPIRE_IN_MIN_BASIC_INFO)
+    return this.fetchHtml(url, CongressGovDataProvider.EXPIRE_IN_MIN_BASIC_INFO)
   }
 
   public fetchBillAllInfoHtml (url: string): Promise<any> {
     console.log(`[CongressGovDataProvider::fetchBillAllInfoHtml()] start, url = ${url}`)
-    return this.fetchBillHtml(url, CongressGovDataProvider.EXPIRE_IN_MIN_ALL_INFO)
+    return this.fetchHtml(url, CongressGovDataProvider.EXPIRE_IN_MIN_ALL_INFO)
   }
 
   public fetchBillTextHtml (url: string): Promise<any> {
     console.log(`[CongressGovDataProvider::fetchBillTextHtml()] start, url = ${url}`)
-    return this.fetchBillHtml(url, CongressGovDataProvider.EXPIRE_IN_MIN_TEXT)
+    return this.fetchHtml(url, CongressGovDataProvider.EXPIRE_IN_MIN_TEXT)
   }
 
-  private async fetchBillHtml (url: string, expireIn: number): Promise<any> {
-    console.log(`[CongressGovDataProvider::fetchBillContent()] start, url = ${url}`)
+  public fetchMemberHtml (url: string): Promise<any> {
+    console.log(`[CongressGovDataProvider::fetchMemberHtml()] start, url = ${url}`)
+    return this.fetchHtml(url, CongressGovDataProvider.EXPIRE_IN_MIN_MEMBER)
+  }
+
+  private async fetchHtml (url: string, expireIn: number): Promise<any> {
+    console.log(`[CongressGovDataProvider::fetchHtml()] start, url = ${url}`)
     const tbl = await CongressGovDataProvider.getCacheTable()
 
     return tbl.getObjectByUrlPath(url).then(obj => {
       if (obj) {
-        console.log(`[CongressGovDataProvider::fetchBillContent()] cache found`)
+        console.log(`[CongressGovDataProvider::fetchHtml()] cache found`)
         if (this.isExpired(obj.lastUpdate, expireIn)) {
-          console.log(`[CongressGovDataProvider::fetchBillContent()] cache is expired`)
+          console.log(`[CongressGovDataProvider::fetchHtml()] cache is expired`)
           return this.updateDbContent(tbl, url)
         } else {
           return cheerio.load(obj.rawData)
         }
       } else {
-        console.log(`[CongressGovDataProvider::fetchBillContent()] cache not found - fetching & updating`)
+        console.log(`[CongressGovDataProvider::fetchHtml()] cache not found - fetching & updating`)
         return this.updateDbContent(tbl, url)
       }
     })
@@ -45,7 +51,7 @@ export class CongressGovDataProvider {
 
   private updateDbContent (tbl: mongoDbLib.CongressGovSyncBillTable, url: string): any {
     return Utility.fetchUrlContent(url).then(body => {
-      console.log(`[CongressGovDataProvider::fetchBillContent()] URL content fetched`)
+      console.log(`[CongressGovDataProvider::updateDbContent()] URL content fetched`)
       tbl.putObject({
         urlPath: url,
         rawData: body

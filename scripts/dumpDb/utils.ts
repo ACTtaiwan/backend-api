@@ -15,7 +15,7 @@ export async function getMongoToolFlags (archiveName: string)
     `--archive=${archiveName}`,
     '--gzip',
   ];
-  if (uriComponent.host !== 'localhost') {
+  if (uriComponent.host !== 'localhost' && uriComponent.host.toLowerCase().includes('azure')) {
     flags.push('--ssl');
     flags.push('--sslAllowInvalidCertificates');
   }
