@@ -52,7 +52,7 @@ export class CongressGovTextParser {
     return this._versionLookupTable
   }
 
-  public set versionLookupTable (val: {[displayName: string]: string} ) {
+  public set versionLookupTable (val: {[code: string]: string} ) {
     this._versionLookupTable = val
   }
 
@@ -124,7 +124,7 @@ export class CongressGovTextParser {
       v.display = v.display.replace(re, '').trim()
 
       if (matches && matches.length === 1) {
-        v.date = Utility.parseDateTimeString(matches[0])
+        v.date = Utility.parseDateTimeStringAtEST(matches[0])
       }
     })
 

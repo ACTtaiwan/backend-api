@@ -185,7 +185,7 @@ describe('MongoGraphTest', async function () {
     });
 
     it('find ents by field value', async function () {
-      let found = await g.findEntities({ _type: ENT_TYPE1, a: 1 });
+      let found = await g.findEntities(<any> { _type: ENT_TYPE1, a: 1 });
       expect(found).to.have.lengthOf(2);
       expect(found).to.deep.include(ents[0]);
       expect(found).to.deep.include(ents[2]);
@@ -193,14 +193,14 @@ describe('MongoGraphTest', async function () {
 
     it('find ents, specifying returned fields', async function () {
       let found =
-        await g.findEntities({ _type: ENT_TYPE1, a: 999 }, undefined, [ 'c' ]);
+        await g.findEntities(<any> { _type: ENT_TYPE1, a: 999 }, undefined, <any> [ 'c' ]);
       expect(found).to.have.lengthOf(1);
       expect(found).to.deep.include(_.pick(ents[1], [ '_id', '_type', 'c' ]));
       expect(found[0]).to.not.have.any.keys([ 'a', 'b' ]);
     });
 
     it('find ents by field values', async function () {
-      let found = await g.findEntities({ _type: ENT_TYPE1, a: [1, 2] });
+      let found = await g.findEntities(<any> { _type: ENT_TYPE1, a: [1, 2] });
       expect(found).to.have.lengthOf(3);
       expect(found).to.deep.include(ents[0]);
       expect(found).to.deep.include(ents[2]);
@@ -209,14 +209,14 @@ describe('MongoGraphTest', async function () {
 
     it('find ents by multi-field, multi-values', async function () {
       let found =
-        await g.findEntities({ _type: ENT_TYPE1, a: [1, 2], b: 'bbb' });
+        await g.findEntities(<any> { _type: ENT_TYPE1, a: [1, 2], b: 'bbb' });
       expect(found).to.have.lengthOf(2);
       expect(found).to.deep.include(ents[0]);
       expect(found).to.deep.include(ents[3]);
     });
 
     it('find nonexisting ents', async function () {
-      let found = await g.findEntities({ _type: ENT_TYPE2, d: 'data2' });
+      let found = await g.findEntities(<any> { _type: ENT_TYPE2, d: 'data2' });
       expect(found).to.have.lengthOf(0);
     });
 
@@ -248,9 +248,9 @@ describe('MongoGraphTest', async function () {
       //  3b. has property { d: 'data2' }
       // finally, return only property c (and _id) of such ents
       let found = await g.findEntities(
-        { _type: ENT_TYPE1, a: 999 },
-        [{ _type: ASSOC_TYPE1, _id1: ids[5], d: 'data2' }],
-        [ 'c' ],
+        <any> { _type: ENT_TYPE1, a: 999 },
+        <any> [{ _type: ASSOC_TYPE1, _id1: ids[5], d: 'data2' }],
+        <any> [ 'c' ],
       );
       expect(found).to.have.lengthOf(1);
       expect(found).to.deep.include(_.pick(ents[1], ['_id', '_type', 'c']));
@@ -342,7 +342,7 @@ describe('MongoGraphTest', async function () {
 
     it('update a single ent, remove/add a field', async function () {
       let numUpdated = await g.updateEntities([
-        { _id: ids[1], up: undefined, z: '78' }, // remove up, add z
+        <any> { _id: ids[1], up: undefined, z: '78' }, // remove up, add z
       ]);
       expect(numUpdated).to.eql(1);
       let updatedEnt = await g.loadEntity(ids[1]);
@@ -366,7 +366,7 @@ describe('MongoGraphTest', async function () {
           expect(assoc).to.eql(_.merge(assocs[i], { u: '123' }));
         } else if (i === 6) {
           let a = _.cloneDeep(assocs[i]);
-          delete a.d;
+          delete (<any> a).d;
           expect(assoc).to.eql(a);
         } else if (i === 8) {
           expect(assoc).to.eql(_.merge(assocs[i], { e: '5566' }));

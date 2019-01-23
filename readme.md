@@ -42,6 +42,13 @@ the source repository, create a file `config/secret.json`. Example:
 
     `npm run ts-node scripts/dumpDb/restoreMongo.ts <ARCHIVE_NAME>`
 
+## Date / Time policy
+- All datetime should be stored as UTC epoch (long integer).
+- For the date WITHOUT time, set `12:00am-0500` (DC time) as its time.
+- For the date WITH time but timezone is unknown, set `-0500` (DC time) as its timezone.
+- Note that `-0500` is UTC offset (Email timezone), where it could be EST or EDT.
+- Recommend to use `Utility.parseDateTimeStringAtEST()` to parse datetime stamp in DC timezone.
+
 ## Test lambda endpoints
 See files in `testLambda/`. Must be run under root directory.
 

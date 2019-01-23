@@ -143,7 +143,7 @@ export class CongressGovAllInfoParser {
       item = $(item)
       let dateNode = item.find('td.date')
       let date = (dateNode.length === 1) && dateNode[0].children && dateNode[0].children[0] && dateNode[0].children[0].data
-      date = (date && Utility.parseDateTimeString(date).getTime()) || undefined
+      date = (date && Utility.parseDateTimeStringAtEST(date).getTime()) || undefined
 
       let descNode = item.find('td.actions').html()
       let description = descNode && descNode.trim()
@@ -179,7 +179,7 @@ export class CongressGovAllInfoParser {
 
       let dateNode = item.find('td.date')
       let date = (dateNode.length === 1) && dateNode[0].children && dateNode[0].children[0] && dateNode[0].children[0].data
-      date = (date && Utility.parseDateTimeString(date).getTime()) || undefined
+      date = (date && Utility.parseDateTimeStringAtEST(date).getTime()) || undefined
 
       let obj = <models.CongressGovCoSponsor> {}
 
@@ -237,7 +237,7 @@ export class CongressGovAllInfoParser {
         let text = _.map(nodes, (n: any) => $(n).text().trim())
         let obj = <models.CongressGovCommitteeRecord> {}
         if (text && text[0]) {
-          obj.date = Utility.parseDateTimeString(text[0]).getTime()
+          obj.date = Utility.parseDateTimeStringAtEST(text[0]).getTime()
         }
         if (text && text[1]) {
           obj.activity = text[1]

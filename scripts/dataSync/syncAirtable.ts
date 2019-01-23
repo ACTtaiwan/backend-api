@@ -389,10 +389,10 @@ const SYNC_BILL_CONFIG: SyncConfig = {
         'display': 'Code',
       },
     },
-    'introducedDate': {
-      sourceField: 'date introduced',
-      transform: SyncUtils.dateToTimestamp,
-    },
+    // 'introducedDate': {
+    //   sourceField: 'date introduced',
+    //   transform: SyncUtils.dateToTimestamp,
+    // },
     'title': 'bill title',
     'categories': {
       sourceField: 'categories',

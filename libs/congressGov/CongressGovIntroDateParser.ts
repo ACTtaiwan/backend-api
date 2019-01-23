@@ -33,7 +33,7 @@ export class CongressGovIntroDateParser {
       let dateMatch = text.match(/[0-9]{2}\/[0-9]{2}\/[0-9]{4}/)
       if (dateMatch && dateMatch.length === 1) {
         let dateStr = dateMatch[0]
-        return Utility.parseDateTimeString(dateStr).getTime()
+        return Utility.parseDateTimeStringAtEST(dateStr).getTime()
       }
     }
     return null

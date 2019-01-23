@@ -1,8 +1,8 @@
 {
-  "name": "taiwanwatch-volunteer-site-api",
+  "name": "ustw-backend-api",
   "version": "0.0.1",
   "private": true,
-  "description": "Taiwan Watch Volunteer Site - APIs",
+  "description": "US Taiwan Watch Backend APIs",
   "main": "handler.js",
   "scripts": {
     "deploy": "node_modules/serverless/bin/serverless deploy",
@@ -65,7 +65,7 @@
     "joi": "^10.6.0",
     "lodash": "^4.17.4",
     "mocha": "^5.2.0",
-    "moment": "^2.20.1",
+    "moment": "^2.23.0",
     "mongodb": "^3.1.3",
     "mongodb-uri": "^0.9.7",
     "request": "^2.83.0",

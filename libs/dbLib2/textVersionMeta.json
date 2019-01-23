@@ -1,0 +1,326 @@
+[
+  {
+    "chamber": [],
+    "code": "unknown",
+    "description": "Unknown Text Version",
+    "name": "Unknown Text Version"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "rcs",
+    "description": "An alternate name for this version is Referred to Different or Additional Senate Committee. This version is a bill or resolution as it was re-referred to a different or additional Senate committee. It may have been discharged from the committee to which it was originally referred then referred to a different committee, referred to an additional committee sequentially, or reported by the original committee then referred to an additional committee. See H.R. 1502 from the 105th Congress for an example of this bill version on a House bill.",
+    "name": "Reference Change Senate"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "res",
+    "description": "This version is a re-engrossed amendment in the Senate. See also Engrossed Amendment Senate.",
+    "name": "Re-engrossed Amendment Senate"
+  },
+  {
+    "chamber": ["house"],
+    "code": "rdh",
+    "description": "An alternate name for this bill version is Received in House from Senate. This version is a bill or resolution as passed or agreed to in the Senate which has been sent to and received in the House. See the 105th Congress for an example of this bill version.",
+    "name": "Received in House"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "ips",
+    "description": "This version is a bill or resolution as it was when consideration was suspended with no date specified for continuing its consideration.",
+    "name": "Indefinitely Postponed Senate"
+  },
+  {
+    "chamber": ["house"],
+    "code": "eph",
+    "description": "This version is the official copy of the bill or joint resolution as passed and certified by the Clerk of the House before it is sent to the Senate. See H. J. RES. 280 from the 101st Congress for an example of this bill version.",
+    "name": "Engrossed and Deemed Passed by House"
+  },
+  {
+    "chamber": ["house", "senate", "joint"],
+    "code": "enr",
+    "description": "An alternate name for this version is Enrolled as Agreed to or Passed by Both House and Senate. This version is the final official copy of the bill or joint resolution which both the House and the Senate have passed in identical form. After it is certified by the chief officer of the house in which it originated (the Clerk of the House or the Secretary of the Senate), then signed by the House Speaker and the Senate President Pro Tempore, the measure is sent to the President for signature.",
+    "name": "Enrolled Bill"
+  },
+  {
+    "chamber": ["senate"],
+    "code": "rts",
+    "description": "Bill or resolution as referred or re-referred to a Senate committee or committees.",
+    "name": "Referred to Committee Senate"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "cds",
+    "description": "An alternate name for this version is Senate Committee Discharged from Further Consideration. This version is a bill or resolution as it was when the committee to which the bill or resolution has been referred has been discharged from its consideration to make it available for floor consideration.",
+    "name": "Committee Discharged Senate"
+  },
+  {
+    "chamber": ["house"],
+    "code": "sc",
+    "description": "This version is used to change sponsors.",
+    "name": "Sponsor Change"
+  },
+  {
+    "chamber": ["house"],
+    "code": "ath",
+    "description": "An alternate name for this version is Agreed to by House. This version is a simple or concurrent resolution as agreed to in the House of Representatives.",
+    "name": "Agreed to House"
+  },
+  {
+    "chamber": ["house", "senate", "joint"],
+    "code": "renr",
+    "description": "This version has been re-enrolled.",
+    "name": "Re-enrolled Bill"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "reah",
+    "description": "This version is a re-engrossed amendment in the House.",
+    "name": "Re-engrossed Amendment House"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "rfs",
+    "description": "An alternate name for this bill version is Referred to Senate Committee after being Received from House. This version is a bill or resolution as passed or agreed to in the House which has been sent to, received in the Senate, and referred to Senate committee or committees.",
+    "name": "Referred in Senate"
+  },
+  {
+    "chamber": ["house"],
+    "code": "fph",
+    "description": "Bill or resolution that failed to pass the House.",
+    "name": "Failed Passage House"
+  },
+  {
+    "chamber": ["senate"],
+    "code": "hds",
+    "description": "An alternate name for this bill version is Ordered Held at Senate Desk after being Received from House. This version is a bill or resolution as received in the Senate from the House which has been ordered to be held at the desk, sometimes in preparation for going to conference. It is available to be called up for consideration by unanimous consent.",
+    "name": "Held at Desk Senate"
+  },
+  {
+    "chamber": ["senate"],
+    "code": "rds",
+    "description": "An alternate name for this bill version is Received in Senate from House. This version is a bill or resolution as it was passed or agreed to in the House which has been sent to and received in the Senate.",
+    "name": "Received in Senate"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "cdh",
+    "description": "An alternate name for this version is House Committee Discharged from Further Consideration. This version is a bill or resolution as it was when the committee to which the bill or resolution has been referred has been discharged from its consideration to make it available for floor consideration.",
+    "name": "Committee Discharged House"
+  },
+  {
+    "chamber": ["joint"],
+    "code": "pl",
+    "description": "Enacted bills and joint resolutions will receive public law (PL) numbers from NARA. PL numbers link to slip law texts after they have been published by GPO.",
+    "name": "Public Law"
+  },
+  {
+    "chamber": ["house"],
+    "code": "cph",
+    "description": "Considered and Passed House – An alternate name for this version is Considered and Passed by House. This version is a bill or joint resolution as considered and passed.",
+    "name": "Considered and Passed House"
+  },
+  {
+    "chamber": ["senate"],
+    "code": "as",
+    "description": "An alternate name for this version is Senate Amendment Ordered to be Printed. This version contains an amendment that has been ordered to be printed.",
+    "name": "Amendment Ordered to be Printed Senate"
+  },
+  {
+    "chamber": ["house"],
+    "code": "eh",
+    "description": "An alternate name for this version is Engrossed as Agreed to or Passed by House. This version is the official copy of the bill or joint resolution as passed, including the text as amended by floor action, and certified by the Clerk of the House before it is sent to the Senate.",
+    "name": "Engrossed in House"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "rs",
+    "description": "This version is a bill or resolution as reported by the committee or one of the committees to which it was referred, including changes, if any, made in committee. The bill or resolution is usually accompanied by a committee report which describes the measure, the committee's views on it, its costs, and the changes it proposes to make in existing law. The bill or resolution is then available for floor consideration.",
+    "name": "Reported in Senate"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "cps",
+    "description": "An alternate name for this version is Considered and Passed by Senate. This version is a bill or joint resolution as considered and passed.",
+    "name": "Considered and Passed Senate"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "ris",
+    "description": "An alternate name for this bill version is Referred to Senate Committee with Instructions. This version is a bill or resolution as referred or re-referred to committee with instructions to take some action on it. Often in the Senate the instructions require the committee to report the measure forth with specified amendments.",
+    "name": "Referral Instructions Senate"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "lth",
+    "description": "This version is a bill or resolution as laid on the table which disposes of it immediately, finally, and adversely via a motion without a direct vote on its substance.",
+    "name": "Laid on Table in House"
+  },
+  {
+    "chamber": ["house"],
+    "code": "ash",
+    "description": "An alternate name for this version is House Sponsors or Cosponsors Added or Withdrawn. This version is used to add or delete cosponsor names. When used, it most often shows numerous cosponsors being added.",
+    "name": "Additional Sponsors House"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "rih",
+    "description": "An alternate name for this bill version is Referred to House Committee with Instructions. This version is a bill or resolution as referred or re-referred to committee with instructions to take some action on it. Invariably in the House the instructions require the committee to report the measure forthwith with specified amendments.",
+    "name": "Referral Instructions House"
+  },
+  {
+    "chamber": ["senate"],
+    "code": "sas",
+    "description": "Additional sponsors have been added to this version.",
+    "name": "Additional Sponsors Senate"
+  },
+  {
+    "chamber": ["senate"],
+    "code": "is",
+    "description": "This version is a bill or resolution as formally presented by a member of Congress to a clerk when the Senate is in session.",
+    "name": "Introduced in Senate"
+  },
+  {
+    "chamber": ["house"],
+    "code": "hdh",
+    "description": "An alternate name for this bill version is Ordered Held at House Desk after being Received from House. This version has been held at the desk in the House.",
+    "name": "Held at Desk House"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "pp",
+    "description": "Any bill from the House or Senate may be issued as a public print. If a bill is issued as a Public Print more copies will be printed than are printed for an engrossed version. Public prints also number the amendments made by the last chamber to pass it. Public Prints are typically published by the Senate to show Senate amendments to House bills. They typically contain the text of a House bill, indicating portions struck, plus Senate amendments in italics. They are routinely ordered for appropriations bills, but the Senate occasionally by unanimous consent orders public prints of other significant bills.",
+    "name": "Public Print"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "pav",
+    "description": "This version is a bill or resolution as it was when an action previously taken on it was undone or invalidated. For example in the 102nd Congress for H.R. 2321 the Senate action discharging the Energy Committee and amending and passing the bill was vitiated by unanimous consent. The bill was amended, reported, and passed anew.",
+    "name": "Previous Action Vitiated"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "rch",
+    "description": "An alternate name for this bill version is Referred to Different or Additional House Committee. This version is a bill or resolution as re-referred to a different or additional House committee. It may have been discharged from the committee to which it was originally referred then referred to a different committee, referred to an additional committee sequentially, or reported by the original committee then referred to an additional committee. See S. 1016 for an example of this bill version on a Senate bill.",
+    "name": "Reference Change House"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "rfh",
+    "description": "An alternate name for this bill version is Referred to House Committee after being Received from Senate. This version is a bill or resolution as passed or agreed to in the Senate which has been sent to, received in the House, and referred to House committee or committees.",
+    "name": "Referred in House"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "eah",
+    "description": "An alternate name for this version is Engrossed Amendment as Agreed to by House. This version is the official copy of a bill or joint resolution as passed, including the text as amended by floor action, and certified by the Clerk of the House before it is sent to the Senate. Often this is the engrossment of an amendment in the nature of a substitute, an amendment which replaces the entire text of a measure. It strikes out everything after the enacting or resolving clause and inserts a version which may be somewhat, substantially, or entirely different.",
+    "name": "Engrossed Amendment House"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "lts",
+    "description": "This version was laid on the table in the Senate. See also Laid on Table in House.",
+    "name": "Laid on Table in Senate"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "pwh",
+    "description": "This version shows Senate amendments to a House bill. It is similar to a Public Print from the Senate, except that it does not include portions struck, only the Senate amendment in the nature of a substitute in italics. See S. 1059 from the 106th Congress for an example of this bill version on a Senate bill.",
+    "name": "Ordered to be Printed with House Amendment"
+  },
+  {
+    "chamber": ["senate"],
+    "code": "es",
+    "description": "An alternate name for this version is Engrossed as Agreed to or Passed by Senate. This version is the official copy of the bill or joint resolution as passed, including the text as amended by floor action, and certified by the Secretary of the Senate before it is sent to the House.",
+    "name": "Engrossed in Senate"
+  },
+  {
+    "chamber": ["house"],
+    "code": "fah",
+    "description": "This amendment has failed in the House.",
+    "name": "Failed Amendment House"
+  },
+  {
+    "chamber": ["senate"],
+    "code": "ops",
+    "description": "This version was ordered to be printed by the Senate. For example, in the 105th Congress S. 1173 was considered at length by the Senate, returned to the Senate calendar, ordered to be printed. Then its text was inserted into its companion House bill which was passed by the Senate.",
+    "name": "Ordered to be Printed Senate"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "rh",
+    "description": "This version is a bill or resolution as reported by the committee or one of the committees to which it was referred, including changes, if any, made in committee. The bill or resolution is usually accompanied by a committee report which describes the measure, the committee's views on it, its costs, and the changes it proposes to make in existing law. The bill or resolution is then available for floor consideration. This version occurs to both House and Senate bills.",
+    "name": "Reported in House"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "pcs",
+    "description": "This version is a bill or resolution as placed on one of the two Senate calendars. It is eligible for floor consideration, but a place on a calendar does not guarantee consideration.",
+    "name": "Placed on Calendar Senate"
+  },
+  {
+    "chamber": ["senate"],
+    "code": "ats",
+    "description": "An alternate name for this version is Agreed to by Senate. This version is a simple or concurrent resolution as agreed to in the Senate.",
+    "name": "Agreed to Senate"
+  },
+  {
+    "chamber": ["house"],
+    "code": "iph",
+    "description": "This version is a bill or resolution as it was when consideration was suspended with no date specified for continuing its consideration.",
+    "name": "Indefinitely Postponed House"
+  },
+  {
+    "chamber": ["house"],
+    "code": "rah",
+    "description": "This version was referred with amendments to the House.",
+    "name": "Referred with Amendments House"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "pap",
+    "description": "This version is a public print of a bill as passed. Generally, appropriation bills receive a PP designation while non-appropriation bills receive a PAP designation. See also Public Print.",
+    "name": "Printed as Passed"
+  },
+  {
+    "chamber": ["senate"],
+    "code": "ras",
+    "description": "This version was referred with amendments to the Senate.",
+    "name": "Referred with Amendments Senate"
+  },
+  {
+    "chamber": ["senate"],
+    "code": "fps",
+    "description": "Bill or resolution that failed to pass the Senate.",
+    "name": "Failed Passage Senate"
+  },
+  {
+    "chamber": ["house"],
+    "code": "ih",
+    "description": "This version is a bill or resolution as formally presented by a member of Congress to a clerk when the House is in session.",
+    "name": "Introduced in House"
+  },
+  {
+    "chamber": ["house"],
+    "code": "rth",
+    "description": "Bill or resolution as referred or re-referred to a House committee or committees. See 104th Congress for an example of this bill version.",
+    "name": "Referred to Committee House"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "eas",
+    "description": "An alternate name for this version is Engrossed Amendment as Agreed to by Senate. This version is the official copy of the amendment to a bill or joint resolution as passed, including the text as amended by floor action, and certified by the Secretary of the Senate before it is sent to the House. Often this is the engrossment of an amendment in the nature of a substitute, an amendment which replaces the entire text of a measure. It strikes out everything after the enacting or resolving clause and inserts a version which may be somewhat, substantially, or entirely different.",
+    "name": "Engrossed Amendment Senate"
+  },
+  {
+    "chamber": ["house"],
+    "code": "oph",
+    "description": "This version was ordered to be printed by the House. See also Ordered to be Printed Senate.",
+    "name": "Ordered to be Printed House"
+  },
+  {
+    "chamber": ["house", "senate"],
+    "code": "pch",
+    "description": "This version is a bill or resolution as placed on one of the five House calendars. It is eligible for floor consideration, but a place on a calendar does not guarantee consideration.",
+    "name": "Placed on Calendar House"
+  }
+]

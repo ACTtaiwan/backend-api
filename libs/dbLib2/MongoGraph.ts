@@ -3,20 +3,14 @@ import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { IDataGraph, Type, Id, IEnt, IEntQuery, IEntAssocQuery,
   IUpdate, IAssoc, DataGraphUtils, IAssocQuery, IEntInsert,
-  IAssocInsert, ISortField, IHasTypeOrTypes } from './DataGraph';
+  IAssocInsert, ISortField, IQueryOperator } from './DataGraph';
 import { MongoDbConfig } from '../../config/mongodb';
 import { expect } from 'chai';
 import { Logger } from './Logger';
 
-type QueryOperator = {
-  _op: string;
-  _val: any;
-}
-
-function isQueryOperator (o: any): o is QueryOperator {
+export function isQueryOperator<T extends IEnt> (o: any): o is IQueryOperator<T> {
   return typeof o === 'object' && o['_op'] && o['_val'];
 }
-
 
 class PageCursor {
   constructor (
@@ -361,14 +355,14 @@ export class MongoGraph implements IDataGraph {
     return res;
   }
 
-  public async findEntities (
-    entQuery: IEntQuery,
+  public async findEntities<T extends IEnt> (
+    entQuery: IEntQuery<T>,
     entAssocQueries?: IEntAssocQuery[],
-    fields?: string[],
+    fields?: (keyof T)[],
     sort?: ISortField[],
     limit?: number,
     readPageSize: number = MongoDbConfig.getReadPageSize(),
-  ): Promise<IEnt[]> {
+  ): Promise<T[]> {
     let logger = new Logger('MongoGraph').in('findEntities');
     logger.log(JSON.stringify({
       entQuery: entQuery,
@@ -401,7 +395,7 @@ export class MongoGraph implements IDataGraph {
           pipeline.push(pipe);
         });
         if (fields) {
-          pipeline.push({ $project: MongoGraph._composeProjection(fields) });
+          pipeline.push({ $project: MongoGraph._composeProjection(fields as string[]) });
         }
         pipeline.push({ $sort: cursor.toSort() });
         pipeline.push({ $limit: limit ?
@@ -423,7 +417,7 @@ export class MongoGraph implements IDataGraph {
     );
 
     let ents = _.map(_.flatten(results), e => {
-      let ret = <IEnt>MongoGraph._decodeIdFields(e);
+      let ret = <T>MongoGraph._decodeIdFields(e);
       expect(ret).to.include.all.keys('_id', '_type');
       return ret;
     });

@@ -5,7 +5,7 @@ import { BillTypeCode, CongressGovBill } from './CongressGovModels'
 export class CongressGovHelper {
   public static readonly CONGRESS_GOV_HOST = 'https://www.congress.gov'
   public static readonly MIN_CONGRESS_DATA_AVAILABLE = 93
-  public static readonly CURRENT_CONGRESS = 115
+  public static readonly CURRENT_CONGRESS = 116
 
   public static billPathToTextUrl (billPath: string): string {
     if (!billPath) {
