@@ -1,3 +1,5 @@
+import { IEntBill } from './';
+
 export type Chamber = 's' | 'h';
 export type CongressRoleType = 'senator' | 'representative';
 export type CongressMemberTitle = {
@@ -61,5 +63,9 @@ export class CongressUtils {
     if (state === 'DC' || state === 'PR') {
       return state;
     }
+  }
+
+  public static displayBill (bill: IEntBill) {
+    return `${bill.congress}-${bill.billType}-${bill.billNumber} (${bill._id})`
   }
 }

@@ -11,12 +11,19 @@ export default class Utility {
   //   - 12/05/2016-7:10pm
   //   - 12/06/2016
   //   - (12/06/2016)
-  public static parseDateTimeString (dateStr: string): Date {
-    dateStr = dateStr.replace(/\(|\)/g, '')
-    let dateTimeStr = dateStr.split('-')
-    let timeStr = (dateTimeStr.length > 1) ? dateTimeStr[1] : '0:00am'
-    dateStr = dateTimeStr[0] + ' ' + timeStr + ' -0500'
-    return Utility.parseDateTimeStringOfFormat(dateStr, 'MM/DD/YYYY h:mma Z')
+  public static parseDateTimeStringAtEST (dateStr: string, dateFormat: string = 'MM/DD/YYYY'): Date {
+    dateStr = dateStr.trim();
+    dateStr = dateStr.replace(/\(|\)/g, '');
+    let dateTimeStr = dateStr.split('-');
+    let hasTime = (dateTimeStr.length > 1) && dateTimeStr[1].includes(':');
+    if (hasTime) {
+      dateStr = `${dateTimeStr[0]} ${dateTimeStr[1]} -0500`; // DC timezone offset (EST)
+    } else {
+      dateStr = `${dateStr} 00:00m -0500`; // DC timezone offset (EST)
+    }
+    const format = `${dateFormat} h:mma Z`;
+    const date = Utility.parseDateTimeStringOfFormat(dateStr, format);
+    return date;
   }
 
   public static parseDateTimeStringOfFormat (dateStr: string, format: string = 'YYYY-MM-DD'): Date {

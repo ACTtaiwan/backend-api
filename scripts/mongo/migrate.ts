@@ -7,6 +7,7 @@ import { Logger } from '../../libs/dbLib2/Logger';
 import { MongoClient } from 'mongodb';
 import { CongressUtils } from '../../libs/dbLib2/CongressUtils';
 import { DataManager } from '../../libs/dbLib2/DataManager';
+import Utility from '../../libs/utils/Utility';
 
 const config = {
   'dbName': 'congress',
@@ -40,26 +41,23 @@ function fieldCoverage (items: object[]): object {
 
 /**
  * @param date could be 12am anywhere in the west hemisphere on the intended
- *  day; e.g., 12am at eastern time (-0500)
- * @returns timestamp at 12pm UTC on the same day
+ *  day; e.g., 12am at EST or GMT
+ * @returns timestamp at 12am EST (-0500) on the same day
  */
 function calibrateDate (date: number): number {
   if (!date) {
     return;
   }
-  // When 12am hits anywhere in the west hemisphere, utc time is between
-  // 12am and 12pm on the same day. We take the date part and 'export' it
-  // as a string, while discarding the time part.
   let str = moment.utc(date).format('YYYY-MM-DD');
-  // (sanity) throw if detect a change of date, assuming EST timezone
   let utcHour = moment.utc(date).hour();
   let estDateStr = moment.utc(date).utcOffset(-5).format('YYYY-MM-DD');
   if (utcHour > 0 && str !== estDateStr) {
     throw Error(`Timestamp ${date} converts to ${str}(utc) `
       + `!= ${estDateStr}(est)`);
   }
-  // Return a new timestamp at 12pm utc on the same day
-  return moment.utc(str + 'T12', 'YYYY-MM-DDTHH').toDate().getTime();
+  // Return a new timestamp at 12am EST on the same day
+  const epoch = Utility.parseDateTimeStringAtEST(str, 'YYYY-MM-DD').getTime();
+  return epoch;
 }
 
 async function migrateTags (m: DataManager, source: MongoClient) {

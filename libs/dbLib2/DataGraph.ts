@@ -39,12 +39,22 @@ type IHasIdPairMaybe = Partial<IHasIdPair>;
 type IHasIdOrIdListPairMaybe = {
   [ P in keyof IHasIdPair ]?: IHasIdPair[P] | IHasIdPair[P][];
 }
-type IHasData = {
-  [ k: string ]: any;
+type IHasData = {};
+
+type ElementType<T> = T extends any[] ? T[number] : T;
+
+export type IQueryOperator<T> = {
+  _op: string;
+  _val: { [K in keyof T]?: ElementType<T[K]> };
 }
+
 export interface IEnt extends IHasType, IHasId, IHasData {}
 export interface IEntInsert extends IHasType, IHasIdMaybe, IHasData {}
-export interface IEntQuery extends IHasType, IHasIdMaybe, IHasData {}
+// export interface IEntQuery<T extends IEnt> extends IHasType, IHasIdMaybe, IHasData {}
+export type IEntQuery<T extends IEnt = IEnt> = IHasType & IHasIdMaybe & IHasData & {
+  [ K in keyof T ]?: T[K] | IQueryOperator<ElementType<T[K]>>;
+};
+
 export interface IEntAssocQuery extends IHasTypeOrTypes,
   IHasIdOrIdListPairMaybe, IHasData {}
 export interface IUpdate extends IHasId, IHasData {}
@@ -53,8 +63,8 @@ export interface IAssocInsert extends IHasType, IHasIdMaybe, IHasIdPair,
   IHasData {}
 export interface IAssocQuery extends IHasType, IHasIdMaybe, IHasIdPairMaybe,
   IHasData {}
-export interface ISortField {
-  field: string,
+export interface ISortField<T extends IEnt = IEnt> {
+  field: keyof T,
   order: 'asc' | 'desc',
 }
 
@@ -105,13 +115,13 @@ export interface IDataGraph {
    * Fields _id1 and _id2 cannot both appear.
    * All queries in entAssocQueries must be satisfied.
    */
-  findEntities (
-    entQuery: IEntQuery,
+  findEntities<T extends IEnt> (
+    entQuery: IEntQuery<T>,
     entAssocQueries?: IEntAssocQuery[],
-    fields?: string[],
-    sort?: ISortField[],
+    fields?: (keyof T)[],
+    sort?: ISortField<T>[],
     limit?: number,
-  ): Promise<IEnt[]>;
+  ): Promise<T[]>;
   /**
    * Update a set of entities
    *
