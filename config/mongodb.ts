@@ -18,9 +18,9 @@ export class MongoDbConfig {
     'TAGS_META_TABLE_NAME': 'volunteer.tags.meta',
     'CONGRESSGOV_SYNC_BILL_TABLE_NAME': 'congressgov.sync.bill',
     'ARTICLE_SNIPPETS_TABLE_NAME': 'site.articleSnippets',
-  }
+  };
 
-  private static _remoteUrl: string
+  private static _remoteUrl: string;
 
   public static get connectionUrl (): Promise<string> {
     // return MongoDbConfig.localUrl
@@ -28,22 +28,22 @@ export class MongoDbConfig {
   }
 
   public static get localUrl (): Promise<string> {
-    return Promise.resolve(`mongodb://localhost:27017/congress`)
+    return Promise.resolve(`mongodb://localhost:27017/congress`);
   }
 
   public static get remoteUrl (): Promise<string> {
     if (MongoDbConfig._remoteUrl) {
-      return Promise.resolve(MongoDbConfig._remoteUrl)
+      return Promise.resolve(MongoDbConfig._remoteUrl);
     } else {
       const dbCredJson = 'digiocean_mongodb.json';
       return MongoDbConfig.getKeyFileFromS3(dbCredJson).then(json => {
         if (dbCredJson === 'digiocean_mongodb.json') {
-          MongoDbConfig._remoteUrl = `mongodb://${json.admin_user}:${json.admin_pass}@${json.host}:${json.port}/congress?authSource=admin`
+          MongoDbConfig._remoteUrl = `mongodb://${json.admin_user}:${json.admin_pass}@${json.host}:${json.port}/congress?authSource=admin`;
         } else {
-          MongoDbConfig._remoteUrl = `mongodb://${json.admin_user}:${json.admin_pass}@${json.host}:${json.port}/congress?ssl=true&replicaSet=globaldb`
+          MongoDbConfig._remoteUrl = `mongodb://${json.admin_user}:${json.admin_pass}@${json.host}:${json.port}/congress?ssl=true&replicaSet=globaldb`;
         }
-        return MongoDbConfig._remoteUrl
-      })
+        return MongoDbConfig._remoteUrl;
+      });
     }
   }
 
@@ -51,35 +51,35 @@ export class MongoDbConfig {
 
   private static async getKeyFileFromS3 (fileName: string = 'digiocean_mongodb.json'): Promise<any> {
     return new Promise((resolve, reject) => {
-      let s3 = new aws.S3()
+      let s3 = new aws.S3();
       var params = {
         Bucket: 'taiwanwatch-credentials',
-        Key: fileName
-       }
-      console.log(`[MongoDbConfig::getKeyFileFromS3()] requesting S3`)
+        Key: fileName,
+      };
+      console.log(`[MongoDbConfig::getKeyFileFromS3()] requesting S3`);
       s3.getObject(params, (err, data) => {
         if (err) {
-          console.log(`[MongoDbConfig::getKeyFileFromS3()] Error = ${JSON.stringify(err, null, 2)}`)
-          reject(err)
+          console.log(`[MongoDbConfig::getKeyFileFromS3()] Error = ${JSON.stringify(err, null, 2)}`);
+          reject(err);
         } else {
           console.log(`[MongoDbConfig::getKeyFileFromS3()] OK. data = ` +
             `${JSON.stringify(
               data,
               (key, val) => key === 'Body' ? '<omitted>' : val,
-              2
+              2,
             )}`
           );
           try {
-            let json = JSON.parse(data.Body.toString())
-            console.log(`[MongoDbConfig::getKeyFileFromS3()] JSON parse done`)
-            resolve(json)
+            let json = JSON.parse(data.Body.toString());
+            console.log(`[MongoDbConfig::getKeyFileFromS3()] JSON parse done`);
+            resolve(json);
           } catch (e) {
-            console.log(`[MongoDbConfig::getKeyFileFromS3()] JSON parse failed. Error = ${e}`)
-            reject(e)
+            console.log(`[MongoDbConfig::getKeyFileFromS3()] JSON parse failed. Error = ${e}`);
+            reject(e);
           }
         }
-      })
-    })
+      });
+    });
   }
 
   private static getSecretValueMaybe (key: string): any {
@@ -92,7 +92,7 @@ export class MongoDbConfig {
     username: string,
     password: string,
     host: string,
-    port: number
+    port: number,
   }> {
     let key = process.env.IS_LOCAL // for `serverless invoke local`
       ? process.env.npm_package_config_db_config || // package.json
@@ -119,12 +119,12 @@ export class MongoDbConfig {
       hosts: [
         {
           host: urlComponents['host'],
-          port: urlComponents['port']
+          port: urlComponents['port'],
         },
       ],
       options: {
-        authSource: 'admin'
-      }
+        authSource: 'admin',
+      },
     };
     return mongodbUri.format(ret);
   }

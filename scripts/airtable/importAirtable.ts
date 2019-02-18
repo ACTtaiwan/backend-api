@@ -12,7 +12,7 @@ let config = {
   'billTypeTableName': 'Bill Types',
   'relevanceTableName': 'Relevance',
   'tagTableName': 'Tags',
-}
+};
 
 let logger = new Logger('importAirtable.ts');
 

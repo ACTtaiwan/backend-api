@@ -1,25 +1,24 @@
-import * as mongoDbLib from '../../../libs/mongodbLib'
-import { MongoDbConfig } from '../../../config/mongodb'
-import * as _ from 'lodash'
+import * as mongoDbLib from '../../../libs/mongodbLib';
+import { MongoDbConfig } from '../../../config/mongodb';
 
-const tblName = MongoDbConfig.tableNames.BILLCATEGORIES_TABLE_NAME
+const tblName = MongoDbConfig.tableNames.BILLCATEGORIES_TABLE_NAME;
 
 class TestBillCategoryTable {
   public static async getAllCategories () {
-    let tbl = await TestBillCategoryTable.getTable()
-    let allCats = await tbl.getAllCategories()
-    console.log(JSON.stringify(allCats, null, 2))
+    let tbl = await TestBillCategoryTable.getTable();
+    let allCats = await tbl.getAllCategories();
+    console.log(JSON.stringify(allCats, null, 2));
   }
 
   public static async getCategoriesById () {
-    let tbl = await TestBillCategoryTable.getTable()
-    let allCats = await tbl.getCategoriesById(['6ca1b2d8-9c15-471d-b680-8a5a3712b052', 'ea86372b-69e5-4102-a087-2e61b73a129a'], 'code', 'name_zh')
-    console.log(JSON.stringify(allCats, null, 2))
+    let tbl = await TestBillCategoryTable.getTable();
+    let allCats = await tbl.getCategoriesById(['6ca1b2d8-9c15-471d-b680-8a5a3712b052', 'ea86372b-69e5-4102-a087-2e61b73a129a'], 'code', 'name_zh');
+    console.log(JSON.stringify(allCats, null, 2));
   }
 
   public static async setBillIdArrayToCategory () {
-    const catId = '6ca1b2d8-9c15-471d-b680-8a5a3712b052'
-    let tbl = await TestBillCategoryTable.getTable()
+    const catId = '6ca1b2d8-9c15-471d-b680-8a5a3712b052';
+    let tbl = await TestBillCategoryTable.getTable();
     await tbl.setBillIdArrayToCategory(catId,  [
       '037faf19-f05b-4c73-bc1b-efb0009bd73e',
       '038964e6-b0d4-43a0-9c16-03207117e2ac',
@@ -184,45 +183,45 @@ class TestBillCategoryTable {
       'f9d37ab0-6796-4db4-917d-1a346256fea5',
       'fea05e2b-6f8f-4847-be59-032e970a9b2b',
       'ff49c12b-facd-4655-943d-a88b54f86fde'
-    ])
-    let allCats = await tbl.getCategoriesById([catId])
-    console.log(JSON.stringify(allCats, null, 2))
+    ]);
+    let allCats = await tbl.getCategoriesById([catId]);
+    console.log(JSON.stringify(allCats, null, 2));
   }
 
   public static async addBillToCategory () {
-    const catId = '6ca1b2d8-9c15-471d-b680-8a5a3712b052'
-    let tbl = await TestBillCategoryTable.getTable()
-    await tbl.addBillToCategory(catId, 'abcde')
-    await tbl.addBillToCategory(catId, 'de')
-    let allCats = await tbl.getCategoriesById([catId])
-    console.log(JSON.stringify(allCats, null, 2))
+    const catId = '6ca1b2d8-9c15-471d-b680-8a5a3712b052';
+    let tbl = await TestBillCategoryTable.getTable();
+    await tbl.addBillToCategory(catId, 'abcde');
+    await tbl.addBillToCategory(catId, 'de');
+    let allCats = await tbl.getCategoriesById([catId]);
+    console.log(JSON.stringify(allCats, null, 2));
   }
 
   public static async removeBillFromCategory () {
-    const catId = '6ca1b2d8-9c15-471d-b680-8a5a3712b052'
-    let tbl = await TestBillCategoryTable.getTable()
-    await tbl.removeBillFromCategory(catId, 'abcde')
-    await tbl.removeBillFromCategory(catId, 'de')
-    let allCats = await tbl.getCategoriesById([catId])
-    console.log(JSON.stringify(allCats, null, 2))
+    const catId = '6ca1b2d8-9c15-471d-b680-8a5a3712b052';
+    let tbl = await TestBillCategoryTable.getTable();
+    await tbl.removeBillFromCategory(catId, 'abcde');
+    await tbl.removeBillFromCategory(catId, 'de');
+    let allCats = await tbl.getCategoriesById([catId]);
+    console.log(JSON.stringify(allCats, null, 2));
   }
 
   public static async removeAllBillsFromCategory () {
-    const catId = '6ca1b2d8-9c15-471d-b680-8a5a3712b052'
-    let tbl = await TestBillCategoryTable.getTable()
-    await tbl.removeAllBillsFromCategory(catId)
-    let allCats = await tbl.getCategoriesById([catId])
-    console.log(JSON.stringify(allCats, null, 2))
+    const catId = '6ca1b2d8-9c15-471d-b680-8a5a3712b052';
+    let tbl = await TestBillCategoryTable.getTable();
+    await tbl.removeAllBillsFromCategory(catId);
+    let allCats = await tbl.getCategoriesById([catId]);
+    console.log(JSON.stringify(allCats, null, 2));
   }
 
   private static async getTable () {
-    const db = await mongoDbLib.MongoDBManager.instance
-    const tblCat = db.getTable<mongoDbLib.BillCategoryTable>(tblName)
-    return tblCat
+    const db = await mongoDbLib.MongoDBManager.instance;
+    const tblCat = db.getTable<mongoDbLib.BillCategoryTable>(tblName);
+    return tblCat;
   }
 }
 
-TestBillCategoryTable.getAllCategories()
+TestBillCategoryTable.getAllCategories();
 // TestBillCategoryTable.getCategoriesById()
 // TestBillCategoryTable.setBillIdArrayToCategory()
 // TestBillCategoryTable.addBillToCategory()

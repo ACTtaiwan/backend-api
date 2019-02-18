@@ -1,12 +1,10 @@
-import * as dbLib from '../../libs/dbLib/DynamoDBManager'
-import * as _ from 'lodash'
-import * as api from '../../functions/private/billManagement/billHandler'
+import * as api from '../../functions/private/billManagement/billHandler';
 
 let test = async (req: api.QueryBillsRequest = {}) => {
-  let billApi = new api.BillApi()
-  let out = await billApi.queryBills(req)
-  console.log(`out = ${JSON.stringify(out, null, 2)}`)
-}
+  let billApi = new api.BillApi();
+  let out = await billApi.queryBills(req);
+  console.log(`out = ${JSON.stringify(out, null, 2)}`);
+};
 
 // test({
 //   flushOut: true,
@@ -18,7 +16,7 @@ let test = async (req: api.QueryBillsRequest = {}) => {
 // test()
 // test({congress: [115], categoryIdx: ['9a6cb046-2f66-4d4b-8148-10b57793341b']})
 test({sponsorRoleId: ['39c0a42a-120f-4e72-861e-b2a3552c9316']}
-)
+);
 // let test2 = async () => {
 //   let billApi = new api.BillApi()
 //   let out = await billApi.getBillById({

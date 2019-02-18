@@ -1,6 +1,6 @@
-import * as airtable from './'
-import * as strftime from 'strftime'
-import * as checksum from 'checksum'
+import * as airtable from './';
+import * as strftime from 'strftime';
+import * as checksum from 'checksum';
 
 async function test () {
   let m = await airtable.Manager.new('appr4yE8zg0gz6OWt');

@@ -11,11 +11,11 @@ export class FullTextSync {
 
   private readonly updater = new CongressGovTextUpdater();
 
-  private readonly s3 = s3Lib.S3Manager.instance()
-  private readonly bcktName = (<any> awsConfig).s3.VOLUNTEER_BILLS_FULLTEXT_BUCKET_NAME
-  private readonly bckt = <s3Lib.BillTextBucket> this.s3.getBucket(this.bcktName)
+  private readonly s3 = s3Lib.S3Manager.instance();
+  private readonly bcktName = (<any> awsConfig).s3.VOLUNTEER_BILLS_FULLTEXT_BUCKET_NAME;
+  private readonly bckt = <s3Lib.BillTextBucket> this.s3.getBucket(this.bcktName);
 
-  private congressBillsMap: {[congress: number]: dbLib2.IEntBill[]}
+  private congressBillsMap: {[congress: number]: dbLib2.IEntBill[]};
 
   public async init () {
     this.g = await dbLib2.DataGraph.getDefault();
@@ -35,14 +35,14 @@ export class FullTextSync {
       undefined,
       ['congress', 'billType', 'billNumber', 'versions']
     );
-    bills = _.filter(bills, x => x.congress >= minCongress && x.congress <= maxCongress)
+    bills = _.filter(bills, x => x.congress >= minCongress && x.congress <= maxCongress);
 
     // build congress <--> bills map
     this.congressBillsMap = _.groupBy(bills, 'congress');
-    const keys = _.keys(this.congressBillsMap)
+    const keys = _.keys(this.congressBillsMap);
     for (let c = 0; c < keys.length; ++c) {
       let congress = parseInt(keys[c]);
-      fLog.log(`Updating congress = ${congress}`)
+      fLog.log(`Updating congress = ${congress}`);
       await this.batchSyncForCongress(congress);
       fLog.log('\n\n\n');
     }
@@ -100,7 +100,7 @@ export class FullTextSync {
     );
     bills = _.filter(bills, b => b.versions && !!_.find(b.versions, v => v.code === versionCode));
     fLog.log(JSON.stringify(bills, null, 2));
-    return bills
+    return bills;
   }
 
   private async updateMongoDb (bill: dbLib2.IEntBill): Promise<dbLib2.IEntBill> {
@@ -127,9 +127,9 @@ export class FullTextSync {
           })
           .value();
 
-        versions[code] = obj
+        versions[code] = obj;
       }
-    })
+    });
 
     const updateVersions = _.values(versions);
     if (!_.isEmpty(updateVersions)) {

@@ -1,8 +1,6 @@
 import 'mocha';
 import * as chai from 'chai';
-import { expect } from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import * as _ from 'lodash';
 import { IdHandler } from '../idHandler';
 import { DataGraph } from '../../../../libs/dbLib2/DataGraph';
 import { BillHandler } from '../BillHandler';
@@ -60,15 +58,15 @@ describe('HandlerTest', function () {
       115,
       114,
     ];
-    let sponsors = [
-      '4f4afa81-b397-409e-8b55-91076a240534',
-    ];
+    // let sponsors = [
+    //   '4f4afa81-b397-409e-8b55-91076a240534',
+    // ];
     let cosponsors = [
       '6db0dd58-4b07-4861-99b7-34aca6497cc8',
-    ]
+    ];
     let tags = [
       '425ea09b-cbaf-450b-bee6-be70b0a0f1ad',
-    ]
+    ];
 
     let res = await BillHandler.run(
       congresses,
@@ -102,9 +100,9 @@ describe('HandlerTest', function () {
       'WA',
       'MD',
     ];
-    let districts = [
-      1,
-    ];
+    // let districts = [
+    //   1,
+    // ];
     let billIds = [
       '15a2ed64-13a6-4b2a-8c8f-2ecd6b99e28e',
       '1d294066-28b8-4e64-bb95-cbe97ea968bb',

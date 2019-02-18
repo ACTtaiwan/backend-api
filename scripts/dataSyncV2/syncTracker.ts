@@ -80,8 +80,8 @@ export class TrackerSync {
       undefined,
       ['congress', 'billType', 'billNumber', 'trackers']
     );
-    const noTrackerBills = _.filter(bills, b => !b.trackers || (b.trackers && b.trackers.length === 0))
-    _.each(noTrackerBills, b => console.log(JSON.stringify(b, null, 2)))
+    const noTrackerBills = _.filter(bills, b => !b.trackers || (b.trackers && b.trackers.length === 0));
+    _.each(noTrackerBills, b => console.log(JSON.stringify(b, null, 2)));
   }
 
   private shouldUpdateTrackerForBill (bill: dbLib2.IEntBill, currentCongress: number): string {

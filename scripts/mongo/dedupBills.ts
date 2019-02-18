@@ -1,7 +1,5 @@
 import * as _ from 'lodash';
-import { MongoClient } from 'mongodb';
-import { DataGraphUtils } from '../../libs/dbLib2/DataGraph';
-import { readAllDocs, bulkDelete, connectMongo } from './utils';
+import { readAllDocs, connectMongo } from './utils';
 import { MongoDbConfig } from '../../config/mongodb';
 
 function group (config, docs: object[]): object {

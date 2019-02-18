@@ -1,5 +1,5 @@
 import * as dbLib2 from '../../libs/dbLib2';
-import * as s3Lib from '../../libs/s3Lib'
+import * as s3Lib from '../../libs/s3Lib';
 import * as _ from 'lodash';
 import { CongressGovMemberParser } from '../../libs/congressGov/CongressGovMemberParser';
 import Utility from '../../libs/utils/Utility';
@@ -8,9 +8,9 @@ import * as sharp from 'sharp';
 var awsConfig = require('../../config/aws.json');
 
 export class ProfilePictureSync {
-  private readonly s3 = s3Lib.S3Manager.instance()
-  private readonly bcktName = (<any> awsConfig).s3.TAIWANWATCH_PERSONS_BUCKET_NAME
-  private readonly bckt = <s3Lib.PersonBucket> this.s3.getBucket(this.bcktName)
+  private readonly s3 = s3Lib.S3Manager.instance();
+  private readonly bcktName = (<any> awsConfig).s3.TAIWANWATCH_PERSONS_BUCKET_NAME;
+  private readonly bckt = <s3Lib.PersonBucket> this.s3.getBucket(this.bcktName);
   private readonly congressGov = new CongressGovMemberParser();
   private readonly logger = new dbLib2.Logger('ProfilePictureSync');
   private g: dbLib2.IDataGraph;
@@ -29,7 +29,7 @@ export class ProfilePictureSync {
           congressNumbers: congress
         }
       }
-    }
+    };
     const m = <dbLib2.IEntPerson[]> await this.g.findEntities(entQuery);
     fLog.log(`Found ${m.length} members in congress ${congress}`);
 
@@ -86,30 +86,30 @@ export class ProfilePictureSync {
       const pics = await this.prepareProfilePictures(m.bioGuideId);
       fLog.log(`Pics missing. Prearing pictures...Done!`);
 
-      const s3Updates: Promise<any>[] = []
+      const s3Updates: Promise<any>[] = [];
 
       if (pics['50px']) {
         s3Updates.push(
           this.bckt.putProfilePicture(s3Prefix, pics['50px'], '50px')
-          .then(url => profilePictures['50px'] = url))
+          .then(url => profilePictures['50px'] = url));
       }
 
       if (pics['100px']) {
         s3Updates.push(
           this.bckt.putProfilePicture(s3Prefix, pics['100px'], '100px')
-          .then(url => profilePictures['100px'] = url))
+          .then(url => profilePictures['100px'] = url));
       }
 
       if (pics['200px']) {
         s3Updates.push(
           this.bckt.putProfilePicture(s3Prefix, pics['200px'], '200px')
-          .then(url => profilePictures['200px'] = url))
+          .then(url => profilePictures['200px'] = url));
       }
 
       if (pics.origin) {
         s3Updates.push(
           this.bckt.putProfilePicture(s3Prefix, pics.origin, 'origin')
-          .then(url => profilePictures.origin = url))
+          .then(url => profilePictures.origin = url));
       }
 
       if (s3Updates.length > 0) {
@@ -129,7 +129,7 @@ export class ProfilePictureSync {
         _type: dbLib2.Type.Person,
         _id: m._id,
         profilePictures
-      }
+      };
       batchUpdate
         ? batchUpdate.push(update as dbLib2.IEntPerson)
         : await this.g.updateEntities([update as dbLib2.IEntPerson]);
@@ -149,14 +149,14 @@ export class ProfilePictureSync {
       this.resizePicture(origin, 200),
       this.resizePicture(origin, 100),
       this.resizePicture(origin, 50)
-    ]
+    ];
     const pics = await Promise.all(promises);
     return {
       origin,
       '200px': pics[0],
       '100px': pics[1],
       '50px': pics[2],
-    }
+    };
   }
 
   private async downloadProfilePicture (bioGuideId: string): Promise<Buffer> {

@@ -1,11 +1,7 @@
-import * as dbLib from '../../libs/dbLib/DynamoDBManager'
-import * as _ from 'lodash'
 import { TagManager } from '../../libs/dataManager/TagManager';
-import { v4 as uuid } from 'uuid';
-import Utility from '../../libs/utils/Utility';
 
 let test = async () => {
-  let tagMngr = new TagManager()
+  let tagMngr = new TagManager();
 
   // await tagMngr.addTagToBill('ait', 'afae2b67-87a4-44d9-9b87-62b31fcd41c4',
   //   {
@@ -51,7 +47,7 @@ let test = async () => {
   // console.log(JSON.stringify(tags, null, 2))
 
   // await tagMngr.tblTag.deleteTag('new')
-  await tagMngr.deleteAllTags()
-}
+  await tagMngr.deleteAllTags();
+};
 
-test()
+test();

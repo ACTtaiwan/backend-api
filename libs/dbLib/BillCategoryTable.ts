@@ -1,46 +1,46 @@
-import * as aws from 'aws-sdk'
-import {TableEntity, DynamoDBTable} from './'
-import * as _ from 'lodash'
+import * as aws from 'aws-sdk';
+import {TableEntity, DynamoDBTable} from './';
+import * as _ from 'lodash';
 
 var awsConfig = require('../../config/aws.json');
 
 // CategoryTable
 
 export interface BillCategoryEntity extends TableEntity {
-  id: string
-  code: string
-  name: string
-  name_zh?: string
-  description?: string
-  description_zh?: string
-  billId?: string[]
+  id: string;
+  code: string;
+  name: string;
+  name_zh?: string;
+  description?: string;
+  description_zh?: string;
+  billId?: string[];
 }
 
 export class BillCategoryTable extends DynamoDBTable {
-  public readonly tableName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLCATEGORIES_TABLE_NAME
+  public readonly tableName = (<any> awsConfig).dynamodb.VOLUNTEER_BILLCATEGORIES_TABLE_NAME;
 
   constructor (docClient: aws.DynamoDB.DocumentClient, db: aws.DynamoDB) {
-    super(docClient, db)
+    super(docClient, db);
   }
 
   public get tableDefinition (): [aws.DynamoDB.KeySchema, aws.DynamoDB.AttributeDefinitions] {
     const keySchema: aws.DynamoDB.KeySchema = [
       { AttributeName: 'id', KeyType: 'HASH'}
-    ]
+    ];
     const attrDef: aws.DynamoDB.AttributeDefinitions = [
       { AttributeName: 'id', AttributeType: 'S' }
-    ]
-    return [keySchema, attrDef]
+    ];
+    return [keySchema, attrDef];
   }
 
   public getAllCategories (): Promise<BillCategoryEntity[]> {
     return super.getAllItems<BillCategoryEntity>(['id', 'code', 'name', 'name_zh', 'description', 'description_zh', 'billId'])
-      .then(out => _.map(out.results, (r: any) => this.convertAttrMapToBillCategoryEntity(r)) || [] )
+      .then(out => _.map(out.results, (r: any) => this.convertAttrMapToBillCategoryEntity(r)) || [] );
   }
 
   public getCategoriesById (idx: string[], ...attrNamesToGet: (keyof BillCategoryEntity)[]): Promise<BillCategoryEntity[]> {
     return super.getItems<BillCategoryEntity>('id', idx, attrNamesToGet).then(results =>
-        _.map(results, (r: any) => this.convertAttrMapToBillCategoryEntity(r)))
+        _.map(results, (r: any) => this.convertAttrMapToBillCategoryEntity(r)));
   }
 
   public setBillIdArrayToCategory (catId: string, billIdx: string[]): Promise<aws.DynamoDB.UpdateItemOutput> {
@@ -49,11 +49,11 @@ export class BillCategoryTable extends DynamoDBTable {
       Key: { 'id': {'S': catId} },
       UpdateExpression: `SET billId = :v_billId`,
       ExpressionAttributeValues: { ':v_billId': {'SS': billIdx} }
-    }
+    };
 
     return new Promise((resolve, reject) => {
-      this.db.updateItem(params, (err, data) => err ? reject(err) : resolve(data))
-    })
+      this.db.updateItem(params, (err, data) => err ? reject(err) : resolve(data));
+    });
   }
 
   public addBillToCategory (catId: string, billId: string): Promise<aws.DynamoDB.UpdateItemOutput> {
@@ -62,11 +62,11 @@ export class BillCategoryTable extends DynamoDBTable {
       Key: { 'id': {'S': catId} },
       UpdateExpression: `ADD billId :v_billId`,
       ExpressionAttributeValues: { ':v_billId': {'SS': [billId]} }
-    }
+    };
 
     return new Promise((resolve, reject) => {
-      this.db.updateItem(params, (err, data) => err ? reject(err) : resolve(data))
-    })
+      this.db.updateItem(params, (err, data) => err ? reject(err) : resolve(data));
+    });
   }
 
   public removeBillFromCategory (catId: string, billId: string): Promise<aws.DynamoDB.UpdateItemOutput>  {
@@ -75,22 +75,22 @@ export class BillCategoryTable extends DynamoDBTable {
       Key: { 'id': {'S': catId} },
       UpdateExpression: `DELETE billId :v_billId`,
       ExpressionAttributeValues: { ':v_billId': {'SS': [billId]} }
-    }
+    };
 
     return new Promise((resolve, reject) => {
-      this.db.updateItem(params, (err, data) => err ? reject(err) : resolve(data))
-    })
+      this.db.updateItem(params, (err, data) => err ? reject(err) : resolve(data));
+    });
   }
 
   public removeAllBillsFromCategory (catId: string): Promise<aws.DynamoDB.DocumentClient.UpdateItemOutput>  {
-    return super.deleteAttributesFromItem<BillCategoryEntity>('id', catId, ['billId'])
+    return super.deleteAttributesFromItem<BillCategoryEntity>('id', catId, ['billId']);
   }
 
   private convertAttrMapToBillCategoryEntity (item: aws.DynamoDB.AttributeMap): BillCategoryEntity {
     if (item && item.billId) {
-      item.billId = item.billId['values'] || []
-      return <any> item
+      item.billId = item.billId['values'] || [];
+      return <any> item;
     }
-    return <any> item
+    return <any> item;
   }
 }

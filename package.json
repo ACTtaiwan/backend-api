@@ -8,7 +8,9 @@
     "deploy": "node_modules/serverless/bin/serverless deploy",
     "test": "mocha --require ts-node/register --recursive \"libs/**/_test/*.ts\"",
     "testf": "mocha --require ts-node/register --recursive \"functions/**/_test/*.ts\"",
-    "ts-node": "node node_modules/ts-node/dist/bin.js"
+    "ts-node": "node node_modules/ts-node/dist/bin.js",
+    "lint": "tslint --project .",
+    "lintfix": "tslint --fix --project ."
   },
   "config": {
     "db_config": "mongodb"
@@ -76,9 +78,9 @@
     "string-similarity": "^1.2.0",
     "tracer": "^0.9.1",
     "ts-loader": "^4.4.1",
-    "tslint": "^5.8.0",
+    "tslint": "^5.12.1",
     "tslint-loader": "^3.5.3",
-    "typescript": "^2.6.2",
+    "typescript": "^2.9.2",
     "uuid": "^3.2.1",
     "xml2js": "^0.4.19"
   }
