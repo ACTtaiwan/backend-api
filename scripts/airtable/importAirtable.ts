@@ -219,4 +219,8 @@ async function main () {
   logger.log('Done');
 }
 
+export async function importAirtable () {
+  main();
+}
+
 main();

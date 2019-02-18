@@ -4,6 +4,7 @@ import { syncAirtable } from '../../../scripts/dataSync/syncAirtable';
 import { CongressGovHelper } from '../../../libs/congressGov/CongressGovHelper';
 import Response from '../../../libs/utils/Response'
 import { AllInfoSync } from '../../../scripts/dataSync/syncAllInfo';
+import { importAirtable } from '../../../scripts/airtable/importAirtable';
 
 class DailySyncHandler {
   public static handleRequest (event: any, context: Context, callback?: Callback) {
@@ -17,7 +18,8 @@ class DailySyncHandler {
     let promises = []
     promises.push(DailySyncHandler.syncTrackers())
     promises.push(DailySyncHandler.syncAllInfo())
-    promises.push(DailySyncHandler.syncAirtable())
+    promises.push(DailySyncHandler.syncAirtable()) // TODO: remove
+    promises.push(DailySyncHandler.syncAirtableV2())
 
     Promise.all(promises).then(out => {
       let err = out[0] || out[1]
@@ -70,6 +72,19 @@ class DailySyncHandler {
         resolve();
       } catch (err) {
         console.log(`[DailySyncHandler::syncAirtable()] failed. err = `
+          + `${JSON.stringify(err, null, 2)}`);
+        reject(err);
+      }
+    });
+  }
+
+  public static syncAirtableV2 (): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await importAirtable();
+        resolve();
+      } catch (err) {
+        console.log(`[DailySyncHandler::syncAirtableV2()] failed. err = `
           + `${JSON.stringify(err, null, 2)}`);
         reject(err);
       }
