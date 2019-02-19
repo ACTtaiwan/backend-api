@@ -38,22 +38,22 @@ export class PropublicaAPI {
         } else {
           resolve(JSON.parse(body).results as T[]);
         }
-      })
+      });
     });
   }
 
   private static async getKeyFileFromS3 (): Promise<any> {
     return new Promise((resolve, reject) => {
-      let s3 = new aws.S3()
+      let s3 = new aws.S3();
       var params = {
         Bucket: 'taiwanwatch-credentials',
         Key: 'propublica.json'
-       }
-      console.log(`[PropublicaAPI::getKeyFileFromS3()] requesting S3`)
+       };
+      console.log(`[PropublicaAPI::getKeyFileFromS3()] requesting S3`);
       s3.getObject(params, (err, data) => {
         if (err) {
-          console.log(`[PropublicaAPI::getKeyFileFromS3()] Error = ${JSON.stringify(err, null, 2)}`)
-          reject(err)
+          console.log(`[PropublicaAPI::getKeyFileFromS3()] Error = ${JSON.stringify(err, null, 2)}`);
+          reject(err);
         } else {
           console.log(`[PropublicaAPI::getKeyFileFromS3()] OK. data = ` +
             `${JSON.stringify(
@@ -63,16 +63,16 @@ export class PropublicaAPI {
             )}`
           );
           try {
-            let json = JSON.parse(data.Body.toString())
-            console.log(`[PropublicaAPI::getKeyFileFromS3()] JSON parse done`)
-            resolve(json)
+            let json = JSON.parse(data.Body.toString());
+            console.log(`[PropublicaAPI::getKeyFileFromS3()] JSON parse done`);
+            resolve(json);
           } catch (e) {
-            console.log(`[PropublicaAPI::getKeyFileFromS3()] JSON parse failed. Error = ${e}`)
-            reject(e)
+            console.log(`[PropublicaAPI::getKeyFileFromS3()] JSON parse failed. Error = ${e}`);
+            reject(e);
           }
         }
-      })
-    })
+      });
+    });
   }
 }
 

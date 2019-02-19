@@ -1,12 +1,11 @@
-import { Context, Callback, APIGatewayEvent } from 'aws-lambda'
-import Response from '../../../libs/utils/Response'
-import * as _ from 'lodash'
+import { Context, Callback, APIGatewayEvent } from 'aws-lambda';
+import Response from '../../../libs/utils/Response';
 import { MongoDBManager, ArticleSnippetsTable, ArticleSnippet } from '../../../libs/mongodbLib';
 import { MongoDbConfig } from '../../../config/mongodb';
 
 export class ArticleSnippetsHandler {
   public static handleRequest (event: APIGatewayEvent, context: Context, callback?: Callback) {
-    console.log(`[ArticleSnippetsHandler::handleRequest()] event = ${JSON.stringify(event, null, 2)}`)
+    console.log(`[ArticleSnippetsHandler::handleRequest()] event = ${JSON.stringify(event, null, 2)}`);
 
     // This freezes node event loop when callback is invoked
     context.callbackWaitsForEmptyEventLoop = false;
@@ -55,4 +54,4 @@ export class ArticleSnippetsHandler {
   }
 }
 
-export let main = ArticleSnippetsHandler.handleRequest
+export let main = ArticleSnippetsHandler.handleRequest;

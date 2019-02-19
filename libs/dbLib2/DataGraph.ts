@@ -20,7 +20,7 @@ export enum Type {
   Sponsor = 1003,
   Cosponsor = 1004,
   HasTag = 1005,
-};
+}
 interface IHasType {
   _type: Type;
 }
@@ -38,7 +38,7 @@ interface IHasIdPair {
 type IHasIdPairMaybe = Partial<IHasIdPair>;
 type IHasIdOrIdListPairMaybe = {
   [ P in keyof IHasIdPair ]?: IHasIdPair[P] | IHasIdPair[P][];
-}
+};
 type IHasData = {};
 
 type ElementType<T> = T extends any[] ? T[number] : T;
@@ -46,7 +46,7 @@ type ElementType<T> = T extends any[] ? T[number] : T;
 export type IQueryOperator<T> = {
   _op: string;
   _val: { [K in keyof T]?: ElementType<T[K]> };
-}
+};
 
 export interface IEnt extends IHasType, IHasId, IHasData {}
 export interface IEntInsert extends IHasType, IHasIdMaybe, IHasData {}
@@ -64,8 +64,8 @@ export interface IAssocInsert extends IHasType, IHasIdMaybe, IHasIdPair,
 export interface IAssocQuery extends IHasType, IHasIdMaybe, IHasIdPairMaybe,
   IHasData {}
 export interface ISortField<T extends IEnt = IEnt> {
-  field: keyof T,
-  order: 'asc' | 'desc',
+  field: keyof T;
+  order: 'asc' | 'desc';
 }
 
 export function isIEntInsert (obj: any): obj is IEntInsert {
@@ -315,7 +315,7 @@ export class DataGraphUtils {
         retryDelay,
       );
       results.push(res);
-    };
+    }
     return results;
   }
 

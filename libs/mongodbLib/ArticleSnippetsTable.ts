@@ -1,6 +1,5 @@
 import { MongoDBTable } from './MongoDBManager';
 import { MongoDbConfig } from '../../config/mongodb';
-import * as _ from 'lodash';
 
 export interface ArticleSnippet {
   id: string;

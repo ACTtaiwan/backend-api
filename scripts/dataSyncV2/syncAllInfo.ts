@@ -9,13 +9,13 @@ export class AllInfoSync {
   private logger = new dbLib2.Logger('AllInfoSync');
   private g: dbLib2.IDataGraph;
 
-  public readonly congressGovAllInfoParser = new CongressGovAllInfoParser()
+  public readonly congressGovAllInfoParser = new CongressGovAllInfoParser();
 
-  private readonly s3 = s3Lib.S3Manager.instance()
-  private readonly bcktName = (<any> awsConfig).s3.VOLUNTEER_BILLS_STATICINFO_BUCKET_NAME
-  private readonly bckt = <s3Lib.BillStaticInfoBucket> this.s3.getBucket(this.bcktName)
+  private readonly s3 = s3Lib.S3Manager.instance();
+  private readonly bcktName = (<any> awsConfig).s3.VOLUNTEER_BILLS_STATICINFO_BUCKET_NAME;
+  private readonly bckt = <s3Lib.BillStaticInfoBucket> this.s3.getBucket(this.bcktName);
 
-  private congressBillsMap: {[congress: number]: dbLib2.IEntBill[]}
+  private congressBillsMap: {[congress: number]: dbLib2.IEntBill[]};
 
   public async init () {
     this.g = await dbLib2.DataGraph.getDefault();
@@ -40,11 +40,11 @@ export class AllInfoSync {
       undefined,
       ['congress', 'billType', 'billNumber', ...attrNames]
     );
-    bills = _.filter(bills, x => x.congress >= minCongress && x.congress <= maxCongress)
+    bills = _.filter(bills, x => x.congress >= minCongress && x.congress <= maxCongress);
 
     // build congress <--> bills map
-    this.congressBillsMap = _.groupBy(bills, 'congress')
-    const keys = _.keys(this.congressBillsMap)
+    this.congressBillsMap = _.groupBy(bills, 'congress');
+    const keys = _.keys(this.congressBillsMap);
     for (let c = 0; c < keys.length; ++c) {
       let congress = parseInt(keys[c]);
       fLog.log(`Updating congress = ${congress}`);
@@ -86,9 +86,9 @@ export class AllInfoSync {
 
   public async syncForBill (bill: dbLib2.IEntBill, attrNames: (keyof dbLib2.IEntBill)[]) {
     const fLog = this.logger.in('syncForBill');
-    const hasAttr = (key: keyof dbLib2.IEntBill): boolean => _.includes(attrNames, key)
-    const path = CongressGovHelper.generateCongressGovBillPath(bill.congress, bill.billType, bill.billNumber)
-    const allInfo = await this.congressGovAllInfoParser.getAllInfo(path)
+    const hasAttr = (key: keyof dbLib2.IEntBill): boolean => _.includes(attrNames, key);
+    const path = CongressGovHelper.generateCongressGovBillPath(bill.congress, bill.billType, bill.billNumber);
+    const allInfo = await this.congressGovAllInfoParser.getAllInfo(path);
     if (allInfo) {
       let updateBill: Partial<dbLib2.IEntBill> = {};
 
@@ -107,7 +107,7 @@ export class AllInfoSync {
       if (hasAttr('actionsAll')) {
         if (allInfo.actionsAll && allInfo.actionsAll.length > 0) {
           if (!_.isEqual(bill.actionsAll, allInfo.actionsAll)) {
-            updateBill.actionsAll = allInfo.actionsAll
+            updateBill.actionsAll = allInfo.actionsAll;
           }
         } else if (bill.actionsAll) {
           updateBill.actionsAll = undefined;
@@ -127,15 +127,15 @@ export class AllInfoSync {
           const url = this.bckt.s3FullUrl(bill.congress, bill.billType, bill.billNumber);
 
           if (obj && _.isEqual(obj, staticInfo)) {
-            fLog.log(`Found S3 same value. Not updating.`)
+            fLog.log(`Found S3 same value. Not updating.`);
             if (!bill.s3Entity) {
-              fLog.log(`S3 URL is missing. Set it back.`)
-              updateBill.s3Entity = url
+              fLog.log(`S3 URL is missing. Set it back.`);
+              updateBill.s3Entity = url;
             }
           } else {
-            fLog.log(`Putting S3 object = ${url}`)
-            await this.bckt.putEntity(staticInfo, bill.congress, bill.billType, bill.billNumber)
-            updateBill.s3Entity = url
+            fLog.log(`Putting S3 object = ${url}`);
+            await this.bckt.putEntity(staticInfo, bill.congress, bill.billType, bill.billNumber);
+            updateBill.s3Entity = url;
           }
         } else if (bill.s3Entity) {
           updateBill.s3Entity = undefined;
@@ -150,11 +150,11 @@ export class AllInfoSync {
           fLog.log(`Writing to database. Object = ${JSON.stringify(updateBill, null, 2)}`);
           await this.g.updateEntities([updateBill as dbLib2.IEntBill]);
         } catch (error) {
-          throw new Error(`DB error = ${JSON.stringify(error, null, 2)}`)
+          throw new Error(`DB error = ${JSON.stringify(error, null, 2)}`);
         }
       }
     } else {
-      fLog.log(`parsing failed\n`)
+      fLog.log(`parsing failed\n`);
     }
   }
 }

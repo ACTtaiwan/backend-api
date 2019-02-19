@@ -1,11 +1,5 @@
-import * as dbLib from '../../libs/dbLib'
-import * as aws from 'aws-sdk'
-import { CongressGovDataProvider } from '../../libs/congressGov/CongressGovDataProvider'
-import { CongressGovTextParser } from '../../libs/congressGov/CongressGovTextParser'
-import { CongressGovTrackerParser } from '../../libs/congressGov/CongressGovTrackerParser'
-import { CongressGovHelper } from '../../libs/congressGov/CongressGovHelper'
-import * as models from '../../libs/congressGov/CongressGovModels'
-import * as _ from 'lodash'
+import * as dbLib from '../../libs/dbLib';
+import * as _ from 'lodash';
 
 var awsConfig = require('../../config/aws.json');
 
@@ -33,8 +27,8 @@ var awsConfig = require('../../config/aws.json');
 //   $.html()
 // })
 
-const tblSyncName = (<any> awsConfig).dynamodb.CONGRESSGOV_SYNC_BILL_TABLE_NAME
-const tblSync = <dbLib.CongressGovSyncBillTable> dbLib.DynamoDBManager.instance().getTable(tblSyncName)
+// const tblSyncName = (<any> awsConfig).dynamodb.CONGRESSGOV_SYNC_BILL_TABLE_NAME;
+// const tblSync = <dbLib.CongressGovSyncBillTable> dbLib.DynamoDBManager.instance().getTable(tblSyncName);
 // const url = 'https://www.congress.gov/bill/115th-congress/house-bill/4288/text'
 // tbl.getObjectByUrlPath(url).then(obj => {
 //   console.log(JSON.stringify(obj, null, 2))
@@ -69,8 +63,8 @@ const tblSync = <dbLib.CongressGovSyncBillTable> dbLib.DynamoDBManager.instance(
 //   console.log(JSON.stringify(url, null, 2))
 // })
 
-const tblRoleName = (<any> awsConfig).dynamodb.VOLUNTEER_ROLES_TABLE_NAME
-const tblRole = <dbLib.RoleTable> dbLib.DynamoDBManager.instance().getTable(tblRoleName)
+const tblRoleName = (<any> awsConfig).dynamodb.VOLUNTEER_ROLES_TABLE_NAME;
+const tblRole = <dbLib.RoleTable> dbLib.DynamoDBManager.instance().getTable(tblRoleName);
 
 // let f = async () => {
 //   let roles = await tblRole.getRolesByState('WA', null, 115)
@@ -80,18 +74,18 @@ const tblRole = <dbLib.RoleTable> dbLib.DynamoDBManager.instance().getTable(tblR
 // f()
 
 let allStates = async () => {
-  let states: string[] = []
+  let states: string[] = [];
   await tblRole.forEachBatchOfAllRoles(async roles => {
-    console.log(`batch role size = ${roles.length}`)
+    console.log(`batch role size = ${roles.length}`);
     _.each(roles, r => {
       if (r.state && !_.includes(states, r.state)) {
-        states.push(r.state)
+        states.push(r.state);
       }
-    })
-  }, ['id', 'state'])
-  console.log(`allStates = ${JSON.stringify(states.sort(), null, 2)}`)
-}
-allStates()
+    });
+  }, ['id', 'state']);
+  console.log(`allStates = ${JSON.stringify(states.sort(), null, 2)}`);
+};
+allStates();
 
 // const tblPplName = (<any> awsConfig).dynamodb.VOLUNTEER_PERSON_TABLE_NAME
 // const tblPpl = <dbLib.PersonTable> dbLib.DynamoDBManager.instance().getTable(tblPplName)

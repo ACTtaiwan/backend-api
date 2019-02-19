@@ -19,6 +19,7 @@ const config = {
 
 let logger = new Logger('migrate.ts');
 
+// tslint:disable-next-line:no-unused-variable
 function fieldCoverage (items: object[]): object {
   let coverage = _.reduce(
     items,

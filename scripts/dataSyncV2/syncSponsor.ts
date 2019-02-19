@@ -2,11 +2,9 @@ import {
   CongressGovHelper,
   CongressGovSponsorParser,
   CongressGovAllInfoParser,
-  ChamberType,
-  CongressGovSponsor
 } from '../../libs/congressGov';
 import * as dbLib2 from '../../libs/dbLib2';
-import * as _ from 'lodash'
+import * as _ from 'lodash';
 
 /**
  *  sync for sponsors & co-sponsors
@@ -19,8 +17,8 @@ export class SponsorSync {
   private readonly congressGovSponsorParser = new CongressGovSponsorParser();
   private readonly congressGovAllInfoParser = new CongressGovAllInfoParser();
 
-  private readonly roleMapSearchId =
-    (bioGuideId: string, chamber: ChamberType) => bioGuideId + '-' + chamber;
+  // private readonly roleMapSearchId =
+  //   (bioGuideId: string, chamber: ChamberType) => bioGuideId + '-' + chamber
 
   public async init () {
     this.g = await dbLib2.DataGraph.getDefault();
@@ -132,7 +130,7 @@ export class SponsorSync {
           congressNumbers: congress
         }
       }
-    }
+    };
     const m = await this.g.findEntities<dbLib2.IEntPerson>(entQuery);
     fLog.log(`Found ${m.length} members in congress ${congress}`);
     return _.keyBy(m, 'bioGuideId');

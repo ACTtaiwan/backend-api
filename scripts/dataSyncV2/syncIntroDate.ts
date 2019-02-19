@@ -1,6 +1,6 @@
 import { CongressGovIntroDateParser, CongressGovHelper } from '../../libs/congressGov';
 import * as dbLib2 from '../../libs/dbLib2';
-import * as _ from 'lodash'
+import * as _ from 'lodash';
 
 export class IntroducedDateSync {
   private logger = new dbLib2.Logger('IntroducedDateSync');
@@ -20,9 +20,9 @@ export class IntroducedDateSync {
   public async syncIntroducedDateForAllBills (currentCongress: number, minUpdateCongress?: number, maxUpdateCongress?: number) {
     const fLog = this.logger.in('syncIntroducedDateForAllBills');
     const minCongress = Math.max(minUpdateCongress || CongressGovHelper.MIN_CONGRESS_DATA_AVAILABLE,
-                                 CongressGovHelper.MIN_CONGRESS_DATA_AVAILABLE)
+                                 CongressGovHelper.MIN_CONGRESS_DATA_AVAILABLE);
     const maxCongress = Math.min(maxUpdateCongress || currentCongress,
-                                 currentCongress)
+                                 currentCongress);
 
     fLog.log(`minCongress = ${minCongress} \t maxCongress = ${maxCongress}`);
 

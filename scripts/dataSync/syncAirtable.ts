@@ -218,7 +218,7 @@ class Sync {
       let sourceEntity = sourceIndex[matchKey];
       if (sourceEntity) {
         sourceMatched[matchKey] = true;
-        let [_, diff] = SyncUtils.syncEntity(
+        let [, diff] = SyncUtils.syncEntity(
           this._config.syncEntityConfig,
           sourceEntity,
           targetEntity,

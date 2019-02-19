@@ -2,7 +2,6 @@ import * as _ from 'lodash';
 import { expect } from 'chai';
 import 'mocha';
 import { IDataGraph, DataGraph, Type } from '../DataGraph';
-import { MongoGraph } from '../MongoGraph';
 
 describe('MongoGraphTest', async function () {
   let g: IDataGraph;

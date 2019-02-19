@@ -4,7 +4,6 @@ import * as chai from 'chai';
 import { expect } from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import { DataGraphUtils } from '../DataGraph';
-import * as _ from 'lodash';
 
 describe('DataGraphUtilsTest', function () {
   let uuidStr, uuidBuf;
@@ -35,7 +34,7 @@ describe('DataGraphUtilsTest', function () {
   it('run func succeeds the first time', async function () {
     let func = async (): Promise<string> => {
       return 'something';
-    }
+    };
     let result = await DataGraphUtils.retry(func);
     expect(result).to.be.equal('something');
   });
@@ -43,7 +42,7 @@ describe('DataGraphUtilsTest', function () {
   it('retry func and evantually failed', async function (done) {
     let func = async (): Promise<string> => {
       throw Error('error test 1');
-    }
+    };
     expect(DataGraphUtils.retry(func)).to.be.rejected;
     done();
   });
@@ -55,7 +54,7 @@ describe('DataGraphUtilsTest', function () {
         throw Error('error test 2');
       }
       return 'success';
-    }
+    };
     expect(DataGraphUtils.retry(func)).to.eventually.be.equal('success');
   });
 
