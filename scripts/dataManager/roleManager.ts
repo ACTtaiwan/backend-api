@@ -1,6 +1,6 @@
-import { RoleManager } from '../../libs/dataManager/RoleManager'
+import { RoleManager } from '../../libs/dataManager/RoleManager';
 
-let roleMngr = new RoleManager()
+let roleMngr = new RoleManager();
 
 // let rebuildCongressIndex = async () => {
 //   await roleMngr.rebuildCongressIndex()
@@ -14,7 +14,7 @@ let roleMngr = new RoleManager()
 // getRolesByBioGuideId()
 
 let getRoleByStatesAndCongress = async () => {
-  let roles = await roleMngr.getRoleByStatesAndCongress('WA', 115)
-  console.log(JSON.stringify(roles, null, 2))
-}
-getRoleByStatesAndCongress()
+  let roles = await roleMngr.getRoleByStatesAndCongress('WA', 115);
+  console.log(JSON.stringify(roles, null, 2));
+};
+getRoleByStatesAndCongress();

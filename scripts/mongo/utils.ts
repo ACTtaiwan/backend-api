@@ -38,7 +38,7 @@ export async function readAllDocs (
         query['_id'] = { $gt: context.minId };
       }
       return db.collection(tableName).find(query).limit(readCount)
-        .sort({ _id: 1 }).toArray()
+        .sort({ _id: 1 }).toArray();
     },
     (context, out) => {
       if (!out || out.length < CHUNK_SIZE) {

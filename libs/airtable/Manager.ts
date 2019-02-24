@@ -1,10 +1,9 @@
-import * as _ from 'lodash'
-import * as assert from 'assert'
-import * as airtable from 'airtable'
-import * as aws from 'aws-sdk'
+import * as _ from 'lodash';
+import * as assert from 'assert';
+import * as airtable from 'airtable';
+import * as aws from 'aws-sdk';
 
-import { Entity, EntityType, SCHEMAS } from './'
-import { resolve } from 'url';
+import { Entity, EntityType, SCHEMAS } from './';
 
 class Cache {
   protected _storage: { [type: string]: { [id: string]: Entity } } = {};
@@ -89,7 +88,7 @@ export class Manager {
     formula?: string,
     limit?: number,
   ): Promise<Entity[]> {
-    let options: any = {}
+    let options: any = {};
     if (fields) {
       fields = _.filter(fields, v => v in SCHEMAS[type].fields);
       options.fields = fields;
@@ -256,7 +255,7 @@ export class Manager {
           console.error(e);
           reject(e);
         }
-      })
+      });
     });
   }
 }

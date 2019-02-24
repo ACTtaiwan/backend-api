@@ -36,8 +36,8 @@ let test = async () => {
   //   {personId: '2cc2d8d2-7c2d-49bc-b8af-f11b04b7cfa9,be4b569c-148e-4f09-a9f3-18e413d7e577'})
 
   // search person name
-  let out = await api.RoleHandler.dispatchEvent('GET', {q: 'solarz'})
+  let out = await api.RoleHandler.dispatchEvent('GET', {q: 'solarz'});
 
-  console.log(JSON.stringify(out, null, 2))
-}
-test()
+  console.log(JSON.stringify(out, null, 2));
+};
+test();

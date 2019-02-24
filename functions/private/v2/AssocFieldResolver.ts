@@ -5,7 +5,7 @@ interface AssocFieldMap {
   [fieldName: string]: {
     assocType: Type,
     direction: 'forward' | 'backward',
-  }
+  };
 }
 
 /**

@@ -12,7 +12,7 @@ let config = {
   'billTypeTableName': 'Bill Types',
   'relevanceTableName': 'Relevance',
   'tagTableName': 'Tags',
-}
+};
 
 let logger = new Logger('importAirtable.ts');
 
@@ -217,6 +217,10 @@ async function main () {
   DataGraph.cleanup();
 
   logger.log('Done');
+}
+
+export async function importAirtable () {
+  main();
 }
 
 main();

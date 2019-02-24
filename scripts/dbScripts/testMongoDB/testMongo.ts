@@ -1,5 +1,5 @@
-import * as mongoDbLib from '../../../libs/mongodbLib'
-import { MongoDbConfig } from '../../../config/mongodb'
+import * as mongoDbLib from '../../../libs/mongodbLib';
+import { MongoDbConfig } from '../../../config/mongodb';
 
 async function getTable () {
  const db = await mongoDbLib.MongoDBManager.instance;

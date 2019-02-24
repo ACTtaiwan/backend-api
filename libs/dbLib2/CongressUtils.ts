@@ -5,7 +5,7 @@ export type CongressRoleType = 'senator' | 'representative';
 export type CongressMemberTitle = {
   short: string,
   long: string,
-}
+};
 
 export class CongressUtils {
   private static readonly STATES = new Set(['ID', 'VA', 'IN', 'SD', 'ME', 'NV', 'AK',
@@ -66,6 +66,6 @@ export class CongressUtils {
   }
 
   public static displayBill (bill: IEntBill) {
-    return `${bill.congress}-${bill.billType}-${bill.billNumber} (${bill._id})`
+    return `${bill.congress}-${bill.billType}-${bill.billNumber} (${bill._id})`;
   }
 }

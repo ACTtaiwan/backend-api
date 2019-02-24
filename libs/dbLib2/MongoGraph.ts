@@ -72,7 +72,6 @@ class PageCursor {
 }
 
 export class MongoGraph implements IDataGraph {
-  private static readonly ASSOC_LOOKUP_OUTPUT_FIELD = '_assocs';
 
   // factory method
   public static async new (

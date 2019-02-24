@@ -61,7 +61,7 @@ export class Entity {
     assert.ok(name in this.schema.fields, `Field does not exist: ${name}`);
     let type = this.schema.fields[name];
     if (type) {
-      let entities = <Entity[]>value;
+      // let entities = <Entity[]>value;
 
       if (value instanceof Array) {
         let results: Entity[] = [];
@@ -116,6 +116,6 @@ export class Entity {
       } else {
         return value;
       }
-    })
+    });
   }
 }

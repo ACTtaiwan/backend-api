@@ -1,1 +1,1 @@
-export * from './S3Manager'
+export * from './S3Manager';

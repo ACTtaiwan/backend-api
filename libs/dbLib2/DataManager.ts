@@ -9,7 +9,7 @@ interface DataCache {
     data: {
       [id: string]: IEnt | IAssoc, // should cache complete fields
     }
-  }
+  };
 }
 
 interface JoinedIEnt extends IEnt {

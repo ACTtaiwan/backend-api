@@ -13,10 +13,6 @@ export interface TextVersionMeta {
   description: string;
 }
 
-export function isTextVersionCode (code: string): code is TextVersionCode {
-  return !!TextVersionMetaHelper.getMetaByCode(code);
-}
-
 export type TextVersionMapByCode = { [code in TextVersionCode]: TextVersionMeta };
 
 export class TextVersionMetaHelper {
@@ -36,4 +32,8 @@ export class TextVersionMetaHelper {
   public static getMetaByCode (code: string | TextVersionCode): TextVersionMeta {
     return TextVersionMetaHelper.m[code];
   }
+}
+
+export function isTextVersionCode (code: string): code is TextVersionCode {
+  return !!TextVersionMetaHelper.getMetaByCode(code);
 }
