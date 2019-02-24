@@ -10,7 +10,7 @@ export class IdHandler {
   ): Promise<any> {
     let g = await DataGraph.getDefault();
     let ents = await Promise.all(
-      _.map(ids, async id => g.loadEntity(id, fields))
+      _.map(ids, async id => g.loadEntity(id, _.isEmpty(fields) ? undefined : fields))
     );
     ents = await AssocFieldResolver.resolve(g, ents, fields);
 

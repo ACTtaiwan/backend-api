@@ -5,6 +5,7 @@
   "description": "US Taiwan Watch Backend APIs",
   "main": "handler.js",
   "scripts": {
+    "start": "node_modules/serverless/bin/serverless offline",
     "deploy": "node_modules/serverless/bin/serverless deploy",
     "test": "mocha --require ts-node/register --recursive \"libs/**/_test/*.ts\"",
     "testf": "mocha --require ts-node/register --recursive \"functions/**/_test/*.ts\"",
@@ -35,6 +36,7 @@
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-standard": "^3.0.1",
     "glob": "^7.1.2",
+    "serverless-offline": "^4.2.0",
     "serverless-webpack": "^5.1.5",
     "ts-node": "^7.0.0",
     "webpack": "^4.12.0",
