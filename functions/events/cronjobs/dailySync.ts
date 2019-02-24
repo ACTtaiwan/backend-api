@@ -5,6 +5,9 @@ import { CongressGovHelper } from '../../../libs/congressGov/CongressGovHelper';
 import Response from '../../../libs/utils/Response';
 import { AllInfoSync } from '../../../scripts/dataSync/syncAllInfo';
 import { importAirtable } from '../../../scripts/airtable/importAirtable';
+import { TrackerSync as TrackerSyncV2 } from '../../../scripts/dataSyncV2/syncTracker';
+import { AllInfoSync as AllInfoSyncV2 } from '../../../scripts/dataSyncV2/syncAllInfo';
+import { SponsorSync as SponsorSyncV2 } from '../../../scripts/dataSyncV2/syncSponsor';
 
 class DailySyncHandler {
   public static handleRequest (event: any, context: Context, callback?: Callback) {
@@ -16,9 +19,15 @@ class DailySyncHandler {
     context.callbackWaitsForEmptyEventLoop = false;
 
     let promises = [];
+
+    // TODO: remove
     promises.push(DailySyncHandler.syncTrackers());
     promises.push(DailySyncHandler.syncAllInfo());
-    promises.push(DailySyncHandler.syncAirtable()); // TODO: remove
+    promises.push(DailySyncHandler.syncAirtable());
+
+    promises.push(DailySyncHandler.syncTrackersV2());
+    promises.push(DailySyncHandler.syncAllInfoV2());
+    promises.push(DailySyncHandler.syncSponsorsV2());
     promises.push(DailySyncHandler.syncAirtableV2());
 
     Promise.all(promises).then(out => {
@@ -75,6 +84,54 @@ class DailySyncHandler {
           + `${JSON.stringify(err, null, 2)}`);
         reject(err);
       }
+    });
+  }
+
+  public static syncTrackersV2 (): Promise<void> {
+    return new Promise((resolve, reject) => {
+      let sync = new TrackerSyncV2();
+      sync.init()
+        .then(() => sync.syncTrackersForAllBills(CongressGovHelper.CURRENT_CONGRESS))
+        .then(() => {
+          console.log(`[DailySyncHandler::syncTrackersV2()] Done`);
+          resolve();
+        })
+        .catch(err => {
+          console.log(`[DailySyncHandler::syncTrackersV2()] Failed. Error = ${JSON.stringify(err, null, 2)}`);
+          resolve(err);
+        });
+    });
+  }
+
+  public static syncAllInfoV2 (): Promise<void> {
+    return new Promise((resolve, reject) => {
+      let sync = new AllInfoSyncV2();
+      let currentCongress = CongressGovHelper.CURRENT_CONGRESS;
+      sync.init()
+        .then(() => sync.syncAllInfoForAllBills(currentCongress, currentCongress, currentCongress))
+        .then(() => {
+          console.log(`[DailySyncHandler::syncAllInfoV2()] Done`);
+          resolve();
+        }).catch((err) => {
+          console.log(`[DailySyncHandler::syncAllInfoV2()] Failed. Error = ${JSON.stringify(err, null, 2)}`);
+          resolve(err);
+        });
+    });
+  }
+
+  public static syncSponsorsV2 (): Promise<void> {
+    return new Promise((resolve, reject) => {
+      let sync = new SponsorSyncV2();
+      let currentCongress = CongressGovHelper.CURRENT_CONGRESS;
+      sync.init()
+        .then(() => sync.syncSponsorForAllBills(currentCongress, currentCongress, currentCongress))
+        .then(() => {
+          console.log(`[DailySyncHandler::syncSponsorsV2()] Done`);
+          resolve();
+        }).catch((err) => {
+          console.log(`[DailySyncHandler::syncSponsorsV2()] Failed. Error = ${JSON.stringify(err, null, 2)}`);
+          resolve(err);
+        });
     });
   }
 

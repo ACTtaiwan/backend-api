@@ -67,7 +67,7 @@ export class SponsorSync {
       const path = CongressGovHelper.generateCongressGovBillPath(bill.congress, bill.billType, bill.billNumber);
       const billDisplay = dbLib2.CongressUtils.displayBill(bill);
 
-      fLog.log(`\n${billDisplay} -- Updating sponsor --\n`);
+      fLog.log(`\n-----------------------------------${billDisplay} - Updating sponsor -----------------------------------\n`);
 
       const sponsor = await this.congressGovSponsorParser.getSponsorBioGuideId(path);
       if (!!sponsor.bioGuideId) {
@@ -88,7 +88,7 @@ export class SponsorSync {
         this.resolveDbOperations(billSponsorInDb, [sponsorAssoc]);
       }
 
-      fLog.log(`\n${billDisplay} -- Updating co-sponsors --\n`);
+      fLog.log(`\n-----------------------------------${billDisplay} - Updating co-sponsors -----------------------------------\n`);
 
       const allInfo = await this.congressGovAllInfoParser.getAllInfo(path);
       const cosponsorAssocs: dbLib2.IAssocCosponsorAssoc[] = [];
@@ -189,5 +189,5 @@ export class SponsorSync {
 
 // let sync = new SponsorSync();
 // sync.setMockWrite(true);
-// sync.init().then(() => sync.syncSponsorForAllBills(115, 115, 115));
+// sync.init().then(() => sync.syncSponsorForAllBills(116, 116, 116));
 // patch('df717157-4d7b-4a55-acf4-eae451f2ff64')
