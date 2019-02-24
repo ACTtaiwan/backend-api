@@ -64,7 +64,7 @@ export interface IAssocInsert extends IHasType, IHasIdMaybe, IHasIdPair,
 export interface IAssocQuery extends IHasType, IHasIdMaybe, IHasIdPairMaybe,
   IHasData {}
 export interface ISortField<T extends IEnt = IEnt> {
-  field: keyof T;
+  field: (keyof T | string);
   order: 'asc' | 'desc';
 }
 
@@ -118,7 +118,7 @@ export interface IDataGraph {
   findEntities<T extends IEnt> (
     entQuery: IEntQuery<T>,
     entAssocQueries?: IEntAssocQuery[],
-    fields?: (keyof T)[],
+    fields?: (keyof T | string)[],
     sort?: ISortField<T>[],
     limit?: number,
   ): Promise<T[]>;

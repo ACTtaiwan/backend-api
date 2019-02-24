@@ -20,15 +20,20 @@ service: backend-api # NOTE: update this with your service name
 # Use serverless-webpack plugin to transpile ES6/ES7
 plugins:
   - serverless-webpack
+  - serverless-offline
 
 # Enable auto-packing of external modules
 custom:
   webpackIncludeModules: true
+  serverless-offline:
+    port: 9487
 
 provider:
   name: aws
   runtime: nodejs6.10
   stage: dev
+  apiKeys:
+    - ${env:MY_API_KEY}
   environment:
     VOLUNTEER_USERS_DYNAMODB_TABLE: "volunteer.users"
     VOLUNTEER_BILLS_DYNAMODB_TABLE: "volunteer.bills"
@@ -43,6 +48,7 @@ provider:
     VOLUNTEER_BILLDOWNLOADTASK_DYNAMODB_TABLE: "volunteer.billDownloadTask"
     VOLUNTEER_BILLS_S3_BUCKET: "volunteer.bills"
     DB_CONFIG: "remoteMongodb"
+    MY_API_KEY: ""
   region: us-east-1
   iamRoleStatements:
     - Effect: "Allow"

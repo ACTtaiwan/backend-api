@@ -357,7 +357,7 @@ export class MongoGraph implements IDataGraph {
   public async findEntities<T extends IEnt> (
     entQuery: IEntQuery<T>,
     entAssocQueries?: IEntAssocQuery[],
-    fields?: (keyof T)[],
+    fields?: (keyof T | string)[],
     sort?: ISortField[],
     limit?: number,
     readPageSize: number = MongoDbConfig.getReadPageSize(),
