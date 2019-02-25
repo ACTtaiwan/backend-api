@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import { expect } from 'chai';
 import 'mocha';
 import { IDataGraph, DataGraph, Type } from '../DataGraph';
+import { Logger } from 'mongodb';
 
 describe('MongoGraphTest', async function () {
   let g: IDataGraph;
@@ -287,15 +288,23 @@ describe('MongoGraphTest', async function () {
       let idsFound =
         await g.listAssociatedEntityIds(ids[2], ASSOC_TYPE2, 'forward');
       expect(idsFound).to.have.lengthOf(2);
-      expect(idsFound).to.deep.include(ids[2]);
-      expect(idsFound).to.deep.include(ids[3]);
+      expect(idsFound).to.deep.include({ _id: ids[2] });
+      expect(idsFound).to.deep.include({ _id: ids[3] });
+    });
+
+    it('find associated ent ids, with assoc fields', async function () {
+      let idsFound =
+        await g.listAssociatedEntityIds(ids[4], ASSOC_TYPE1, 'forward', ['d']);
+      expect(idsFound).to.have.lengthOf(1);
+      console.log(idsFound);
+      expect(idsFound).to.deep.include({ _id: ids[0], d: 'data1' });
     });
 
     it('find associated ent ids, backward', async function () {
       let idsFound =
         await g.listAssociatedEntityIds(ids[1], ASSOC_TYPE2, 'backward');
       expect(idsFound).to.have.lengthOf(1);
-      expect(idsFound).to.deep.include(ids[0]);
+      expect(idsFound).to.deep.include({ _id: ids[0] });
     });
 
     it('find associated ent ids, backward, nonexisting', async function () {

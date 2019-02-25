@@ -67,6 +67,7 @@ export interface ISortField<T extends IEnt = IEnt> {
   field: (keyof T | string);
   order: 'asc' | 'desc';
 }
+export interface IAssociatedEntIds extends IHasId, IHasData {}
 
 export function isIEntInsert (obj: any): obj is IEntInsert {
   return '_type' in obj;
@@ -159,12 +160,14 @@ export interface IDataGraph {
    * @param entId
    * @param assocType
    * @param direction
+   * @param assocFields data fields to fetch from each association
    */
   listAssociatedEntityIds (
     entId: Id,
     assocType: Type,
     direction: 'forward' | 'backward',
-  ): Promise<Id[]>;
+    assocFields?: string[],
+  ): Promise<IAssociatedEntIds[]>;
   deleteAssocs (ids: Id[]): Promise<number>;
   dropDb (): Promise<any>;
   close (): Promise<void>;

@@ -10,7 +10,8 @@
         "field": [
             "congress",
             "billType",
-            "billNumber"
+            "billNumber",
+            "cosponsors#date"
         ]
     },
     "pathParameters": null,
