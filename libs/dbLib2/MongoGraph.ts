@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { IDataGraph, Type, Id, IEnt, IEntQuery, IEntAssocQuery,
   IUpdate, IAssoc, DataGraphUtils, IAssocQuery, IEntInsert,
-  IAssocInsert, ISortField, IQueryOperator } from './DataGraph';
+  IAssocInsert, ISortField, IQueryOperator, IAssociatedEntIds } from './DataGraph';
 import { MongoDbConfig } from '../../config/mongodb';
 import { expect } from 'chai';
 import { Logger } from './Logger';
@@ -539,14 +539,15 @@ export class MongoGraph implements IDataGraph {
     sort = sort || [];
     sort.push({ field: '_id', order: 'asc' });
 
-    if (fields) {
-      fields.push('_id1', '_id2');
+    let queryFields = _.clone(fields);
+    if (queryFields) {
+      queryFields.push('_id1', '_id2');
 
       // explicitly include sort fields in projection; otherwise won't sort
-      let fset = new Set(fields);
+      let fset = new Set(queryFields);
       _.each(sort, s => {
         if (!(s.field in fset)) {
-          fields.push(s.field);
+          queryFields.push(s.field);
         }
       });
     }
@@ -555,7 +556,7 @@ export class MongoGraph implements IDataGraph {
       async cursor => {
         let q = this._assocs.find(
           MongoGraph._composeQuery(query, cursor),
-          { projection: MongoGraph._composeProjection(fields) }
+          { projection: MongoGraph._composeProjection(queryFields) }
         )
         .sort(cursor.toSort())
         .limit(readPageSize);
@@ -584,7 +585,8 @@ export class MongoGraph implements IDataGraph {
     entId: Id,
     assocType: Type,
     direction: 'forward' | 'backward',
-  ): Promise<Id[]> {
+    assocFields?: string[],
+  ): Promise<IAssociatedEntIds[]> {
     let results;
     let q = { _type: assocType };
     let self, other;
@@ -596,8 +598,19 @@ export class MongoGraph implements IDataGraph {
       other = '_id1';
     }
     q[self] = entId;
-    results = await this.findAssocs(q, [ other ]);
-    return _.map(results, r => r[other]);
+    let fields = assocFields || [];
+    fields.push(other);
+    results = await this.findAssocs(q, fields);
+    if (assocFields) {
+      Logger.log(results, 'asdf');
+    }
+    return _.map(results, result => {
+      delete result['_type'];
+      delete result[self];
+      result._id = result[other];
+      delete result[other];
+      return result;
+    });
   }
 
   public async updateAssocs (updates: IUpdate[]): Promise<number> {

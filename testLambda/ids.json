@@ -12,8 +12,8 @@
             "congress",
             "billType",
             "billNumber",
-            "sponsors",
-            "tags"
+            "cosponsors#date",
+            "tagIds"
         ],
         "id": [
             "fc46042f-989f-49a8-8e00-a5d26c0c3ba1",

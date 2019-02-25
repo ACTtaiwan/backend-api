@@ -5,7 +5,13 @@ interface AssocFieldMap {
   [fieldName: string]: {
     assocType: Type,
     direction: 'forward' | 'backward',
+    allowedSubfields?: string[],
   };
+}
+
+interface AssocFieldRequest {
+  field: string;
+  subFields?: string[];
 }
 
 /**
@@ -16,6 +22,7 @@ interface AssocFieldMap {
 export class AssocFieldResolver {
   /**
    * Defines how to resolve assoc fields
+   * TODO: remove
    */
   protected static ASSOC_FIELD_MAPS: { [entType: number]: AssocFieldMap } = {
     [Type.Bill]: {
@@ -31,6 +38,19 @@ export class AssocFieldResolver {
         assocType: Type.HasTag,
         direction: 'forward',
       },
+      sponsors: {
+        assocType: Type.Sponsor,
+        direction: 'backward',
+      },
+      cosponsors: {
+        assocType: Type.Cosponsor,
+        direction: 'backward',
+        allowedSubfields: ['date'],
+      },
+      tags: {
+        assocType: Type.HasTag,
+        direction: 'forward',
+      },
     },
     [Type.Person]: {
       sponsoredBillIds: {
@@ -41,8 +61,29 @@ export class AssocFieldResolver {
         assocType: Type.Cosponsor,
         direction: 'forward',
       },
+      sponsoredBills: {
+        assocType: Type.Sponsor,
+        direction: 'forward',
+      },
+      cosponsoredBills: {
+        assocType: Type.Cosponsor,
+        direction: 'forward',
+        allowedSubfields: ['date'],
+      },
     }
   };
+
+  protected static parseAssocFieldString (fieldString: string)
+  : AssocFieldRequest {
+    let toks = _.split(fieldString, '#');
+    let res: AssocFieldRequest = {
+      field: toks[0],
+    };
+    if (toks.length > 1) {
+      res.subFields = _.split(toks[1], ',');
+    }
+    return res;
+  }
 
   /**
    * @param ents Entities that may contain assoc fields to be resolved. If
@@ -63,11 +104,18 @@ export class AssocFieldResolver {
       if (e) {
         _.each(fields, f => {
           let assocFieldMap = AssocFieldResolver.ASSOC_FIELD_MAPS[e._type];
-          if (assocFieldMap && assocFieldMap[f]) {
+          let fieldReq = AssocFieldResolver.parseAssocFieldString(f);
+          if (assocFieldMap && assocFieldMap[fieldReq.field]) {
+            let assocFieldMetadata = assocFieldMap[fieldReq.field];
+            let subfields = _.intersection(
+              assocFieldMetadata.allowedSubfields,
+              fieldReq.subFields,
+            );
             promises.push(g.listAssociatedEntityIds(
               e._id,
-              assocFieldMap[f].assocType,
-              assocFieldMap[f].direction,
+              assocFieldMetadata.assocType,
+              assocFieldMetadata.direction,
+              subfields,
             ));
             promiseKeys.push(`${e._id}.${f}`);
           }
@@ -87,6 +135,10 @@ export class AssocFieldResolver {
           let k = `${e._id}.${f}`;
           if (k in resultMap) {
             e[f] = resultMap[k];
+            // TODO: remove
+            if (_.endsWith(f, 'Ids')) {
+              e[f] = _.map(e[f], obj => obj['_id']);
+            }
           }
         });
       }
