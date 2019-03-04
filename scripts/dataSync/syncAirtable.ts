@@ -459,7 +459,7 @@ const SYNC_TAG_CONFIG: SyncConfig = {
 
 const SYNC_ARTICLE_SNIPPET_CONFIG: SyncConfig = {
   sourceTable: {
-    dbId: 'appX2196fiRt2qlzf',
+    dbId: 'appp9kTQYOdrmDGuS',
     entityType: 'ArticleSnippet',
   },
   targetTable: {
