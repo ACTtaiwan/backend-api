@@ -4,7 +4,7 @@ import { syncAirtable } from '../../../scripts/dataSync/syncAirtable';
 import { CongressGovHelper } from '../../../libs/congressGov/CongressGovHelper';
 import Response from '../../../libs/utils/Response';
 import { AllInfoSync } from '../../../scripts/dataSync/syncAllInfo';
-import { importAirtable } from '../../../scripts/airtable/importAirtable';
+import { main as importAirtable } from '../../../scripts/airtable/importAirtable';
 import { TrackerSync as TrackerSyncV2 } from '../../../scripts/dataSyncV2/syncTracker';
 import { AllInfoSync as AllInfoSyncV2 } from '../../../scripts/dataSyncV2/syncAllInfo';
 import { SponsorSync as SponsorSyncV2 } from '../../../scripts/dataSyncV2/syncSponsor';

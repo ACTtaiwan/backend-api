@@ -262,6 +262,7 @@ functions:
 
   cronjobs:
     handler: functions/events/cronjobs/dailySync.main
+    timeout: 600
     events:
       - schedule: cron(0 12 * * ? *) # Run at 12:00 pm (UTC) every day
 

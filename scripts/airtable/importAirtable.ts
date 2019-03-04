@@ -205,7 +205,7 @@ async function importHasTagAssocs (m: DataManager, source: AirtableReader) {
 }
 
 
-async function main () {
+export async function main () {
   let g = await DataGraph.get('MongoGraph', MongoDbConfig.getDbName());
   let m = new DataManager(g);
   let airtableReader = new AirtableReader(config['dbId']);
@@ -219,8 +219,6 @@ async function main () {
   logger.log('Done');
 }
 
-export async function importAirtable () {
+if (require.main === module) {
   main();
 }
-
-main();
