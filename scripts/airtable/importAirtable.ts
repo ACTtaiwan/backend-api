@@ -14,6 +14,11 @@ let config = {
   'tagTableName': 'Tags',
 };
 
+let configArticle = {
+  'dbId': 'appX2196fiRt2qlzf',
+  'articleTableName': 'Articles'
+};
+
 let logger = new Logger('importAirtable.ts');
 
 function resolveLinkedField (
@@ -133,6 +138,41 @@ async function composeTagsFromAirtable (
   return results;
 }
 
+
+async function composeAirticlesFromAirtable (
+  source: AirtableReader,
+): Promise<{[id: string]: IEnt}> {
+  let articles = await source.readTable(configArticle.articleTableName);
+  let results = _.pickBy(_.mapValues(articles, v => {
+    if (!v['Headline'] || !v['Readable ID']) {
+      return;
+    }
+
+    let convertDatetime = (fieldName: string) => {
+      // AirTable API returns ISO 8601 formatted date
+      // e.g. "2014-09-05T07:00:00.000Z".
+      let s = v['Date'];
+      return s ? new Date(s).getTime() : undefined;
+    };
+
+    return {
+      _id: undefined,
+      _type: Type.ArticleSnippet,
+      readableId: v['Readable ID'],
+      headline: v['Headline'],
+      subhead: v['Subhead'],
+      author: v['Author'],
+      date: convertDatetime('Date'),
+      intro: v['Intro'],
+      url: v['URL'],
+      imageUrl: v['Image URL'],
+      sites: v['Publish Sites'] || []
+    };
+  }));
+
+  return results;
+}
+
 async function importBills (m: DataManager, source: AirtableReader) {
   let sourceBills = await composeBillsFromAirtable(source);
   await m.importDataset(
@@ -204,6 +244,16 @@ async function importHasTagAssocs (m: DataManager, source: AirtableReader) {
   );
 }
 
+async function importArticles (m: DataManager, source: AirtableReader) {
+  let sourceTags = await composeAirticlesFromAirtable(source);
+  await m.importDataset(
+    Type.ArticleSnippet,
+    _.values(sourceTags),
+    [ 'readableId' ],
+    Utility.isLocalRun(),
+    false,
+  );
+}
 
 export async function main () {
   let g = await DataGraph.get('MongoGraph', MongoDbConfig.getDbName());
@@ -213,6 +263,16 @@ export async function main () {
   await importBills(m, airtableReader);
   await importTags(m, airtableReader);
   await importHasTagAssocs(m, airtableReader);
+
+  DataGraph.cleanup();
+
+  // articles in different DB
+
+  g = await DataGraph.get('MongoGraph', MongoDbConfig.getDbName());
+  m = new DataManager(g);
+
+  airtableReader = new AirtableReader(configArticle['dbId']);
+  await importArticles(m, airtableReader);
 
   DataGraph.cleanup();
 

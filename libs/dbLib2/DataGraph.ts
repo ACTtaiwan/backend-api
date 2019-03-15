@@ -222,6 +222,7 @@ export class DataGraph {
     _.each(_.values(DataGraph._cache), g => {
       g.close();
     });
+    DataGraph._cache = {};
   }
 }
 
