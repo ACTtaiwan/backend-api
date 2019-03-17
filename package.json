@@ -6,7 +6,8 @@
   "main": "handler.js",
   "scripts": {
     "start": "node_modules/serverless/bin/serverless offline",
-    "deploy": "node_modules/serverless/bin/serverless deploy",
+    "deploy-dev": "node_modules/serverless/bin/serverless deploy --stage dev",
+    "deploy-prod": "node_modules/serverless/bin/serverless deploy --stage prod",
     "test": "mocha --require ts-node/register --recursive \"libs/**/_test/*.ts\"",
     "testf": "mocha --require ts-node/register --recursive \"functions/**/_test/*.ts\"",
     "ts-node": "node node_modules/ts-node/dist/bin.js",
