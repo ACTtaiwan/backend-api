@@ -8,6 +8,7 @@ import { main as importAirtable } from '../../../scripts/airtable/importAirtable
 import { TrackerSync as TrackerSyncV2 } from '../../../scripts/dataSyncV2/syncTracker';
 import { AllInfoSync as AllInfoSyncV2 } from '../../../scripts/dataSyncV2/syncAllInfo';
 import { SponsorSync as SponsorSyncV2 } from '../../../scripts/dataSyncV2/syncSponsor';
+import { IntroducedDateSync as IntroducedDateSyncV2 } from '../../../scripts/dataSyncV2/syncIntroDate';
 
 class DailySyncHandler {
   public static handleRequest (event: any, context: Context, callback?: Callback) {
@@ -29,6 +30,7 @@ class DailySyncHandler {
     promises.push(DailySyncHandler.syncAllInfoV2());
     promises.push(DailySyncHandler.syncSponsorsV2());
     promises.push(DailySyncHandler.syncAirtableV2());
+    promises.push(DailySyncHandler.syncIntroDateV2());
 
     Promise.all(promises).then(out => {
       let err = out[0] || out[1];
@@ -145,6 +147,22 @@ class DailySyncHandler {
           + `${JSON.stringify(err, null, 2)}`);
         reject(err);
       }
+    });
+  }
+
+  public static syncIntroDateV2 (): Promise<void> {
+    return new Promise((resolve, reject) => {
+      let sync = new IntroducedDateSyncV2();
+      let currentCongress = CongressGovHelper.CURRENT_CONGRESS;
+      sync.init(true)
+        .then(() => sync.syncIntroducedDateForAllBills(currentCongress, currentCongress, currentCongress))
+        .then(() => {
+          console.log(`[DailySyncHandler::syncIntroDateV2()] Done`);
+          resolve();
+        }).catch((err) => {
+          console.log(`[DailySyncHandler::syncIntroDateV2()] Failed. Error = ${JSON.stringify(err, null, 2)}`);
+          resolve(err);
+        });
     });
   }
 }

@@ -6,11 +6,13 @@ export class IntroducedDateSync {
   private logger = new dbLib2.Logger('IntroducedDateSync');
   private g: dbLib2.IDataGraph;
   private mockWrite: boolean = false;
+  private skipSyncIfExist: boolean = false;
 
   private readonly congressGovIntroDateParser = new CongressGovIntroDateParser();
 
-  public async init () {
+  public async init (skipSyncIfExist: boolean = false) {
     this.g = await dbLib2.DataGraph.getDefault();
+    this.skipSyncIfExist = skipSyncIfExist;
   }
 
   public setMockWrite (flag: boolean) {
@@ -53,6 +55,11 @@ export class IntroducedDateSync {
       const bill = bills[i];
       const path = CongressGovHelper.generateCongressGovBillPath(bill.congress, bill.billType, bill.billNumber);
       const billDisplay = dbLib2.CongressUtils.displayBill(bill);
+
+      if (bill.introducedDate && this.skipSyncIfExist) {
+        fLog.log(`\n${billDisplay} -- Skip updating for existing introduced date --\n`);
+        continue;
+      }
 
       fLog.log(`\n${billDisplay} -- Updating introduced date --\n`);
 
