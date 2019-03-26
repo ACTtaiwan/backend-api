@@ -7,11 +7,18 @@ export class SendGridApi {
 
 }
 
-export class SendGridHandlerParams {
+export interface SendGridHandlerParams {
   body?: {
     list?: 'act' | 'ustw'
     email?: string
     name?: string
+    code?: string
+  };
+  pathAndQsp?: {
+    path: string
+    list?: 'act' | 'ustw'
+    code?: string
+    email?: string
   };
 }
 
@@ -24,8 +31,27 @@ export class SendGridApiHandler {
 
     let body = JSON.parse(event.body) || undefined;
     let params: SendGridHandlerParams = {
-      body
+      body,
+      pathAndQsp: {
+        path: event.path,
+        ...event.queryStringParameters,
+        ...event.pathParameters
+      }
     };
+
+    // unsubscribe
+    if (event.httpMethod === 'GET' && params.pathAndQsp && params.pathAndQsp.path.includes('unsubscribe/')) {
+      SendPulseAgent.instance.then(async agent => {
+        let html = await agent.unsubscribe(params.pathAndQsp.email, params.pathAndQsp.code, params.pathAndQsp.list);
+        callback(null, {
+          statusCode: 200,
+          headers: { 'Content-Type': 'text/html; charset=utf-8' },
+          body: html
+        });
+      });
+      return;
+    }
+
     let promise = SendGridApiHandler.dispatchEvent(event.httpMethod, params);
     if (promise) {
       promise

@@ -12,7 +12,7 @@ module.exports = {
   // the webpack config) as an entry
   entry: slsw.lib.entries,
   resolve: {
-    extensions: ['.js', '.json', '.ts', '.tsx']
+    extensions: ['.js', '.json', '.ts', '.tsx', '.html']
   },
   target: 'node',
   // Since 'aws-sdk' is not compatible with webpack,
@@ -53,6 +53,11 @@ module.exports = {
             loader: 'ts-loader'
           }
         ]
+      },
+      {
+        test: /\.html$/,
+        exclude: /node_modules/,
+        loader: "html-loader?exportAsEs6Default"
       }
     ]
   },

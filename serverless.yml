@@ -49,6 +49,7 @@ provider:
     VOLUNTEER_BILLS_S3_BUCKET: "volunteer.bills"
     DB_CONFIG: "remoteMongodb"
     MY_API_KEY: ""
+    CURRENT_STAGE: ${opt:stage}
   region: us-east-1
   iamRoleStatements:
     - Effect: "Allow"
@@ -283,6 +284,10 @@ functions:
           method: post
           cors: true
           private: true
+      - http:
+          path: unsubscribe/{list}
+          method: get
+          cors: true
 
   articleSnippets:
     handler: functions/private/articleSnippets/articleSnippetsHandler.main
