@@ -6,17 +6,18 @@ import { DataManager } from '../../libs/dbLib2/DataManager';
 import { Logger } from '../../libs/dbLib2/Logger';
 import Utility from '../../libs/utils/Utility';
 
-let config = {
-  'dbId': 'appp9kTQYOdrmDGuS',
+let airtableConfig = {
+  'billDbId': 'appp9kTQYOdrmDGuS',
   'billTableName': 'Bills',
   'billTypeTableName': 'Bill Types',
   'relevanceTableName': 'Relevance',
   'tagTableName': 'Tags',
-};
 
-let configArticle = {
-  'dbId': 'appX2196fiRt2qlzf',
-  'articleTableName': 'Articles'
+  'articleDbId': 'appX2196fiRt2qlzf',
+  'articleTableName': 'Articles',
+
+  'personDbId': 'appv9GLBqyyDP6ObR',
+  'personTableName': 'Persons'
 };
 
 let logger = new Logger('importAirtable.ts');
@@ -67,9 +68,9 @@ async function composeBillsFromAirtable (
   getTagRefsOnly = false,
 ): Promise<{[id: string]: IEnt}> {
   let [ billTypes, relevances, bills ] = await Promise.all([
-    source.readTable(config['billTypeTableName']),
-    source.readTable(config['relevanceTableName']),
-    source.readTable(config['billTableName']),
+    source.readTable(airtableConfig['billTypeTableName']),
+    source.readTable(airtableConfig['relevanceTableName']),
+    source.readTable(airtableConfig['billTableName']),
   ]);
 
   let results = _.pickBy(_.mapValues(bills, v => {
@@ -121,7 +122,7 @@ async function composeBillsFromAirtable (
 async function composeTagsFromAirtable (
   source: AirtableReader,
 ): Promise<{[id: string]: IEnt}> {
-  let tags = await source.readTable(config['tagTableName']);
+  let tags = await source.readTable(airtableConfig['tagTableName']);
   let results = _.pickBy(_.mapValues(tags, v => {
     if (!v['Name']) {
       return;
@@ -142,7 +143,7 @@ async function composeTagsFromAirtable (
 async function composeAirticlesFromAirtable (
   source: AirtableReader,
 ): Promise<{[id: string]: IEnt}> {
-  let articles = await source.readTable(configArticle.articleTableName);
+  let articles = await source.readTable(airtableConfig.articleTableName);
   let results = _.pickBy(_.mapValues(articles, v => {
     if (!v['Headline'] || !v['Readable ID']) {
       return;
@@ -245,11 +246,37 @@ async function importHasTagAssocs (m: DataManager, source: AirtableReader) {
 }
 
 async function importArticles (m: DataManager, source: AirtableReader) {
-  let sourceTags = await composeAirticlesFromAirtable(source);
+  let sourceArticles = await composeAirticlesFromAirtable(source);
   await m.importDataset(
     Type.ArticleSnippet,
-    _.values(sourceTags),
+    _.values(sourceArticles),
     [ 'readableId' ],
+    Utility.isLocalRun(),
+    false,
+  );
+}
+
+async function importPersons (m: DataManager, source: AirtableReader) {
+  let airtableRows = await source.readTable(airtableConfig.personTableName);
+  let airtablePersons = _.pickBy(_.mapValues(airtableRows, v => {
+    if (!v['bioGuideId'] || !v['firstname'] || !v['lastname']) {
+      return;
+    }
+    return {
+      _id: undefined,
+      _type: Type.Person,
+      bioGuideId: v['bioGuideId'],
+      firstName: v['firstname'],
+      lastName: v['lastname'],
+      lastName_zh: v['lastname_zh'],
+      firstName_zh: v['firstname_zh'],
+    };
+  }));
+
+  await m.importDataset(
+    Type.Person,
+    _.values(airtablePersons),
+    [ 'bioGuideId' ],
     Utility.isLocalRun(),
     false,
   );
@@ -258,21 +285,17 @@ async function importArticles (m: DataManager, source: AirtableReader) {
 export async function main () {
   let g = await DataGraph.get('MongoGraph', MongoDbConfig.getDbName());
   let m = new DataManager(g);
-  let airtableReader = new AirtableReader(config['dbId']);
 
+  let airtableReader = new AirtableReader(airtableConfig.billDbId);
   await importBills(m, airtableReader);
   await importTags(m, airtableReader);
   await importHasTagAssocs(m, airtableReader);
 
-  DataGraph.cleanup();
-
-  // articles in different DB
-
-  g = await DataGraph.get('MongoGraph', MongoDbConfig.getDbName());
-  m = new DataManager(g);
-
-  airtableReader = new AirtableReader(configArticle['dbId']);
+  airtableReader = new AirtableReader(airtableConfig.articleDbId);
   await importArticles(m, airtableReader);
+
+  airtableReader = new AirtableReader(airtableConfig.personDbId);
+  await importPersons(m, airtableReader);
 
   DataGraph.cleanup();
 
