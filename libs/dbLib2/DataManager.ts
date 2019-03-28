@@ -103,15 +103,22 @@ export class DataManager {
     data: (IEnt | IAssoc)[],
     joinFields: string[],
   ): Promise<(JoinedIEnt | JoinedIAssoc)[]> {
-    let joinKey = d => _.join(_.map(joinFields, jf => {
-      if (d[jf] === undefined) {
-        throw Error(`[DataManager.loadAllAndJoinWithData()] Join field ${jf} `
-          + `cannot be undefined in ${d}`);
+    let joinKey = (d: object) => {
+      try {
+        return _.join(_.map(joinFields, jf => {
+          if (d[jf] === undefined) {
+            throw Error(`[DataManager.loadAllAndJoinWithData()] Join field ${jf} `
+              + `cannot be undefined in ${d}`);
+          }
+          return JSON.stringify(d[jf]);
+        }), ':');
+      } catch (err) {
+        return undefined;
       }
-      return JSON.stringify(d[jf]);
-    }), ':');
+    };
     let targetDataset = await this.loadAll(type);
     let targetDatasetByJoinKey = _.keyBy<IEnt | IAssoc>(targetDataset, joinKey);
+    delete targetDatasetByJoinKey.undefined;
     data = _.map(data, src => {
       let key = joinKey(src);
       if (key in targetDatasetByJoinKey) {
