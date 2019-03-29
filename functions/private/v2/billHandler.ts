@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import { Type, DataGraph } from '../../../libs/dbLib2/DataGraph';
 import { translateTypeEnum } from './handlers';
 import { AssocFieldResolver } from './AssocFieldResolver';
+import { LanguageHelper } from './LanguageHelper';
 
 export class BillHandler {
   public static async run (
@@ -10,6 +11,7 @@ export class BillHandler {
     cosponsorIds: string[],
     tagIds: string[],
     fields: string[],
+    lang?: string,
   ): Promise<any> {
 
     let entQuery = { _type: Type.Bill };
@@ -37,6 +39,7 @@ export class BillHandler {
     }
 
     let g = await DataGraph.getDefault();
+    fields = LanguageHelper.augmentFields(fields, lang);
     let ents = await g.findEntities(
       entQuery,
       entAssocQueries,
@@ -44,6 +47,7 @@ export class BillHandler {
       [{ field: 'introducedDate', order: 'desc'}],
     );
     ents = await AssocFieldResolver.resolve(g, ents, fields);
+    ents = LanguageHelper.consolidateFields(ents, lang);
 
     return _.map(ents, translateTypeEnum);
   }

@@ -29,18 +29,25 @@ describe('HandlerTest', function () {
       'congress',
       'billType',
       'billNumber',
-      'sponsorIds',
-      'cosponsorIds',
-      'tagIds',
+      'sponsors',
+      'cosponsors',
+      'tags',
+      'title',
+      'summary',
+      'name',
+      'name_zh',
+      'firstName',
+      'lastName',
     ];
     let ids = [
       'fc46042f-989f-49a8-8e00-a5d26c0c3ba1',
       'fc46042f-989f-49a8-8e00-a5d26c0c3ba0',
       'fb9469f8-d30b-4215-a466-84c094dcf678',
       '56a3f0d7-3945-4912-9199-dc86183fa4c6',
+      'c167307e-ae0f-4a2f-a958-7f946848faa6',
     ];
 
-    let res = await IdHandler.run(ids, fields);
+    let res = await IdHandler.run(ids, fields, 'zh');
     console.log(res);
   });
 
@@ -50,9 +57,10 @@ describe('HandlerTest', function () {
       'congress',
       'billType',
       'billNumber',
-      'sponsorIds',
-      'cosponsorIds',
-      'tagIds',
+      'sponsors',
+      'cosponsors',
+      'tags',
+      'title',
     ];
     let congresses = [
       115,
@@ -73,7 +81,8 @@ describe('HandlerTest', function () {
       undefined,
       cosponsors,
       tags,
-      fields
+      fields,
+      'zh',
     );
     console.log(res);
   });
@@ -89,8 +98,8 @@ describe('HandlerTest', function () {
       'congressRoles.congressNumbers',
       'congressRoles.state',
       'congressRoles.district',
-      'sponsoredBillIds',
-      'cosponsoredBillIds',
+      'sponsoredBills',
+      'cosponsoredBills',
     ];
     let congresses = [
       115,
@@ -114,6 +123,7 @@ describe('HandlerTest', function () {
       undefined,
       billIds,
       fields,
+      'zh',
     );
     console.dir(res, { depth: null });
   });

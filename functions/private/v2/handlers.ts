@@ -74,8 +74,12 @@ export function handleIds (
   let params = initHandler(event, context);
   let ids = getStringArrayParam(params, 'id');
   let fields = getStringArrayParam(params, 'field');
+  let lang = getStringArrayParamFirst(params, 'lang');
 
-  IdHandler.run(ids, fields) .then(res => Response.success(callback, JSON.stringify(res), true)) .catch(err => Response.error(callback, JSON.stringify(err), true)); }
+  IdHandler.run(ids, fields, lang)
+    .then(res => Response.success(callback, JSON.stringify(res), true))
+    .catch(err => Response.error(callback, JSON.stringify(err), true));
+  }
 
 export function handleBills (
   event: APIGatewayEvent,
@@ -88,8 +92,9 @@ export function handleBills (
   let cosponsorIds = getStringArrayParam(params, 'cosponsorId');
   let tagIds = getStringArrayParam(params, 'tagId');
   let fields = getStringArrayParam(params, 'field');
+  let lang = getStringArrayParamFirst(params, 'lang');
 
-  BillHandler.run(congresses, sponsorIds, cosponsorIds, tagIds, fields)
+  BillHandler.run(congresses, sponsorIds, cosponsorIds, tagIds, fields, lang)
     .then(res => Response.success(callback, JSON.stringify(res), true))
     .catch(err => Response.error(callback, JSON.stringify(err), true));
 }
@@ -105,8 +110,9 @@ export function handlePersons (
   let districts = getIntArrayParam(params, 'district');
   let billIds = getStringArrayParam(params, 'sponsorId');
   let fields = getStringArrayParam(params, 'field');
+  let lang = getStringArrayParamFirst(params, 'lang');
 
-  PersonHandler.run(congresses, states, districts, billIds, fields)
+  PersonHandler.run(congresses, states, districts, billIds, fields, lang)
     .then(res => Response.success(callback, JSON.stringify(res), true))
     .catch(err => Response.error(callback, JSON.stringify(err), true));
 }

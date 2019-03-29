@@ -601,9 +601,6 @@ export class MongoGraph implements IDataGraph {
     let fields = assocFields || [];
     fields.push(other);
     results = await this.findAssocs(q, fields);
-    if (assocFields) {
-      Logger.log(results, 'asdf');
-    }
     return _.map(results, result => {
       delete result['_type'];
       delete result[self];

@@ -3,6 +3,7 @@ import { Type, DataGraph } from '../../../libs/dbLib2/DataGraph';
 import { translateTypeEnum } from './handlers';
 import { AssocFieldResolver } from './AssocFieldResolver';
 import { CongressUtils } from '../../../libs/dbLib2/CongressUtils';
+import { LanguageHelper } from './LanguageHelper';
 
 export class PersonHandler {
   public static async run (
@@ -11,6 +12,7 @@ export class PersonHandler {
     districts: number[],
     billIds: string[],
     fields: string[],
+    lang?: string,
   ): Promise<any> {
     let entQuery = { _type: Type.Person };
 
@@ -43,6 +45,7 @@ export class PersonHandler {
     }
 
     let g = await DataGraph.getDefault();
+    fields = LanguageHelper.augmentFields(fields, lang);
     let ents = await g.findEntities(
       entQuery,
       entAssocQueries,
@@ -54,6 +57,7 @@ export class PersonHandler {
       ],
     );
     ents = await AssocFieldResolver.resolve(g, ents, fields);
+    ents = LanguageHelper.consolidateFields(ents, lang);
 
     return _.map(ents, translateTypeEnum);
   }
