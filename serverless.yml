@@ -315,6 +315,7 @@ functions:
               querystrings:
                 id: true
                 field: false
+                lang: false
           cors: true
 
   v2Bills:
@@ -331,6 +332,7 @@ functions:
                 cosponsorId: false
                 tagId: false
                 field: false
+                lang: false
           cors: true
 
   v2Persons:
@@ -347,6 +349,7 @@ functions:
                 district: false
                 billId: false
                 field: false
+                lang: false
           cors: true
 
   v2ArticleSnippets:
