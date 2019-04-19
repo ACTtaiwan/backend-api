@@ -1,9 +1,10 @@
 import * as _ from 'lodash';
-import { Type, DataGraph } from '../../../libs/dbLib2/DataGraph';
+import { Type, DataGraph, ArrayFieldFilters } from '../../../libs/dbLib2/DataGraph';
 import { translateTypeEnum } from './handlers';
 import { AssocFieldResolver } from './AssocFieldResolver';
 import { CongressUtils } from '../../../libs/dbLib2/CongressUtils';
 import { LanguageHelper } from './LanguageHelper';
+import { CongressRoleFilter } from './CongressRoleFilter';
 
 export class PersonHandler {
   public static async run (
@@ -46,6 +47,10 @@ export class PersonHandler {
 
     let g = await DataGraph.getDefault();
     fields = LanguageHelper.augmentFields(fields, lang);
+
+    let fieldFilters: ArrayFieldFilters = {};
+    fields = CongressRoleFilter.getFieldFilters(fields, fieldFilters);
+
     let ents = await g.findEntities(
       entQuery,
       entAssocQueries,
@@ -55,6 +60,9 @@ export class PersonHandler {
         { field: 'firstName', order: 'asc' },
         { field: 'middleName', order: 'asc' },
       ],
+      undefined,
+      undefined,
+      fieldFilters,
     );
     ents = await AssocFieldResolver.resolve(g, ents, fields);
     ents = LanguageHelper.consolidateFields(ents, lang);

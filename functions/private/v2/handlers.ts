@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { APIGatewayEvent, Context, Callback } from 'aws-lambda';
 import Response from '../../../libs/utils/Response';
-import { IdHandler } from './idHandler';
+import { IdHandler } from './IdHandler';
 import { BillHandler } from './BillHandler';
 import { Type } from '../../../libs/dbLib2/DataGraph';
 import { PersonHandler } from './PersonHandler';
