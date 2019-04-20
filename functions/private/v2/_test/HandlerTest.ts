@@ -1,7 +1,7 @@
 import 'mocha';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import { IdHandler } from '../idHandler';
+import { IdHandler } from '../IdHandler';
 import { DataGraph } from '../../../../libs/dbLib2/DataGraph';
 import { BillHandler } from '../BillHandler';
 import { PersonHandler } from '../PersonHandler';
@@ -38,17 +38,19 @@ describe('HandlerTest', function () {
       'name_zh',
       'firstName',
       'lastName',
+      'congressRoles#1555658613000',
     ];
     let ids = [
-      'fc46042f-989f-49a8-8e00-a5d26c0c3ba1',
-      'fc46042f-989f-49a8-8e00-a5d26c0c3ba0',
-      'fb9469f8-d30b-4215-a466-84c094dcf678',
-      '56a3f0d7-3945-4912-9199-dc86183fa4c6',
-      'c167307e-ae0f-4a2f-a958-7f946848faa6',
+      '03d6f10b-40e8-44b1-ab36-0d69eef50274',
+      // 'fc46042f-989f-49a8-8e00-a5d26c0c3ba1',
+      // 'fc46042f-989f-49a8-8e00-a5d26c0c3ba0',
+      // 'fb9469f8-d30b-4215-a466-84c094dcf678',
+      // '56a3f0d7-3945-4912-9199-dc86183fa4c6',
+      // 'c167307e-ae0f-4a2f-a958-7f946848faa6',
     ];
 
     let res = await IdHandler.run(ids, fields, 'zh');
-    console.log(res);
+    console.dir(res, { depth: null });
   });
 
   it.skip('bills', async function () {
@@ -94,10 +96,10 @@ describe('HandlerTest', function () {
       'middleName',
       'lastName',
       'bioGuideId',
-      // 'congressRoles',
-      'congressRoles.congressNumbers',
-      'congressRoles.state',
-      'congressRoles.district',
+      'congressRoles#1555658613000',
+      // 'congressRoles.congressNumbers',
+      // 'congressRoles.state',
+      // 'congressRoles.district',
       'sponsoredBills',
       'cosponsoredBills',
     ];

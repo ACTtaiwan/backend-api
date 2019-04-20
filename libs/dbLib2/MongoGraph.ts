@@ -3,7 +3,9 @@ import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { IDataGraph, Type, Id, IEnt, IEntQuery, IEntAssocQuery,
   IUpdate, IAssoc, DataGraphUtils, IAssocQuery, IEntInsert,
-  IAssocInsert, ISortField, IQueryOperator, IAssociatedEntIds } from './DataGraph';
+  IAssocInsert, ISortField, IQueryOperator, IAssociatedEntIds,
+  ArrayFieldFilters,
+} from './DataGraph';
 import { MongoDbConfig } from '../../config/mongodb';
 import { expect } from 'chai';
 import { Logger } from './Logger';
@@ -218,11 +220,36 @@ export class MongoGraph implements IDataGraph {
     table: Collection,
     id: Id,
     fields?: string[],
+    fieldFilters?: ArrayFieldFilters,
   ): Promise<object> {
-    let ent = await table.findOne(
-      MongoGraph._encodeIdFields({ _id: id }),
-      { projection: MongoGraph._composeProjection(fields) },
-    );
+    let proj = MongoGraph._composeProjection(fields, true, fieldFilters);
+    let hasFieldFilter = false;
+    _.forOwn(proj, p => {
+      if (typeof p === 'object') {
+        hasFieldFilter = true;
+        return false;
+      }
+    });
+
+    let ent = undefined;
+    if (!hasFieldFilter) {
+      ent = await table.findOne(
+        MongoGraph._encodeIdFields({ _id: id }),
+        { projection: proj },
+      );
+    } else {
+      let pipeline = [];
+      pipeline.push({ $match: MongoGraph._encodeIdFields({ _id: id }) });
+      if (proj && _.size(proj) > 0) {
+        pipeline.push({ $project: proj });
+      }
+      pipeline.push({ $limit: 1 });
+      let results = await table.aggregate(pipeline).toArray();
+      if (results && results.length >= 1) {
+        ent = results[0];
+      }
+    }
+
     if (!ent) {
       return null;
     }
@@ -231,8 +258,17 @@ export class MongoGraph implements IDataGraph {
     return ret;
   }
 
-  public async loadEntity (id: Id, fields?: string[]): Promise<IEnt> {
-    let ret = await MongoGraph._loadHelper(this._entities, id, fields);
+  public async loadEntity (
+    id: Id,
+    fields?: string[],
+    fieldFilters?: ArrayFieldFilters,
+  ): Promise<IEnt> {
+    let ret = await MongoGraph._loadHelper(
+      this._entities,
+      id,
+      fields,
+      fieldFilters
+    );
     return <IEnt>ret;
   }
 
@@ -258,8 +294,16 @@ export class MongoGraph implements IDataGraph {
             return { $lt: v['_val'] };
           case '<=':
             return { $lte: v['_val'] };
+          case 'and':
+          case 'or':
+            return {
+              [`$${v['_op']}`]: _.map(
+                v['_val'],
+                sub => MongoGraph._composeQuery(sub, null, true),
+              ),
+            };
           default:
-            throw Error(`Unknown operator ${v['_op']} in ${v}`);
+            throw Error(`Unknown query operator ${v['_op']} in ${v}`);
         }
       } else {
         return v;
@@ -283,17 +327,88 @@ export class MongoGraph implements IDataGraph {
   }
 
   /**
+   * Compose a Mongo expression from an IEntQuery object.
+   */
+  private static _composeExpression (
+    cond: any,
+    path: string,
+    nested: boolean = false,
+  ): object {
+    if (cond === null) {
+      return {};
+    }
+    if (Array.isArray(cond)) {
+      return { $in: [path, cond] };
+    } else if (nested && isQueryOperator(cond)) {
+      let op = cond._op;
+      let val = cond._val;
+      switch (op) {
+        case '>':
+          return { $gt: [path, val] };
+        case '>=':
+          return { $gte: [path, val] };
+        case '<':
+          return { $lt: [path, val] };
+        case '<=':
+          return { $lte: [path, val] };
+        case 'and':
+        case 'or':
+          return {
+            [`$${op}`]: _.map(
+              val,
+              sub => MongoGraph._composeExpression(sub, path, true),
+            ),
+          };
+        default:
+          throw Error(`Unknown filter operator ${op} in ${cond}`);
+      }
+    } else if (!nested && typeof cond === 'object') {
+      let subConds = _.map(
+        _.keys(cond),
+        k => MongoGraph._composeExpression(cond[k], `${path}.${k}`, true),
+      );
+      if (subConds.length === 0) {
+        return {};
+      } else if (subConds.length === 1) {
+        return subConds[0];
+      } else {
+        return { $and: subConds };
+      }
+    } else {
+      return { $cond: [
+        { $isArray: [path] },
+        { $in: [cond, path] },
+        { $eq: [cond, path] },
+      ] };
+    }
+  }
+
+  /**
    * Compose a mongo projection.
    */
-  private static _composeProjection (fields: string[], present = true)
-  : object {
+  private static _composeProjection (
+    fields: string[],
+    present = true,
+    filters?: ArrayFieldFilters,
+  ): object {
     if (!fields) {
       return {};
     }
     if (present) {
       fields.push('_type'); // always include _type field
     }
-    return _.fromPairs(_.map(fields, f => [f, present]));
+    return _.fromPairs(_.map(fields, f => {
+      if (filters && filters[f] && present) {
+        return [f, {
+          $filter: {
+            input: `$${f}`,
+            as: 'item',
+            cond: MongoGraph._composeExpression(filters[f], '$$item'),
+          }
+        }];
+      }
+      return [f, present];
+    }));
   }
 
   /**
@@ -361,6 +476,7 @@ export class MongoGraph implements IDataGraph {
     sort?: ISortField[],
     limit?: number,
     readPageSize: number = MongoDbConfig.getReadPageSize(),
+    fieldFilters?: ArrayFieldFilters,
   ): Promise<T[]> {
     let logger = new Logger('MongoGraph').in('findEntities');
     logger.log(JSON.stringify({
@@ -394,7 +510,13 @@ export class MongoGraph implements IDataGraph {
           pipeline.push(pipe);
         });
         if (fields) {
-          pipeline.push({ $project: MongoGraph._composeProjection(fields as string[]) });
+          pipeline.push({
+            $project: MongoGraph._composeProjection(
+              fields as string[],
+              true,
+              fieldFilters
+            ),
+          });
         }
         pipeline.push({ $sort: cursor.toSort() });
         pipeline.push({ $limit: limit ?

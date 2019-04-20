@@ -73,6 +73,9 @@ export class AssocFieldResolver {
     }
   };
 
+  /**
+   * @param fieldString Example: virtual_field#assoc_field1,assoc_field2,...
+   */
   protected static parseAssocFieldString (fieldString: string)
   : AssocFieldRequest {
     let toks = _.split(fieldString, '#');

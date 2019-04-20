@@ -54,6 +54,9 @@ export interface IEntInsert extends IHasType, IHasIdMaybe, IHasData {}
 export type IEntQuery<T extends IEnt = IEnt> = IHasType & IHasIdMaybe & IHasData & {
   [ K in keyof T ]?: T[K] | IQueryOperator<ElementType<T[K]>>;
 };
+export type ArrayFieldFilters = {
+  [ field: string ]: object;
+};
 
 export interface IEntAssocQuery extends IHasTypeOrTypes,
   IHasIdOrIdListPairMaybe, IHasData {}
@@ -83,9 +86,17 @@ export interface IDataGraph {
    */
   insertEntities (ents: IEntInsert[]): Promise<Id[]>;
   /**
+   * @param fieldFilters field name to query conditions mappings. If the
+   * field is an array type, the specified conditions will be applied to
+   * each array element, and only those matching the conditions will be
+   * returned.
    * @returns null if not found
    */
-  loadEntity (id: Id, fields?: string[]): Promise<IEnt>;
+  loadEntity (
+    id: Id,
+    fields?: string[],
+    fieldFilters?: ArrayFieldFilters,
+  ): Promise<IEnt>;
   /**
    *
    * @param entQuery is a structure containing a set of conditions:
@@ -122,6 +133,8 @@ export interface IDataGraph {
     fields?: (keyof T | string)[],
     sort?: ISortField<T>[],
     limit?: number,
+    readPageSize?: number,
+    fieldFilters?: ArrayFieldFilters,
   ): Promise<T[]>;
   /**
    * Update a set of entities

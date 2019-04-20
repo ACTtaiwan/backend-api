@@ -2,7 +2,8 @@ import * as _ from 'lodash';
 import { expect } from 'chai';
 import 'mocha';
 import { IDataGraph, DataGraph, Type } from '../DataGraph';
-import { Logger } from 'mongodb';
+import { MongoGraph } from '../MongoGraph';
+import { Logger } from '../Logger';
 
 describe('MongoGraphTest', async function () {
   let g: IDataGraph;
@@ -16,7 +17,15 @@ describe('MongoGraphTest', async function () {
     { _type: ENT_TYPE1, a: 999, c: Date.now()},
     { _type: ENT_TYPE1, a: 1, b: 'zzz' },
     { _type: ENT_TYPE1, a: 2, b: 'bbb' },
-    { _type: ENT_TYPE2, x: 'xxx' },
+    { _type: ENT_TYPE2, x: 'xxx', z: [
+      { speed: 123, name: 'fdaa' },
+      { speed: 3, name: 'xlufal' },
+      { speed: 56, year: 2005 },
+      { speed: 300 },
+      'what?',
+      { struct: { p: -56, q: 56 } },
+      { year: [1994, 2000, 2005, 2010, 2020] },
+    ] },
     { _type: ENT_TYPE2, y: 'yyy' },
   ];
   let assocData = [
@@ -314,6 +323,146 @@ describe('MongoGraphTest', async function () {
     });
   });
 
+  describe('Project', async function () {
+    let ids, assocIds, ents;
+
+    before(async function () {
+      if (!g) {
+        this.skip();
+      }
+      dropDb();
+      ids = await insertTestEntData();
+      [assocIds, ents] = await Promise.all([
+        insertTestAssocData(ids),
+        loadAllEnts(ids),
+      ]);
+    });
+
+    it('project', async function () {
+      let found = await g.findEntities(
+        <any>{ _type: ENT_TYPE1 },
+        undefined,
+        ['b'],
+      );
+      expect(found).to.have.lengthOf(4);
+
+      let fieldFilter = k => k === '_id' || k === '_type' || k === 'b';
+      expect(found).to.deep.include(
+        _.pickBy(ents[0], (_v, k) => fieldFilter(k))
+      );
+      expect(found).to.deep.include(
+        _.pickBy(ents[1], (_v, k) => fieldFilter(k))
+      );
+      expect(found).to.deep.include(
+        _.pickBy(ents[2], (_v, k) => fieldFilter(k))
+      );
+      expect(found).to.deep.include(
+        _.pickBy(ents[3], (_v, k) => fieldFilter(k))
+      );
+    });
+
+    it('filter array field, match value', async function () {
+      let found = await g.findEntities(
+        <any>{ _type: ENT_TYPE2, x: 'xxx' },
+        undefined,
+        ['z'],
+        undefined,
+        undefined,
+        undefined,
+        {
+          'z': <any>{
+            'name': 'fdaa',
+          },
+        },
+      );
+      expect(found).to.have.lengthOf(1);
+      expect(found[0]['z']).to.eql([ents[4]['z'][0]]);
+    });
+
+    it('filter array field, match object value', async function () {
+      let found = await g.findEntities(
+        <any>{ _type: ENT_TYPE2, x: 'xxx' },
+        undefined,
+        ['z'],
+        undefined,
+        undefined,
+        undefined,
+        {
+          'z': <any>{
+            'struct': {
+              'p': -56,
+              'q': 56,
+            }
+          },
+        },
+      );
+      expect(found).to.have.lengthOf(1);
+      expect(found[0]['z']).to.eql([ents[4]['z'][5]]);
+    });
+
+    it('filter array field, match value in array', async function () {
+      let found = await g.findEntities(
+        <any>{ _type: ENT_TYPE2, x: 'xxx' },
+        undefined,
+        ['z'],
+        undefined,
+        undefined,
+        undefined,
+        {
+          'z': <any>{
+            'year': 2005
+          },
+        },
+      );
+      expect(found).to.have.lengthOf(1);
+      expect(found[0]['z']).to.eql([ents[4]['z'][2], ents[4]['z'][6]]);
+    });
+
+    it('filter array field, value in range', async function () {
+      let found = await g.findEntities(
+        <any>{ _type: ENT_TYPE2, x: 'xxx' },
+        undefined,
+        ['z'],
+        undefined,
+        undefined,
+        undefined,
+        {
+          'z': <any>{
+            'speed': {
+              _op: 'and',
+              _val: [
+                { _op: '>=', _val: 3 },
+                { _op: '<', _val: 100 },
+              ],
+            }
+          },
+        },
+      );
+      expect(found).to.have.lengthOf(1);
+      expect(found[0]['z']).to.eql([ents[4]['z'][1], ents[4]['z'][2]]);
+    });
+
+    it('filter array field, value in range (load ent)', async function () {
+      let found = await g.loadEntity(
+        ents[4]._id,
+        ['z'],
+        {
+          'z': <any>{
+            'speed': {
+              _op: 'and',
+              _val: [
+                { _op: '>=', _val: 3 },
+                { _op: '<', _val: 100 },
+              ],
+            }
+          },
+        },
+      );
+      expect(found['_id']).to.eql(ents[4]['_id']);
+      expect(found['z']).to.eql([ents[4]['z'][1], ents[4]['z'][2]]);
+    });
+  });
+
   describe('Update', function () {
     let ids, assocIds, ents;
 
@@ -467,5 +616,166 @@ describe('MongoGraphTest', async function () {
       assocsFound = await g.findAssocs({ _type: ASSOC_TYPE1 });
       expect(assocsFound).to.have.lengthOf(0);
     });
+  });
+
+  describe('(Internal) _queryToExpression', function () {
+    const VAR = '$$item';
+    let tests = {
+      'empty': { input: null, expected: {} },
+      'simple': { input: 7788, expected: {
+        $cond: [
+          { $isArray: [VAR] },
+          { $in: [7788, VAR] },
+          { $eq: [7788, VAR] },
+        ],
+      }},
+      'empty object': { input: {}, expected: {} },
+      'values1': {
+        input: { a: 'asdf' },
+        expected: {
+          $cond: [
+            { $isArray: [`${VAR}.a`] },
+            { $in: ['asdf', `${VAR}.a`] },
+            { $eq: ['asdf', `${VAR}.a`] },
+          ],
+      }},
+      'values2': {
+        input: { a: 1, b: 'kkk' },
+        expected: {
+          $and: [
+            { $cond: [
+              { $isArray: [`${VAR}.a`] },
+              { $in: [1, `${VAR}.a`] },
+              { $eq: [1, `${VAR}.a`] },
+            ]},
+            { $cond: [
+              { $isArray: [`${VAR}.b`] },
+              { $in: ['kkk', `${VAR}.b`] },
+              { $eq: ['kkk', `${VAR}.b`] },
+            ]},
+          ],
+        },
+      },
+      'values3': {
+        input: { a: 1, z: [38, 42, 'zzZ'], b: 'kkk' },
+        expected: {
+          $and: [
+            { $cond: [
+              { $isArray: [`${VAR}.a`] },
+              { $in: [1, `${VAR}.a`] },
+              { $eq: [1, `${VAR}.a`] }
+            ]},
+            { $in: [`${VAR}.z`, [38, 42, 'zzZ']] },
+            { $cond: [
+              { $isArray: [`${VAR}.b`] },
+              { $in: ['kkk', `${VAR}.b`] },
+              { $eq: ['kkk', `${VAR}.b`] },
+            ]},
+          ],
+        },
+      },
+      'op1': {
+        input: { y: { _op: '>', _val: 101 } },
+        expected: { $gt: [`${VAR}.y`, 101]},
+      },
+      'op2': {
+        input: {
+          y: { _op: '>', _val: 101 },
+          Y: { _op: '<=', _val: 9 },
+        },
+        expected: {
+          $and: [
+            { $gt: [`${VAR}.y`, 101] },
+            { $lte: [`${VAR}.Y`, 9] },
+          ],
+        },
+      },
+      'op and2': {
+        input: {
+          y: {
+            _op: 'and',
+            _val: [
+              { _op: '>=', _val: 2000 },
+              { _op: '<', _val: 2020 },
+            ],
+          },
+        },
+        expected: {
+          $and: [
+            { $gte: [`${VAR}.y`, 2000] },
+            { $lt: [`${VAR}.y`, 2020] },
+          ],
+        },
+      },
+      'op or4': {
+        input: {
+          y: {
+            _op: 'or',
+            _val: [
+              { _op: '>=', _val: 2000 },
+              { _op: '<', _val: 2020 },
+              { aa: 4123, $or: 'hello' }, // $or here is not an operator
+              5566,
+            ],
+          },
+        },
+        expected: {
+          $or: [
+            { $gte: [`${VAR}.y`, 2000] },
+            { $lt: [`${VAR}.y`, 2020] },
+            { $cond: [
+              { $isArray: [`${VAR}.y`] },
+              { $in: [{ aa: 4123, $or: 'hello' }, `${VAR}.y`] },
+              { $eq: [{ aa: 4123, $or: 'hello' }, `${VAR}.y`] },
+            ]},
+            { $cond: [
+              { $isArray: [`${VAR}.y`] },
+              { $in: [5566, `${VAR}.y`] },
+              { $eq: [5566, `${VAR}.y`] },
+            ]},
+          ],
+        },
+      },
+      'op or and': {
+        input: {
+          'y.z': {
+            _op: 'or',
+            _val: [
+              {
+                _op: 'and',
+                _val: [
+                  { _op: '>=', _val: 2000 },
+                  { _op: '<', _val: 2020 },
+                ],
+              },
+              'haha',
+            ],
+          },
+        },
+        expected: {
+          $or: [
+            {
+              $and: [
+                { $gte: [`${VAR}.y.z`, 2000] },
+                { $lt: [`${VAR}.y.z`, 2020] },
+              ],
+            },
+            { $cond: [
+              { $isArray: [`${VAR}.y.z`] },
+              { $in: ['haha', `${VAR}.y.z`] },
+              { $eq: ['haha', `${VAR}.y.z`] },
+            ]},
+          ],
+        },
+      },
+    };
+
+    _.forOwn(tests, (t, name) => {
+      it(name, function () {
+        let ret = MongoGraph['_composeExpression'](t.input, VAR);
+        expect(ret).to.eql(t.expected);
+      });
+    });
+
   });
 });
