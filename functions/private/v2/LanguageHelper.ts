@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import { IEnt, IAssoc } from '../../../libs/dbLib2';
 
 export class LanguageHelper {
+  // field --> supported suffix
   protected static ELIGIBLE_FIELDS = {
     title: new Set(['zh']),
     summary: new Set(['zh']),
@@ -10,6 +11,13 @@ export class LanguageHelper {
     name: new Set(['zh']),
   };
 
+  protected static getSuffix (lang: string): string {
+    if (lang && lang.startsWith('zh')) {
+      return 'zh';
+    }
+    return undefined;
+  }
+
   /**
    * Scan through fields to find eligible ones for the specified language.
    * Add a new field whose name is the original field name appended with
@@ -17,10 +25,11 @@ export class LanguageHelper {
    * For example: lastName -> lastName_zh
    */
   public static augmentFields (fields: string[], lang?: string): string[] {
+    let suffix = LanguageHelper.getSuffix(lang);
     let extraFields = _.filter(_.map(fields, f => {
       let eligibleLangSet = LanguageHelper.ELIGIBLE_FIELDS[f];
-      if (eligibleLangSet && eligibleLangSet.has(lang)) {
-        return `${f}_${lang}`;
+      if (eligibleLangSet && eligibleLangSet.has(suffix)) {
+        return `${f}_${suffix}`;
       }
     }));
 
@@ -40,7 +49,7 @@ export class LanguageHelper {
     if (lang === undefined || lang.length <= 0) {
       return objects;
     }
-    let fieldPostfix = `_${lang}`;
+    let fieldPostfix = `_${LanguageHelper.getSuffix(lang)}`;
     return _.map(objects, o => {
       let updatingFields = {};
       let deletingFields = [];
