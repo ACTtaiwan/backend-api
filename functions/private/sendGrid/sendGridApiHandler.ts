@@ -1,7 +1,8 @@
 import { Context, Callback, APIGatewayEvent } from 'aws-lambda';
 import Response from '../../../libs/utils/Response';
 // import { SendGridAgent } from '../../../libs/subscribe/SendGridAgent';
-import { SendPulseAgent } from '../../../libs/subscribe/SendPulseAgent';
+// import { SendPulseAgent } from '../../../libs/subscribe/SendPulseAgent';
+import { MailigenAgent } from '../../../libs/subscribe/MailigenAgent';
 
 export class SendGridApi {
 
@@ -39,18 +40,18 @@ export class SendGridApiHandler {
       }
     };
 
-    // unsubscribe
-    if (event.httpMethod === 'GET' && params.pathAndQsp && params.pathAndQsp.path.includes('unsubscribe/')) {
-      SendPulseAgent.instance.then(async agent => {
-        let html = await agent.unsubscribe(params.pathAndQsp.email, params.pathAndQsp.code, params.pathAndQsp.list);
-        callback(null, {
-          statusCode: 200,
-          headers: { 'Content-Type': 'text/html; charset=utf-8' },
-          body: html
-        });
-      });
-      return;
-    }
+    // // unsubscribe
+    // if (event.httpMethod === 'GET' && params.pathAndQsp && params.pathAndQsp.path.includes('unsubscribe/')) {
+    //   SendPulseAgent.instance.then(async agent => {
+    //     let html = await agent.unsubscribe(params.pathAndQsp.email, params.pathAndQsp.code, params.pathAndQsp.list);
+    //     callback(null, {
+    //       statusCode: 200,
+    //       headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    //       body: html
+    //     });
+    //   });
+    //   return;
+    // }
 
     let promise = SendGridApiHandler.dispatchEvent(event.httpMethod, params);
     if (promise) {
@@ -72,7 +73,7 @@ export class SendGridApiHandler {
       let body = params.body;
       if (body) {
         console.log(`[SendGridApiHandler::dispatchEvent()] subscribe email = ${body.email}`);
-        return SendPulseAgent.instance.then(agent => agent.subscribe(body.email, body.name, undefined, body.list));
+        return MailigenAgent.instance.then(agent => agent.subscribe(body.email, body.name, undefined, body.list));
       } else {
         let errObj = {
           error: 'POST body is missing'
