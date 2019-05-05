@@ -88,7 +88,6 @@ provider:
 #    - exclude-me.js
 #    - exclude-me-dir/**
 
-
 functions:
   # Defines an HTTP API endpoint that calls the main function in create.js
   # - path: url path is /bill
@@ -288,6 +287,15 @@ functions:
           path: unsubscribe/{list}
           method: get
           cors: true
+
+  donation:
+    handler: functions/private/stripe/stripeApiHandler.main
+    events:
+      - http:
+          path: stripe/charge
+          method: post
+          cors: true
+          private: true
 
   articleSnippets:
     handler: functions/private/articleSnippets/articleSnippetsHandler.main
