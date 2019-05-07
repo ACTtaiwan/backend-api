@@ -40,25 +40,25 @@ function initHandler (
   return _.assign(queryParams, pathParams);
 }
 
-function getStringArrayParam (p: RequestParams, name: string): string[] {
+export function getStringArrayParam (p: RequestParams, name: string): string[] {
   if (!p || !p[name]) {
     return [];
   }
   return p[name];
 }
 
-function getIntArrayParam (p: RequestParams, name: string): number[] {
+export function getIntArrayParam (p: RequestParams, name: string): number[] {
   return _.map(getStringArrayParam(p, name), v => parseInt(v));
 }
 
-function getStringArrayParamFirst (p: RequestParams, name: string): string {
+export function getStringArrayParamFirst (p: RequestParams, name: string): string {
   let val = getStringArrayParam(p, name);
   if (val.length > 0) {
     return val[0];
   }
 }
 
-function getIntArrayParamFirst (p: RequestParams, name: string): number {
+export function getIntArrayParamFirst (p: RequestParams, name: string): number {
   let val = getIntArrayParam(p, name);
   if (val.length > 0) {
     return val[0];
