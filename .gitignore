@@ -21,3 +21,9 @@ dbData/
 *.dontcommit*
 tmp.*
 .webpack
+
+# .env
+.env
+
+# docker-push
+docker-push-*
