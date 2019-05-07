@@ -1,6 +1,7 @@
 export default class AppConfig {
   static readonly stage = process.env.STAGE || 'dev';
   static readonly port = process.env.port || process.env.PORT || 9487;
+  static readonly myAPIKey = process.env.MY_API_KEY;
   static readonly aws = {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,

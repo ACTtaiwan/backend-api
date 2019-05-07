@@ -24,13 +24,15 @@ if (!config.isLocal) {
     .setSendLiveMetrics(false);
   appInsights.defaultClient.context.tags[appInsights.defaultClient.context.keys.cloudRole] = config.appInsights.loggingAppName;
   appInsights.start();
-  logger.log('NODE_ENV = production. Use Application Insights');
+  logger.log(`NODE_ENV = production. Use Application Insights. Key = ${config.appInsights.key} Role = ${config.appInsights.loggingAppName}`);
 } else {
-  logger.log('NODE_ENV = local');
+  logger.log('NODE_ENV = local. Not use Application Insights.');
 }
 
-// log STAGE
+// log basic info
 logger.log(`STAGE = ${config.stage}`);
+logger.log(`MY_API_KEY = ${config.myAPIKey}`);
+logger.log(`IS_LOCAL = ${config.isLocal}`);
 
 // set up AWS credentials
 let awsCreds: AWS.Credentials;
@@ -44,7 +46,7 @@ if (config.aws.accessKeyId && config.aws.secretAccessKey) {
 AWS.config.credentials = awsCreds;
 
 function ensureAuthenticated (req: Request, res: Response, next: NextFunction) {
-  if (req.header('x-api-key') !== process.env.MY_API_KEY) {
+  if (req.header('x-api-key') !== config.myAPIKey) {
     res.status(401).send('Invalid API key!');
   } else {
     next();

@@ -1,5 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import { inspect } from 'util';
+import config from '../../config/appConfig';
 
 export class Logger {
   protected _id: string;
@@ -27,7 +28,7 @@ export class Logger {
 
   public static log (msg: any, prefix?: string) {
     if (typeof msg !== 'string') {
-      let colors = process.env.IS_LOCAL ? true : false;
+      let colors = config.isLocal;
       msg = inspect(msg, { depth: null, colors: colors });
     }
     if (prefix !== undefined) {
