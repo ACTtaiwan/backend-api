@@ -93,6 +93,7 @@
     "strftime": "^0.10.0",
     "string-similarity": "^1.2.0",
     "string-template": "^1.0.0",
+    "stripe": "^6.31.1",
     "tracer": "^0.9.1",
     "ts-loader": "^4.4.1",
     "tslint": "^5.12.1",
