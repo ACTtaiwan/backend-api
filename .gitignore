@@ -24,6 +24,3 @@ tmp.*
 
 # .env
 .env
-
-# docker-push
-docker-push-*
