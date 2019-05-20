@@ -3,7 +3,7 @@ import Response from '../../../libs/utils/Response';
 import * as Stripe from 'stripe';
 import { MailigenAgent } from '../../../libs/subscribe/MailigenAgent';
 
-const stripe = new Stripe('sk_live_mW6GJYf31GeoDD67HTrz0lVC00ewEgymWw');
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 stripe.setApiVersion('2019-03-14');
 
 const sourceMap = ['U.S. Taiwan Watch', 'American Citizens for Taiwan'];
@@ -27,7 +27,7 @@ export interface StripeHandlerParams {
 }
 
 export class StripeApiHandler {
-  public static handleRequest (event: APIGatewayEvent, context: Context, callback?: Callback) {
+  public static handleRequest(event: APIGatewayEvent, context: Context, callback?: Callback) {
     console.log(`[StripeApiHandler::handleRequest()] event = ${JSON.stringify(event, null, 2)}`);
 
     // This freezes node event loop when callback is invoked
@@ -57,7 +57,7 @@ export class StripeApiHandler {
     }
   }
 
-  public static async getCustomer (params: StripeHandlerParams) {
+  public static async getCustomer(params: StripeHandlerParams) {
     let source = 'unknown source';
     let customer: Stripe.customers.ICustomer;
 
@@ -84,7 +84,7 @@ export class StripeApiHandler {
     return customer;
   }
 
-  public static async updateSource (params: StripeHandlerParams, customer: Stripe.customers.ICustomer) {
+  public static async updateSource(params: StripeHandlerParams, customer: Stripe.customers.ICustomer) {
     const source = await stripe.customers.update(customer.id, {
       source: params.body.token
     });
@@ -92,7 +92,7 @@ export class StripeApiHandler {
     return source;
   }
 
-  public static async dispatchEvent (httpMethod: string, params: StripeHandlerParams): Promise<any> {
+  public static async dispatchEvent(httpMethod: string, params: StripeHandlerParams): Promise<any> {
     if (httpMethod === 'POST' && params.body) {
       const customer = await StripeApiHandler.getCustomer(params);
       const source = await StripeApiHandler.updateSource(params, customer);
