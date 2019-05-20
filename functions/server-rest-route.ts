@@ -14,6 +14,7 @@ import { BillHandler } from './private/v2/BillHandler';
 import { PersonHandler } from './private/v2/PersonHandler';
 import { ArticleSnippetHandler } from './private/v2/ArticleSnippetHandler';
 import { SendGridApiHandler } from './private/sendGrid/sendGridApiHandler';
+import { StripeApiHandler } from './private/stripe/stripeApiHandler';
 
 export class ServerRoute {
   public readonly route = Router();
@@ -34,6 +35,7 @@ export class ServerRoute {
 
     // private
     this.route.post('/subscribe/newsletter', this.ensureAuthenticated, (req, res, next) => this.handleSubscription(req, res, next));
+    this.route.post('/stripe/charge', this.ensureAuthenticated, (req, res, next) => this.handleStripe(req, res, next));
   }
 
   private handleIds (req: Request, res: Response, next: NextFunction) {
@@ -91,6 +93,12 @@ export class ServerRoute {
 
   private handleSubscription (req: Request, res: Response, next: NextFunction) {
     SendGridApiHandler.dispatchEvent('POST', { body: req.body })
+      .then(json => res.json(json))
+      .catch(err => res.status(500).json(err));
+  }
+
+  private handleStripe (req: Request, res: Response, next: NextFunction) {
+    StripeApiHandler.dispatchEvent('POST', { body: req.body })
       .then(json => res.json(json))
       .catch(err => res.status(500).json(err));
   }
