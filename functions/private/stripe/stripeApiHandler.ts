@@ -3,7 +3,7 @@ import Response from '../../../libs/utils/Response';
 import * as Stripe from 'stripe';
 import { MailigenAgent } from '../../../libs/subscribe/MailigenAgent';
 
-const stripe = new Stripe('sk_test_5Bp0cnAOkOs5ehAtWGGXdQ5200aJciBWK0');
+const stripe = new Stripe('sk_live_mW6GJYf31GeoDD67HTrz0lVC00ewEgymWw');
 stripe.setApiVersion('2019-03-14');
 
 const sourceMap = ['U.S. Taiwan Watch', 'American Citizens for Taiwan'];
