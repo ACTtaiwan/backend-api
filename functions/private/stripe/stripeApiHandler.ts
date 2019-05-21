@@ -104,6 +104,7 @@ export class StripeApiHandler {
         currency: params.body.currency,
         customer: source.id,
         source: source.default_source,
+        receipt_email: params.body.email,
         description: params.body.description
       });
     }
