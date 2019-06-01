@@ -73,7 +73,16 @@ export class SendGridApiHandler {
       let body = params.body;
       if (body) {
         console.log(`[SendGridApiHandler::dispatchEvent()] subscribe email = ${body.email}`);
-        return MailigenAgent.instance.then(agent => agent.subscribe(body.email, body.name, undefined, body.list));
+        return MailigenAgent.instance.then(agent => {
+          if (body.list === 'ustw') {
+            return agent.subscribe(body.email, body.name, undefined, body.list);
+          } else {
+            // act site -> separate into first / last name
+            const firstName = body.name.split(' ').slice(0, -1).join(' ');
+            const lastName = body.name.split(' ').slice(-1).join(' ');
+            return agent.subscribe(body.email, firstName, lastName, body.list);
+          }
+        });
       } else {
         let errObj = {
           error: 'POST body is missing'
