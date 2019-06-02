@@ -187,7 +187,9 @@ export class SponsorSync {
   }
 }
 
-// let sync = new SponsorSync();
-// sync.setMockWrite(true);
-// sync.init().then(() => sync.syncSponsorForAllBills(116, 116, 116));
-// patch('df717157-4d7b-4a55-acf4-eae451f2ff64')
+if (require.main === module) {
+    let sync = new SponsorSync();
+    // sync.setMockWrite(true);
+    sync.init().then(() => sync.syncSponsorForAllBills(116, 116, 116));
+    // patch('df717157-4d7b-4a55-acf4-eae451f2ff64')
+}

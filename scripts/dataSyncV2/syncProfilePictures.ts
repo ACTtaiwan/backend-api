@@ -175,6 +175,8 @@ export class ProfilePictureSync {
   }
 }
 
-// let s = new ProfilePictureSync();
-// s.init().then(() => s.buildProfilePictureForMember('a7265cef-5aaf-4d5a-9116-63dfde31c3e4'));
-// s.init().then(() => s.buildProfilePictureForCongress(116));
+if (require.main === module) {
+  let s = new ProfilePictureSync();
+  // s.init().then(() => s.buildProfilePictureForMember('a7265cef-5aaf-4d5a-9116-63dfde31c3e4'));
+  s.init().then(() => s.buildProfilePictureForCongress(116));
+}

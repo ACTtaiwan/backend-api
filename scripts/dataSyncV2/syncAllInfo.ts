@@ -159,6 +159,8 @@ export class AllInfoSync {
   }
 }
 
-// let sync = new AllInfoSync()
+if (require.main === module) {
+  let sync = new AllInfoSync()
 // sync.init().then(() => sync.patchSingleBill('95616e24-6ee1-4949-8f29-a79dfccccc5e'))
-// sync.init().then(() => sync.syncAllInfoForAllBills(115, 115, 115));
+  sync.init().then(() => sync.syncAllInfoForAllBills(CongressGovHelper.CURRENT_CONGRESS, CongressGovHelper.CURRENT_CONGRESS, CongressGovHelper.CURRENT_CONGRESS));
+}

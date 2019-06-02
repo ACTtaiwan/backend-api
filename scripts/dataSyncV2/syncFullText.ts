@@ -165,20 +165,22 @@ export class FullTextSync {
   }
 }
 
-// let sync = new FullTextSync()
-// sync.init()
-  // .then(() => sync.syncAllBills(115, 115, 115))
-  // .then(() => sync.syncAllBills(CongressGovHelper.CURRENT_CONGRESS, CongressGovHelper.CURRENT_CONGRESS))
-  // .then(() => sync.syncBillById('cbcb5e56-b764-468f-9564-3fe0fdeae4a2'))
+if (require.main === module) {
+  let sync = new FullTextSync()
+  sync.init()
+    // .then(() => sync.syncAllBills(115, 115, 115))
+    .then(() => sync.syncAllBills(CongressGovHelper.CURRENT_CONGRESS, CongressGovHelper.CURRENT_CONGRESS, CongressGovHelper.CURRENT_CONGRESS));
+    // .then(() => sync.syncBillById('cbcb5e56-b764-468f-9564-3fe0fdeae4a2'))
 
-// problems:
-//   [106-s-1059 (154155dd-0d68-4a15-ae54-98f747fdef66)] Error: [FullTextSync::updateMongoDb()] can not find bill version for code = pwh
+  // problems:
+  //   [106-s-1059 (154155dd-0d68-4a15-ae54-98f747fdef66)] Error: [FullTextSync::updateMongoDb()] can not find bill version for code = pwh
 
-// sync.syncBill(<any> {
-//   id: '154155dd-0d68-4a15-ae54-98f747fdef66',
-//   congress: 106,
-//   billType: {code: 's'},
-//   billNumber: 1059
-// })
+  // sync.syncBill(<any> {
+  //   id: '154155dd-0d68-4a15-ae54-98f747fdef66',
+  //   congress: 106,
+  //   billType: {code: 's'},
+  //   billNumber: 1059
+  // })
 
-// let bills = sync.listAllBillsForVersionCode('pwah')
+  // let bills = sync.listAllBillsForVersionCode('pwah')
+}

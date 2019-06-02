@@ -101,6 +101,8 @@ export class TrackerSync {
   }
 }
 
-// let sync = new TrackerSync();
-// sync.setMockWrite(true);
-// sync.init().then(() => sync.syncTrackersForAllBills(115));
+if (require.main === module) {
+  let sync = new TrackerSync();
+  // sync.setMockWrite(true);
+  sync.init().then(() => sync.syncTrackersForAllBills(CongressGovHelper.CURRENT_CONGRESS));
+}

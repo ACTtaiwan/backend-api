@@ -87,8 +87,10 @@ export class IntroducedDateSync {
   }
 }
 
-// let sync = new IntroducedDateSync();
-// sync.setMockWrite(true);
-// sync.init()
-  // .then(() => sync.syncIntroducedDateForAllBills(CongressGovHelper.CURRENT_CONGRESS))
-  // .then(() => sync.syncIntroducedDateForAllBills(115, 115, 115));
+if (require.main === module) {
+  let sync = new IntroducedDateSync();
+  // sync.setMockWrite(true);
+  sync.init()
+    .then(() => sync.syncIntroducedDateForAllBills(CongressGovHelper.CURRENT_CONGRESS, CongressGovHelper.CURRENT_CONGRESS, CongressGovHelper.CURRENT_CONGRESS));
+    // .then(() => sync.syncIntroducedDateForAllBills(115, 115, 115));
+}
