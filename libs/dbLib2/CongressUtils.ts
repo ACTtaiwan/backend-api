@@ -23,8 +23,8 @@ export class CongressUtils {
   : CongressMemberTitle {
     if (chamber === 's') {
       if (!CongressUtils.STATES.has(state)) {
-        throw Error(`Cannot determine congress member title for `
-          + `chamber=${chamber}, state=${state}`);
+        throw Error(`CongressUtils.getMemberTitle()] Cannot determine congress `
+          + `member title for chamber=${chamber}, state=${state}`);
       }
       return {
         short: 'Sen.',
@@ -49,8 +49,8 @@ export class CongressUtils {
         long: 'Resident Commissioner',
       };
     }
-    throw Error(`Cannot determine congress member title for `
-      + `chamber=${chamber}, state=${state}`);
+    throw Error(`CongressUtils.getMemberTitle()] Cannot determine congress `
+      + `member title for chamber=${chamber}, state=${state}`);
   }
 
   public static validateState (state: string): string {
@@ -67,5 +67,19 @@ export class CongressUtils {
 
   public static displayBill (bill: IEntBill) {
     return `${bill.congress}-${bill.billType}-${bill.billNumber} (${bill._id})`;
+  }
+
+  public static getCongressNumber (date: Date): number {
+    let year = date.getFullYear();
+    let month = date.getMonth();
+    let day = date.getDay();
+    if (month === 1 && day < 3) {
+      year -= 1;
+    }
+    if (year < 1935) {
+      throw Error(`[CongressUtils.getCongressNumber()] Does not support `
+        + `congresses earlier than 1935 (74th). date: ${JSON.stringify(date)}`);
+    }
+    return Math.floor((year - 1935) / 2) + 74;
   }
 }

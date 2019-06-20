@@ -11,8 +11,7 @@
     "serverless": "node_modules/serverless/bin/serverless offline",
     "deploy-dev": "node_modules/serverless/bin/serverless deploy --stage dev",
     "deploy-prod": "node_modules/serverless/bin/serverless deploy --stage prod",
-    "test": "mocha --require ts-node/register --recursive \"libs/**/_test/*.ts\"",
-    "testf": "mocha --require ts-node/register --recursive \"functions/**/_test/*.ts\"",
+    "test": "export NODE_ENV=test && mocha --require ts-node/register --recursive \"**/_test/*.ts\"",
     "ts-node": "node node_modules/ts-node/dist/bin.js",
     "lint": "tslint --project .",
     "lintfix": "tslint --fix --project ."
@@ -53,6 +52,7 @@
     "webpack-node-externals": "^1.6.0"
   },
   "dependencies": {
+    "@fluffy-spoon/substitute": "^1.88.0",
     "@sendgrid/mail": "^6.3.1",
     "@types/chai": "^4.1.4",
     "@types/chai-as-promised": "^7.1.0",
@@ -94,11 +94,12 @@
     "string-similarity": "^1.2.0",
     "string-template": "^1.0.0",
     "stripe": "^6.31.1",
+    "supertest": "^4.0.2",
     "tracer": "^0.9.1",
     "ts-loader": "^4.4.1",
     "tslint": "^5.12.1",
     "tslint-loader": "^3.5.3",
-    "typescript": "^2.9.2",
+    "typescript": "^3.5.1",
     "uuid": "^3.2.1",
     "xml2js": "^0.4.19"
   }

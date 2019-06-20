@@ -28,7 +28,7 @@ export class Logger {
 
   public static log (msg: any, prefix?: string) {
     if (typeof msg !== 'string') {
-      let colors = config.isLocal;
+      let colors = config.isLocal || config.isTest;
       msg = inspect(msg, { depth: null, colors: colors });
     }
     if (prefix !== undefined) {

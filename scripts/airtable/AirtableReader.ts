@@ -10,7 +10,7 @@ export class AirtableReader {
     if (secret && secret['airtable'] && secret['airtable']['apiKey']) {
       return secret['airtable']['apiKey'];
     }
-    throw Error('Cannot locate airtable key');
+    throw Error('[AirtableReader.apiKey()] Cannot locate airtable key');
   }
 
   public constructor (dbId: string) {
