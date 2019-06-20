@@ -29,7 +29,8 @@ function resolveLinkedField (
   resolveFirstElementOnly = true,
 ): object {
   if (!src) {
-    throw Error('Cannot resolve a null object');
+    throw Error(`[importAirtable.resolveLinkedField()] Cannot resolve a null `
+      + `object`);
   }
   if (
     src[field] === undefined ||
@@ -39,20 +40,21 @@ function resolveLinkedField (
     return;
   }
   if (!Array.isArray(src[field])) {
-    throw Error(`Expecting ${field} field to be an array in `
-      + `${JSON.stringify(src)}`);
+    throw Error(`[importAirtable.resolveLinkedField()] Expecting ${field} `
+      + `field to be an array in ${JSON.stringify(src)}`);
   }
   if (resolveFirstElementOnly) {
     let id: string = src[field][0];
     if (lookupTable[id] === undefined) {
-      throw Error(`Cannot resolve ${field} in ${JSON.stringify(src)}`);
+      throw Error(`[importAirtable.resolveLinkedField()] Cannot resolve `
+        + `${field} in ${JSON.stringify(src)}`);
     }
     return lookupTable[id];
   } else {
     let results = _.map(src[field], (id, i) => {
       if (lookupTable[id] === undefined) {
-        throw Error(`Cannot resolve ${field} (i=${i}) in `
-          + `${JSON.stringify(src)}`);
+        throw Error(`[importAirtable.resolveLinkedField()] Cannot resolve `
+          + `${field} (i=${i}) in ${JSON.stringify(src)}`);
       }
       return lookupTable[id];
     });
@@ -220,13 +222,14 @@ async function importHasTagAssocs (m: DataManager, source: AirtableReader) {
   let hasTagAssocs = [];
   _.each(bills, b => {
     if (!b['_joinedEntry']) {
-      throw Error(`Bill does not exist in data graph ${JSON.stringify(b)}`);
+      throw Error(`[importAirtable.importHasTagAssocs()] Bill does not exist `
+        + `in data graph ${JSON.stringify(b)}`);
     }
     let myTags = resolveLinkedField(b, 'tags', tags, false);
     _.each(myTags, myTag => {
       if (!myTag['_joinedEntry']) {
-        throw Error(`Tag does not exist in data graph `
-          + `${JSON.stringify(myTag)}`);
+        throw Error(`[importAirtable.importHasTagAssocs()] Tag does not exist `
+          + `in data graph ${JSON.stringify(myTag)}`);
       }
       hasTagAssocs.push({
         _type: Type.HasTag,

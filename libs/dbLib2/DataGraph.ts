@@ -37,7 +37,7 @@ interface IHasIdPair {
 }
 type IHasIdPairMaybe = Partial<IHasIdPair>;
 type IHasIdOrIdListPairMaybe = {
-  [ P in keyof IHasIdPair ]?: IHasIdPair[P] | IHasIdPair[P][];
+  [P in keyof IHasIdPair]?: IHasIdPair[P] | IHasIdPair[P][]
 };
 type IHasData = {};
 
@@ -50,27 +50,37 @@ export type IQueryOperator<T> = {
 
 export interface IEnt extends IHasType, IHasId, IHasData {}
 export interface IEntInsert extends IHasType, IHasIdMaybe, IHasData {}
-// export interface IEntQuery<T extends IEnt> extends IHasType, IHasIdMaybe, IHasData {}
-export type IEntQuery<T extends IEnt = IEnt> = IHasType & IHasIdMaybe & IHasData & {
-  [ K in keyof T ]?: T[K] | IQueryOperator<ElementType<T[K]>>;
-};
-export type ArrayFieldFilters = {
-  [ field: string ]: object;
+export type IEntQuery<T extends IEnt = IEnt> = IHasType &
+  IHasIdMaybe &
+  IHasData &
+  { [K in keyof T]?: T[K] | IQueryOperator<ElementType<T[K]>> };
+
+export type IFields = {
+  [field: string]: boolean | object;
 };
 
-export interface IEntAssocQuery extends IHasTypeOrTypes,
-  IHasIdOrIdListPairMaybe, IHasData {}
+export interface IEntAssocQuery
+  extends IHasTypeOrTypes,
+    IHasIdOrIdListPairMaybe,
+    IHasData {}
 export interface IUpdate extends IHasId, IHasData {}
 export interface IAssoc extends IHasType, IHasId, IHasIdPair, IHasData {}
-export interface IAssocInsert extends IHasType, IHasIdMaybe, IHasIdPair,
-  IHasData {}
-export interface IAssocQuery extends IHasType, IHasIdMaybe, IHasIdPairMaybe,
-  IHasData {}
+export interface IAssocInsert
+  extends IHasType,
+    IHasIdMaybe,
+    IHasIdPair,
+    IHasData {}
+export interface IAssocQuery
+  extends IHasType,
+    IHasIdMaybe,
+    IHasIdPairMaybe,
+    IHasData {}
 export interface ISortField<T extends IEnt = IEnt> {
-  field: (keyof T | string);
+  field: keyof T | string;
   order: 'asc' | 'desc';
 }
 export interface IAssociatedEntIds extends IHasId, IHasData {}
+export type AssocDirection = 'forward' | 'backward';
 
 export function isIEntInsert (obj: any): obj is IEntInsert {
   return '_type' in obj;
@@ -92,11 +102,7 @@ export interface IDataGraph {
    * returned.
    * @returns null if not found
    */
-  loadEntity (
-    id: Id,
-    fields?: string[],
-    fieldFilters?: ArrayFieldFilters,
-  ): Promise<IEnt>;
+  loadEntity (id: Id, fields?: IFields): Promise<IEnt>;
   /**
    *
    * @param entQuery is a structure containing a set of conditions:
@@ -119,10 +125,11 @@ export interface IDataGraph {
    * @param entAssocQueries are structures identical to entQuery, except that
    * the top-level query must also contain either an _id1 or _id2 field.
    * The query filters entities by their assocs. If _id1 is specified, only
-   * entities whose assocs satisfy the following conditions will be returned:
-   * 1. _id1 satisfy the condition
+   * entities who has at least an assoc satisfying the following conditions
+   * will be returned:
+   * 1. _id1 satisfies the given condition
    * 2. _id2 = each entity itself
-   * 3. other conditions in query are satisfied
+   * 3. other conditions in query are also satisfied
    * Similarly if _id2 is specified.
    * Fields _id1 and _id2 cannot both appear.
    * All queries in entAssocQueries must be satisfied.
@@ -130,11 +137,10 @@ export interface IDataGraph {
   findEntities<T extends IEnt> (
     entQuery: IEntQuery<T>,
     entAssocQueries?: IEntAssocQuery[],
-    fields?: (keyof T | string)[],
+    fields?: IFields,
     sort?: ISortField<T>[],
     limit?: number,
-    readPageSize?: number,
-    fieldFilters?: ArrayFieldFilters,
+    readPageSize?: number
   ): Promise<T[]>;
   /**
    * Update a set of entities
@@ -156,11 +162,11 @@ export interface IDataGraph {
    * @param assoc If _id is not specified, a random one will be generated
    */
   insertAssocs (assocs: IAssocInsert[]): Promise<Id[]>;
-  loadAssoc (id: Id, fields?: string[]): Promise<IAssoc>;
+  loadAssoc (id: Id, fields?: IFields): Promise<IAssoc>;
   findAssocs (
     query: IAssocQuery,
-    fields?: string[],
-    sort?: ISortField[],
+    fields?: IFields,
+    sort?: ISortField[]
   ): Promise<IAssoc[]>;
   updateAssocs (updates: IUpdate[]): Promise<number>;
   /**
@@ -178,8 +184,8 @@ export interface IDataGraph {
   listAssociatedEntityIds (
     entId: Id,
     assocType: Type,
-    direction: 'forward' | 'backward',
-    assocFields?: string[],
+    direction: AssocDirection,
+    assocFields?: IFields
   ): Promise<IAssociatedEntIds[]>;
   deleteAssocs (ids: Id[]): Promise<number>;
   dropDb (): Promise<any>;
@@ -196,7 +202,7 @@ export class DataGraph {
     dbName: string,
     entTableName = 'entities',
     assocTableName = 'assocs',
-    connectInfo?: any,
+    connectInfo?: any
   ): Promise<IDataGraph> {
     let cacheKey = JSON.stringify({
       type: type,
@@ -216,7 +222,7 @@ export class DataGraph {
           dbName,
           entTableName,
           assocTableName,
-          connectInfo,
+          connectInfo
         );
         break;
     }
@@ -256,19 +262,37 @@ export class DataGraphUtils {
       return ret;
     });
     let i = 0;
-    return strs[i++] + strs[i++] + strs[i++] + strs[i++] + '-'
-      + strs[i++] + strs[i++] + '-'
-      + strs[i++] + strs[i++] + '-'
-      + strs[i++] + strs[i++] + '-'
-      + strs[i++] + strs[i++] + strs[i++] + strs[i++] + strs[i++] + strs[i++];
+    return (
+      strs[i++] +
+      strs[i++] +
+      strs[i++] +
+      strs[i++] +
+      '-' +
+      strs[i++] +
+      strs[i++] +
+      '-' +
+      strs[i++] +
+      strs[i++] +
+      '-' +
+      strs[i++] +
+      strs[i++] +
+      '-' +
+      strs[i++] +
+      strs[i++] +
+      strs[i++] +
+      strs[i++] +
+      strs[i++] +
+      strs[i++]
+    );
   }
 
   public static idToBuffer (id: Id): Buffer {
     if (!id) {
       return;
     }
-    let a = _.filter(id.toLowerCase(), c =>
-      (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')
+    let a = _.filter(
+      id.toLowerCase(),
+      c => (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')
     );
     if (a.length !== 32) {
       return;
@@ -287,7 +311,7 @@ export class DataGraphUtils {
   public static async retry (
     func: () => Promise<any>,
     retryCount: number = 3,
-    retryDelay: number | ((retry: number) => number) = 500,
+    retryDelay: number | ((retry: number) => number) = 500
   ): Promise<any> {
     let retry = 0;
     while (true) {
@@ -295,14 +319,16 @@ export class DataGraphUtils {
         return await func();
       } catch (err) {
         ++retry;
-        console.error(`[DataGraphUtils.retry()] retry=${retry}, err=${err}`
-          + (err.stack ? `\n${err.stack}` : ''));
+        console.error(
+          `[DataGraphUtils.retry()] retry=${retry}, err=${err}` +
+            (err.stack ? `\n${err.stack}` : '')
+        );
         if (retry > retryCount) {
           throw Error(`[DataGraphUtils.retry()] All retries failed`);
         }
 
         let delay = 0;
-        if (typeof(retryDelay) !== 'number') {
+        if (typeof retryDelay !== 'number') {
           delay = retryDelay(retry);
         } else {
           delay = retryDelay;
@@ -321,7 +347,7 @@ export class DataGraphUtils {
     items: any[],
     chunkSize: number = 10,
     retryCount: number = 3,
-    retryDelay: number | ((retry: number) => number) = 1000,
+    retryDelay: number | ((retry: number) => number) = 1000
   ): Promise<any[]> {
     let batches = _.chunk(items, chunkSize);
     let results = [];
@@ -329,7 +355,7 @@ export class DataGraphUtils {
       let res = await DataGraphUtils.retry(
         async () => func(batch),
         retryCount,
-        retryDelay,
+        retryDelay
       );
       results.push(res);
     }
@@ -348,7 +374,7 @@ export class DataGraphUtils {
     updateContext: (context: any, prevOutput: Readonly<any>) => any,
     init: any,
     retryCount: number = 3,
-    retryDelay: number | ((retry: number) => number) = 1000,
+    retryDelay: number | ((retry: number) => number) = 1000
   ): Promise<any[]> {
     let context = init;
     let results = [];
@@ -356,11 +382,18 @@ export class DataGraphUtils {
       let output = await DataGraphUtils.retry(
         async () => func(context),
         retryCount,
-        retryDelay,
+        retryDelay
       );
       results.push(output);
       context = updateContext(context, output);
     }
     return results;
+  }
+
+  public static fieldsFromArray (fieldNames: string[]): IFields {
+    return _.chain(fieldNames)
+      .map(fieldName => [fieldName, true])
+      .fromPairs()
+      .value();
   }
 }

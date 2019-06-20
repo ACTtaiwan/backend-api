@@ -1,18 +1,47 @@
 import * as _ from 'lodash';
-import { Type, DataGraph } from '../../../libs/dbLib2/DataGraph';
-import { translateTypeEnum, Site, Timestamp } from './handlers';
+import {
+  Type,
+  DataGraph,
+  IEnt,
+  IDataGraph,
+} from '../../../libs/dbLib2/DataGraph';
+import { RequestHandlerBase } from './RequestHandlerBase';
+import { RequestParams } from './RequestParams';
 
-export class ArticleSnippetHandler {
-  public static async run (
-    site: Site,
-    before: Timestamp, // timestamp
-    limit: number,
-    fields: string[],
-  ): Promise<any> {
+type Site = 'act' | 'ustw';
+function toSite (o: string): Site {
+  if (o === 'act') {
+    return 'act';
+  }
+  if (o === 'ustw') {
+    return 'ustw';
+  }
+}
+
+export class ArticleSnippetHandler extends RequestHandlerBase<IEnt> {
+  public constructor (private _g: IDataGraph) {
+    super();
+  }
+
+  protected async preProcess (_params: RequestParams): Promise<boolean> {
+    return true;
+  }
+
+  protected async postProcess (
+    params: RequestParams,
+    _r: IEnt[]
+  ): Promise<IEnt[]> {
+    let site = params.getFirstString('site');
+    let before = params.getFirstInt('before');
+    let limit = params.getFirstInt('limit');
+    let fields = params.getFields();
+
     let entQuery = { _type: Type.ArticleSnippet };
 
-    if (!site) {
-      throw Error('Param site not provided');
+    if (!toSite(site)) {
+      throw Error(
+        `[ArticleSnippetHandler.postProcess()] Param site invalid: ${site}`
+      );
     }
     entQuery['sites'] = site;
 
@@ -20,15 +49,12 @@ export class ArticleSnippetHandler {
       entQuery['date'] = { _op: '<', _val: before };
     }
 
-    let g = await DataGraph.getDefault();
-    let ents = await g.findEntities(
+    return await this._g.findEntities(
       entQuery,
       undefined,
       fields,
       [{ field: 'date', order: 'desc' }],
-      limit,
+      limit
     );
-
-    return _.map(ents, translateTypeEnum);
   }
 }

@@ -11,4 +11,5 @@ export default class AppConfig {
     loggingAppName: `ustw-backend-${AppConfig.stage}`
   };
   static readonly isLocal = process.env.NODE_ENV === 'local';
+  static readonly isTest = process.env.NODE_ENV === 'test';
 }

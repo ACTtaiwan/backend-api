@@ -1,7 +1,11 @@
-import { CongressGovTextUpdater, CongressGovHelper } from '../../libs/congressGov';
+import {
+  CongressGovTextUpdater,
+  CongressGovHelper,
+} from '../../libs/congressGov';
 import * as dbLib2 from '../../libs/dbLib2';
 import * as s3Lib from '../../libs/s3Lib';
 import * as _ from 'lodash';
+import { DataGraphUtils } from '../../libs/dbLib2';
 
 var awsConfig = require('../../config/aws.json');
 
@@ -12,30 +16,49 @@ export class FullTextSync {
   private readonly updater = new CongressGovTextUpdater();
 
   private readonly s3 = s3Lib.S3Manager.instance();
-  private readonly bcktName = (<any> awsConfig).s3.VOLUNTEER_BILLS_FULLTEXT_BUCKET_NAME;
-  private readonly bckt = <s3Lib.BillTextBucket> this.s3.getBucket(this.bcktName);
+  private readonly bcktName = (<any>awsConfig).s3
+    .VOLUNTEER_BILLS_FULLTEXT_BUCKET_NAME;
+  private readonly bckt = <s3Lib.BillTextBucket>(
+    this.s3.getBucket(this.bcktName)
+  );
 
-  private congressBillsMap: {[congress: number]: dbLib2.IEntBill[]};
+  private congressBillsMap: { [congress: number]: dbLib2.IEntBill[] };
 
   public async init () {
     this.g = await dbLib2.DataGraph.getDefault();
   }
 
-  public async syncAllBills (currentCongress: number, minUpdateCongress?: number, maxUpdateCongress?: number) {
+  public async syncAllBills (
+    currentCongress: number,
+    minUpdateCongress?: number,
+    maxUpdateCongress?: number
+  ) {
     const fLog = this.logger.in('syncAllBills');
-    const minCongress = Math.max(minUpdateCongress || CongressGovHelper.MIN_CONGRESS_DATA_AVAILABLE,
-                                 CongressGovHelper.MIN_CONGRESS_DATA_AVAILABLE);
-    const maxCongress = Math.min(maxUpdateCongress || currentCongress,
-                                 currentCongress);
+    const minCongress = Math.max(
+      minUpdateCongress || CongressGovHelper.MIN_CONGRESS_DATA_AVAILABLE,
+      CongressGovHelper.MIN_CONGRESS_DATA_AVAILABLE
+    );
+    const maxCongress = Math.min(
+      maxUpdateCongress || currentCongress,
+      currentCongress
+    );
 
     fLog.log(`minCongress = ${minCongress} \t maxCongress = ${maxCongress}`);
 
     let bills = await this.g.findEntities<dbLib2.IEntBill>(
       { _type: dbLib2.Type.Bill },
       undefined,
-      ['congress', 'billType', 'billNumber', 'versions']
+      DataGraphUtils.fieldsFromArray([
+        'congress',
+        'billType',
+        'billNumber',
+        'versions',
+      ])
     );
-    bills = _.filter(bills, x => x.congress >= minCongress && x.congress <= maxCongress);
+    bills = _.filter(
+      bills,
+      x => x.congress >= minCongress && x.congress <= maxCongress
+    );
 
     // build congress <--> bills map
     this.congressBillsMap = _.groupBy(bills, 'congress');
@@ -50,10 +73,15 @@ export class FullTextSync {
 
   public async batchSyncForCongress (congress: number) {
     const fLog = this.logger.in('batchSyncForCongress');
-    fLog.log(`\n\n---------------------------------- Congress ${congress} ----------------------------------\n\n`);
+    fLog.log(
+      `\n\n---------------------------------- Congress ${congress} ----------------------------------\n\n`
+    );
     let bills: dbLib2.IEntBill[] = this.congressBillsMap[congress];
     for (let i = 0; i < bills.length; ++i) {
-      fLog.log(`\n\n---------------------------------- Bill ${i} / ${bills.length - 1} ----------------------------------\n\n`);
+      fLog.log(
+        `\n\n---------------------------------- Bill ${i} / ${bills.length -
+          1} ----------------------------------\n\n`
+      );
       const bill = bills[i];
       await this.syncBill(bill);
     }
@@ -62,12 +90,18 @@ export class FullTextSync {
   public async syncBillById (billId: string): Promise<void> {
     const fLog = this.logger.in('syncBillById');
 
-    let bill = await this.g.findEntities<dbLib2.IEntBill>({
+    let bill = await this.g.findEntities<dbLib2.IEntBill>(
+      {
         _type: dbLib2.Type.Bill,
-        _id: billId
+        _id: billId,
       },
       undefined,
-      ['congress', 'billType', 'billNumber', 'versions']
+      DataGraphUtils.fieldsFromArray([
+        'congress',
+        'billType',
+        'billNumber',
+        'versions',
+      ])
     );
 
     if (bill && bill[0]) {
@@ -81,7 +115,9 @@ export class FullTextSync {
   public async syncBill (bill: dbLib2.IEntBill): Promise<void> {
     const fLog = this.logger.in('syncBill');
     const billDisplay = dbLib2.CongressUtils.displayBill(bill);
-    fLog.log(`\n---------------------------------- Updating ${billDisplay} ----------------------------------\n\n`);
+    fLog.log(
+      `\n---------------------------------- Updating ${billDisplay} ----------------------------------\n\n`
+    );
     try {
       await this.uploadAllText(bill);
       let update = await this.updateMongoDb(bill);
@@ -91,20 +127,34 @@ export class FullTextSync {
     }
   }
 
-  public async listAllBillsForVersionCode (versionCode: string): Promise<dbLib2.IEntBill[]> {
+  public async listAllBillsForVersionCode (
+    versionCode: string
+  ): Promise<dbLib2.IEntBill[]> {
     const fLog = this.logger.in('listAllBillsForVersionCode');
     let bills = await this.g.findEntities<dbLib2.IEntBill>(
       { _type: dbLib2.Type.Bill },
       undefined,
-      ['congress', 'billType', 'billNumber', 'versions']
+      DataGraphUtils.fieldsFromArray([
+        'congress',
+        'billType',
+        'billNumber',
+        'versions',
+      ])
     );
-    bills = _.filter(bills, b => b.versions && !!_.find(b.versions, v => v.code === versionCode));
+    bills = _.filter(
+      bills,
+      b => b.versions && !!_.find(b.versions, v => v.code === versionCode)
+    );
     fLog.log(JSON.stringify(bills, null, 2));
     return bills;
   }
 
   private async updateMongoDb (bill: dbLib2.IEntBill): Promise<dbLib2.IEntBill> {
-    const s3Items = await this.bckt.listDocumentsOfBill(bill.congress, bill.billType, bill.billNumber);
+    const s3Items = await this.bckt.listDocumentsOfBill(
+      bill.congress,
+      bill.billType,
+      bill.billNumber
+    );
     const s3ItemMap = _.groupBy(s3Items, 'code');
     const versions: { [code: string]: dbLib2.TextVersion } = {};
 
@@ -118,13 +168,18 @@ export class FullTextSync {
           obj.date = items[0].date;
         }
 
-        obj.documents = _
-          .chain(items)
+        obj.documents = _.chain(items)
           .filter(doc => !!doc.s3BucketKey)
-          .map(doc => <dbLib2.S3TextDocument> {
-            s3Entity: s3Lib.S3BucketHelper.generateFullUrl(this.bckt.bucketName, doc.s3BucketKey),
-            contentType: doc.contentType
-          })
+          .map(
+            doc =>
+              <dbLib2.S3TextDocument>{
+                s3Entity: s3Lib.S3BucketHelper.generateFullUrl(
+                  this.bckt.bucketName,
+                  doc.s3BucketKey
+                ),
+                contentType: doc.contentType,
+              }
+          )
           .value();
 
         versions[code] = obj;
@@ -133,18 +188,18 @@ export class FullTextSync {
 
     const updateVersions = _.values(versions);
     if (!_.isEmpty(updateVersions)) {
-      const update = <dbLib2.IEntBill> {
+      const update = <dbLib2.IEntBill>{
         _type: dbLib2.Type.Bill,
         _id: bill._id,
-        versions: updateVersions
+        versions: updateVersions,
       };
       await this.g.updateEntities([update]);
       return update;
     } else if (!_.isEmpty(bill.versions)) {
-      const update = <dbLib2.IEntBill> {
+      const update = <dbLib2.IEntBill>{
         _type: dbLib2.Type.Bill,
         _id: bill._id,
-        versions: undefined
+        versions: undefined,
       };
       await this.g.updateEntities([update]);
       return update;
@@ -158,19 +213,34 @@ export class FullTextSync {
   private async uploadAllText (bill: dbLib2.IEntBill): Promise<void> {
     const versionMap = this.getAllVersionMap();
     // key = code, value = version display name
-    const codeNameMap: {[code: string]: string} = _.transform(versionMap, (res, val, key) => res[key] = val.name, {});
+    const codeNameMap: { [code: string]: string } = _.transform(
+      versionMap,
+      (res, val, key) => (res[key] = val.name),
+      {}
+    );
     this.updater.parser.versionLookupTable = codeNameMap;
-    const cngrGovBillPath = CongressGovHelper.generateCongressGovBillPath(bill.congress, bill.billType, bill.billNumber);
+    const cngrGovBillPath = CongressGovHelper.generateCongressGovBillPath(
+      bill.congress,
+      bill.billType,
+      bill.billNumber
+    );
     return this.updater.updateAllTextVersions(cngrGovBillPath);
   }
 }
 
 if (require.main === module) {
-  let sync = new FullTextSync()
-  sync.init()
+  let sync = new FullTextSync();
+  sync
+    .init()
     // .then(() => sync.syncAllBills(115, 115, 115))
-    .then(() => sync.syncAllBills(CongressGovHelper.CURRENT_CONGRESS, CongressGovHelper.CURRENT_CONGRESS, CongressGovHelper.CURRENT_CONGRESS));
-    // .then(() => sync.syncBillById('cbcb5e56-b764-468f-9564-3fe0fdeae4a2'))
+    .then(() =>
+      sync.syncAllBills(
+        CongressGovHelper.CURRENT_CONGRESS,
+        CongressGovHelper.CURRENT_CONGRESS,
+        CongressGovHelper.CURRENT_CONGRESS
+      )
+    );
+  // .then(() => sync.syncBillById('cbcb5e56-b764-468f-9564-3fe0fdeae4a2'))
 
   // problems:
   //   [106-s-1059 (154155dd-0d68-4a15-ae54-98f747fdef66)] Error: [FullTextSync::updateMongoDb()] can not find bill version for code = pwh

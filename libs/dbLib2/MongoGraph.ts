@@ -4,7 +4,8 @@ import { v4 as uuid } from 'uuid';
 import { IDataGraph, Type, Id, IEnt, IEntQuery, IEntAssocQuery,
   IUpdate, IAssoc, DataGraphUtils, IAssocQuery, IEntInsert,
   IAssocInsert, ISortField, IQueryOperator, IAssociatedEntIds,
-  ArrayFieldFilters,
+  IFields,
+  AssocDirection,
 } from './DataGraph';
 import { MongoDbConfig } from '../../config/mongodb';
 import { expect } from 'chai';
@@ -94,6 +95,8 @@ export class MongoGraph implements IDataGraph {
     return await instance._init();
   }
 
+  private static _logger: Logger;
+
   protected _client: MongoClient;
   protected _db: Db;
   protected _entities: Collection;
@@ -104,7 +107,9 @@ export class MongoGraph implements IDataGraph {
     protected _entityCollectionName: string,
     protected _assocCollectionName: string,
     protected _url: string,
-  ) {}
+  ) {
+    MongoGraph._logger = new Logger('MongoGraph');
+  }
 
   protected async _init (): Promise<MongoGraph> {
     try {
@@ -125,7 +130,7 @@ export class MongoGraph implements IDataGraph {
   /**
    * Encode string uuid into bson binary format
    */
-  public static encodeId (id: Id): Binary {
+  private static encodeId (id: Id): Binary {
     let buf = DataGraphUtils.idToBuffer(id);
     if (buf) {
       return new Binary(buf, Binary.SUBTYPE_UUID);
@@ -136,14 +141,15 @@ export class MongoGraph implements IDataGraph {
   /**
    * Decode bson binary-encoded uuid to string
    */
-  public static decodeId (bin: Binary): Id {
+  private static decodeId (bin: Binary): Id {
     if (bin.sub_type === Binary.SUBTYPE_UUID && bin.buffer) {
       let id = DataGraphUtils.idFromBuffer(bin.buffer);
       if (id) {
         return id;
       }
     }
-    throw Error(`[MongoGraph.decodeId()] cannot decode ID: ${bin}`);
+    throw Error(`[MongoGraph.decodeId()] cannot decode ID: `
+      + `${JSON.stringify(bin)}`);
   }
 
   private static _encodeIdFields (input: any, nested = false): object {
@@ -209,7 +215,7 @@ export class MongoGraph implements IDataGraph {
   }
 
   public async insertEntities (ents: IEntInsert[]): Promise<Id[]> {
-    let logger = new Logger('MongoGraph').in('insertEntities');
+    let logger = MongoGraph._logger.in('insertEntities');
     logger.log(`inserting ${ents.length} ents`);
     let ids = await MongoGraph._insertHelper(this._entities, ents);
     logger.log(`inserted ${ids.length} ents: ${JSON.stringify(ids)}`);
@@ -219,10 +225,9 @@ export class MongoGraph implements IDataGraph {
   private static async _loadHelper (
     table: Collection,
     id: Id,
-    fields?: string[],
-    fieldFilters?: ArrayFieldFilters,
+    fields?: IFields,
   ): Promise<object> {
-    let proj = MongoGraph._composeProjection(fields, true, fieldFilters);
+    let proj = MongoGraph._composeProjection(fields);
     let hasFieldFilter = false;
     _.forOwn(proj, p => {
       if (typeof p === 'object') {
@@ -232,22 +237,27 @@ export class MongoGraph implements IDataGraph {
     });
 
     let ent = undefined;
-    if (!hasFieldFilter) {
-      ent = await table.findOne(
-        MongoGraph._encodeIdFields({ _id: id }),
-        { projection: proj },
-      );
-    } else {
-      let pipeline = [];
-      pipeline.push({ $match: MongoGraph._encodeIdFields({ _id: id }) });
-      if (proj && _.size(proj) > 0) {
-        pipeline.push({ $project: proj });
+    try {
+      if (!hasFieldFilter) {
+          ent = await table.findOne(
+            MongoGraph._encodeIdFields({ _id: id }),
+            { projection: proj },
+          );
+      } else {
+        let pipeline = [];
+        pipeline.push({ $match: MongoGraph._encodeIdFields({ _id: id }) });
+        if (proj && _.size(proj) > 0) {
+          pipeline.push({ $project: proj });
+        }
+        pipeline.push({ $limit: 1 });
+        let results = await table.aggregate(pipeline).toArray();
+        if (results && results.length >= 1) {
+          ent = results[0];
+        }
       }
-      pipeline.push({ $limit: 1 });
-      let results = await table.aggregate(pipeline).toArray();
-      if (results && results.length >= 1) {
-        ent = results[0];
-      }
+    } catch (err) {
+      MongoGraph._logger.in('_loadHelper').log(err);
+      return null;
     }
 
     if (!ent) {
@@ -260,15 +270,9 @@ export class MongoGraph implements IDataGraph {
 
   public async loadEntity (
     id: Id,
-    fields?: string[],
-    fieldFilters?: ArrayFieldFilters,
+    fields?: IFields,
   ): Promise<IEnt> {
-    let ret = await MongoGraph._loadHelper(
-      this._entities,
-      id,
-      fields,
-      fieldFilters
-    );
+    let ret = await MongoGraph._loadHelper(this._entities, id, fields);
     return <IEnt>ret;
   }
 
@@ -299,11 +303,18 @@ export class MongoGraph implements IDataGraph {
             return {
               [`$${v['_op']}`]: _.map(
                 v['_val'],
-                sub => MongoGraph._composeQuery(sub, null, true),
+                sub => {
+                  if (typeof sub !== 'object') {
+                    throw Error(`[MongoGraph._composeQuery] Expecting objects `
+                      + `under 'and' and 'or' but got ${sub}`);
+                  }
+                  return MongoGraph._composeQuery(sub, null, true);
+                }
               ),
             };
           default:
-            throw Error(`Unknown query operator ${v['_op']} in ${v}`);
+            throw Error(`[MongoGraph._composeQuery] Unknown query operator `
+              + `${v['_op']} in ${JSON.stringify(v)}`);
         }
       } else {
         return v;
@@ -360,7 +371,8 @@ export class MongoGraph implements IDataGraph {
             ),
           };
         default:
-          throw Error(`Unknown filter operator ${op} in ${cond}`);
+          throw Error(`[MongoGraph._composeExpression()] Unknown filter `
+            + `operator ${op} in ${JSON.stringify(cond)}`);
       }
     } else if (!nested && typeof cond === 'object') {
       let subConds = _.map(
@@ -384,31 +396,61 @@ export class MongoGraph implements IDataGraph {
   }
 
   /**
+   * Compose the projection value of a field according to fieldSpec. Cases:
+   * 1. fieldSpec is an object. Assuming the field is an array field,
+   *    a 'find first in array' operation will be performed, and only the
+   *    first array element satisfying the conditions specified in the
+   *    fieldSpec will be returned. The fieldSpec object is in the same
+   *    format as IEntQuery/IAssocQuery (less enforcing _type field).
+   * 2. anything else. Will return the field value as is.
+   * @param fieldSpec a value from a Fields object
+   */
+  private static _composeProjectionValue (
+    field: string,
+    fieldSpec: IFields[keyof IFields],
+    present = true,
+  ): object | boolean {
+    if (!present) {
+      return false;
+    }
+
+    if (typeof fieldSpec === 'object' && !Array.isArray(fieldSpec)) {
+      const ELEM_NAME = 'item';
+      return {
+        $cond: {
+          if: { $isArray: [`$${field}`] },
+          then: {
+            $filter: {
+              input: `$${field}`,
+              as: ELEM_NAME,
+              cond: MongoGraph._composeExpression(fieldSpec, `$$${ELEM_NAME}`),
+            }
+          },
+          else: `$${field}`,
+        },
+      };
+    }
+
+    return true;
+  }
+
+  /**
    * Compose a mongo projection.
    */
   private static _composeProjection (
-    fields: string[],
+    fields?: IFields,
     present = true,
-    filters?: ArrayFieldFilters,
   ): object {
     if (!fields) {
       return {};
     }
     if (present) {
-      fields.push('_type'); // always include _type field
+      fields['_type'] = true;
     }
-    return _.fromPairs(_.map(fields, f => {
-      if (filters && filters[f] && present) {
-        return [f, {
-          $filter: {
-            input: `$${f}`,
-            as: 'item',
-            cond: MongoGraph._composeExpression(filters[f], '$$item'),
-          }
-        }];
-      }
-      return [f, present];
-    }));
+    return _.mapValues(
+      fields,
+      (v, k) => this._composeProjectionValue(k, v, present)
+    );
   }
 
   /**
@@ -421,13 +463,15 @@ export class MongoGraph implements IDataGraph {
     let needId1 = false, needId2 = false;
     _.each(queries, q => {
       if (q._id1 && q._id2) {
-        throw Error('Invalid TAssocQuery: both _id1 and _id2 are present');
+        throw Error(`[MongoGraph._composePipesForEntAssocQueries()] `
+          + `Invalid TAssocQuery: both _id1 and _id2 are present`);
       } else if (q._id1 && !q._id2) {
         needId1 = true;
       } else if (!q._id1 && q._id2) {
         needId2 = true;
       } else {
-        throw Error('Invalid TAssocQuery: both _id1 and _id2 are absent');
+        throw Error(`[MongoGraph._composePipesForEntAssocQueries()] `
+          + `Invalid TAssocQuery: both _id1 and _id2 are absent`);
       }
     });
     // compose lookup pipeline
@@ -453,14 +497,14 @@ export class MongoGraph implements IDataGraph {
       res.push({ $match: { [f]: { $elemMatch: MongoGraph._composeQuery(q) }}});
     });
     // remove tmp fields
-    let tmpFieldsToRemove = [];
+    let tmpFieldsToRemove = {};
     if (needId1) {
-      tmpFieldsToRemove.push('_id1');
+      tmpFieldsToRemove['_id1'] = true;
     }
     if (needId2) {
-      tmpFieldsToRemove.push('_id2');
+      tmpFieldsToRemove['_id2'] = true;
     }
-    if (tmpFieldsToRemove.length > 0) {
+    if (_.size(tmpFieldsToRemove) > 0) {
       res.push({
         $project: MongoGraph._composeProjection(tmpFieldsToRemove, false),
       });
@@ -472,13 +516,12 @@ export class MongoGraph implements IDataGraph {
   public async findEntities<T extends IEnt> (
     entQuery: IEntQuery<T>,
     entAssocQueries?: IEntAssocQuery[],
-    fields?: (keyof T | string)[],
+    fields?: IFields,
     sort?: ISortField[],
     limit?: number,
     readPageSize: number = MongoDbConfig.getReadPageSize(),
-    fieldFilters?: ArrayFieldFilters,
   ): Promise<T[]> {
-    let logger = new Logger('MongoGraph').in('findEntities');
+    let logger = MongoGraph._logger.in('findEntities');
     logger.log(JSON.stringify({
       entQuery: entQuery,
       entAssocQueries: entAssocQueries,
@@ -490,12 +533,12 @@ export class MongoGraph implements IDataGraph {
     sort = sort || [];
     sort.push({ field: '_id', order: 'asc' });
 
+    let queryFields = _.clone(fields);
     // explicitly include sort fields in projection; otherwise won't sort
-    if (fields) {
-      let fset = new Set(fields);
+    if (queryFields) {
       _.each(sort, s => {
-        if (!(s.field in fset)) {
-          fields.push(s.field);
+        if (!(s.field in queryFields)) {
+          queryFields[s.field] = true;
         }
       });
     }
@@ -509,13 +552,9 @@ export class MongoGraph implements IDataGraph {
         _.each(this._composePipesForEntAssocQueries(entAssocQueries), pipe => {
           pipeline.push(pipe);
         });
-        if (fields) {
+        if (queryFields) {
           pipeline.push({
-            $project: MongoGraph._composeProjection(
-              fields as string[],
-              true,
-              fieldFilters
-            ),
+            $project: MongoGraph._composeProjection(queryFields, true),
           });
         }
         pipeline.push({ $sort: cursor.toSort() });
@@ -590,7 +629,7 @@ export class MongoGraph implements IDataGraph {
   }
 
   public async updateEntities (updates: IUpdate[]): Promise<number> {
-    let logger = new Logger('MongoGraph').in('updateEntities');
+    let logger = MongoGraph._logger.in('updateEntities');
     logger.log(`updating ${updates.length}: `
       + JSON.stringify(_.map(updates, u => u._id)));
     let updateCount = await MongoGraph._updateHelper(
@@ -603,7 +642,7 @@ export class MongoGraph implements IDataGraph {
   }
 
   public async deleteEntities (ids: Id[]): Promise<[number, number]> {
-    let logger = new Logger('MongoGraph').in('deleteEntities');
+    let logger = MongoGraph._logger.in('deleteEntities');
     logger.log(`deleting ${ids.length}: ${JSON.stringify(ids)}`);
     let binIds = _.map(ids, id => MongoGraph.encodeId(id));
     let promiseDeleteEnts = DataGraphUtils.retryInChunks(
@@ -632,25 +671,25 @@ export class MongoGraph implements IDataGraph {
   public async insertAssocs (
     assocs: IAssoc[],
   ): Promise<Id[]> {
-    let logger = new Logger('MongoGraph').in('insertAssocs');
+    let logger = MongoGraph._logger.in('insertAssocs');
     logger.log(`inserting ${assocs.length} assocs`);
     let ids = await MongoGraph._insertHelper(this._assocs, assocs);
     logger.log(`inserted ${assocs.length} assocs: ${JSON.stringify(ids)}`);
     return ids;
   }
 
-  public async loadAssoc (id: Id, fields?: string[]): Promise<IAssoc> {
+  public async loadAssoc (id: Id, fields?: IFields): Promise<IAssoc> {
     let ret = await MongoGraph._loadHelper(this._assocs, id, fields);
     return <IAssoc>ret;
   }
 
   public async findAssocs (
     query: IAssocQuery,
-    fields?: string[],
+    fields?: IFields,
     sort?: ISortField[],
     readPageSize: number = MongoDbConfig.getReadPageSize(),
   ): Promise<IAssoc[]> {
-    let logger = new Logger('MongoGraph').in('findAssocs');
+    let logger = MongoGraph._logger.in('findAssocs');
     logger.log(JSON.stringify({
       query: query,
       fields: fields,
@@ -663,13 +702,12 @@ export class MongoGraph implements IDataGraph {
 
     let queryFields = _.clone(fields);
     if (queryFields) {
-      queryFields.push('_id1', '_id2');
-
+      queryFields['_id1'] = true;
+      queryFields['_id2'] = true;
       // explicitly include sort fields in projection; otherwise won't sort
-      let fset = new Set(queryFields);
       _.each(sort, s => {
-        if (!(s.field in fset)) {
-          queryFields.push(s.field);
+        if (!(s.field in queryFields)) {
+          queryFields[s.field] = true;
         }
       });
     }
@@ -706,8 +744,8 @@ export class MongoGraph implements IDataGraph {
   public async listAssociatedEntityIds (
     entId: Id,
     assocType: Type,
-    direction: 'forward' | 'backward',
-    assocFields?: string[],
+    direction: AssocDirection,
+    assocFields?: IFields,
   ): Promise<IAssociatedEntIds[]> {
     let results;
     let q = { _type: assocType };
@@ -720,8 +758,8 @@ export class MongoGraph implements IDataGraph {
       other = '_id1';
     }
     q[self] = entId;
-    let fields = assocFields || [];
-    fields.push(other);
+    let fields = assocFields || {};
+    fields[other] = true;
     results = await this.findAssocs(q, fields);
     return _.map(results, result => {
       delete result['_type'];
@@ -733,7 +771,7 @@ export class MongoGraph implements IDataGraph {
   }
 
   public async updateAssocs (updates: IUpdate[]): Promise<number> {
-    let logger = new Logger('MongoGraph').in('updateAssocs');
+    let logger = MongoGraph._logger.in('updateAssocs');
     logger.log(`updating ${updates.length}: `
       + JSON.stringify(_.map(updates, u => u._id)));
     let updateCount = await MongoGraph._updateHelper(
@@ -746,7 +784,7 @@ export class MongoGraph implements IDataGraph {
   }
 
   public async deleteAssocs (ids: Id[]): Promise<number> {
-    let logger = new Logger('MongoGraph').in('deleteAssocs');
+    let logger = MongoGraph._logger.in('deleteAssocs');
     logger.log(`deleting ${ids.length}: ${JSON.stringify(ids)}`);
     let binIds = _.map(ids, id => MongoGraph.encodeId(id));
     let results = await DataGraphUtils.retryInChunks(
