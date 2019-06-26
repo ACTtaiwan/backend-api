@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import { RequestHandlerBase } from './RequestHandlerBase';
 import { RequestParams } from './RequestParams';
+import { IFields } from '../../../libs/dbLib2';
 
 export class CongressRolesFieldProcessor<T> extends RequestHandlerBase<T> {
   protected async preProcess (params: RequestParams): Promise<boolean> {
@@ -11,14 +12,13 @@ export class CongressRolesFieldProcessor<T> extends RequestHandlerBase<T> {
     return fieldValues.processContext('congressRoles', this._getFilter);
   }
 
-  protected _getFilter (rawContext: string[]): boolean | object {
+  protected _getFilter (rawContext: string[]): IFields[keyof IFields] {
     if (rawContext.length < 1) {
       return true;
     }
     let param: string = _.head(rawContext);
     if (param === 'latest') {
-      // todo
-      return {};
+      return [0];
     }
 
     let roleTime: number;

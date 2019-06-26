@@ -14,7 +14,7 @@ describe.skip('ServerRouteTest', function () {
 
   let inputs = {
     id: [
-      '03d6f10b-40e8-44b1-ab36-0d69eef50274', // person
+      '03d6f10b-40e8-44b1-ab36-0d69eef50274', // person: James Inhofe
       'fc46042f-989f-49a8-8e00-a5d26c0c3ba1', // bill
       'fb9469f8-d30b-4215-a466-84c094dcf678', // bill
       'c167307e-ae0f-4a2f-a958-7f946848faa6', // person
@@ -22,6 +22,7 @@ describe.skip('ServerRouteTest', function () {
       '3d1d9f5e-521f-4247-8136-2192fc1dfd35', // bill
       '597b8414-8f47-4c0b-85ab-0cc72e03ff56', // bill
       '8dd53af3-97a0-442a-9365-7bdd36bfe32d', // bill: tw travel act
+      '0537bdf4-58c6-4d44-97b9-77df88366abf', // person: John McCain
     ],
   };
 
@@ -82,11 +83,13 @@ describe.skip('ServerRouteTest', function () {
 
   it('/v2: load person', async function () {
     let qs = new QueryString();
-    qs.add('id', inputs.id[0]);
+    qs.add('id', inputs.id[8]);
     qs.add('field', [
       'firstName',
       // 'congressRoles#1141915600000',
-      'congressRoles#current',
+      // 'congressRoles#current',
+      'congressRoles#latest',
+      // 'congressRoles',
       'lastName',
       'lastName_zh',
     ]);
