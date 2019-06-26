@@ -437,6 +437,31 @@ describe('MongoGraphTest', async function () {
       expect(found['_id']).to.eql(ents[4]['_id']);
       expect(found['z']).to.eql([ents[4]['z'][1], ents[4]['z'][2]]);
     });
+
+    it('filter array field, specify one array index', async function () {
+      let found = await g.findEntities(
+        <any>{ _type: ENT_TYPE2, x: 'xxx' },
+        undefined,
+        { z: [0] }
+      );
+      expect(found).to.have.lengthOf(1);
+      expect(found[0]['z']).to.eql([ents[4]['z'][0]]);
+    });
+
+    it('filter array field, specify multiple array indices', async function () {
+      let found = await g.findEntities(
+        <any>{ _type: ENT_TYPE2, x: 'xxx' },
+        undefined,
+        { z: [0, -1, 4] }
+      );
+      expect(found).to.have.lengthOf(1);
+      expect(found[0]['z']).to.eql([
+        ents[4]['z'][0],
+        ents[4]['z'][6],
+        ents[4]['z'][4],
+      ]);
+    });
+
   });
 
   describe('Update', function () {

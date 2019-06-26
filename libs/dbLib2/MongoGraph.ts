@@ -396,14 +396,7 @@ export class MongoGraph implements IDataGraph {
   }
 
   /**
-   * Compose the projection value of a field according to fieldSpec. Cases:
-   * 1. fieldSpec is an object. Assuming the field is an array field,
-   *    a 'find first in array' operation will be performed, and only the
-   *    first array element satisfying the conditions specified in the
-   *    fieldSpec will be returned. The fieldSpec object is in the same
-   *    format as IEntQuery/IAssocQuery (less enforcing _type field).
-   * 2. anything else. Will return the field value as is.
-   * @param fieldSpec a value from a Fields object
+   * See DataGarph for how IField values are interpreted
    */
   private static _composeProjectionValue (
     field: string,
@@ -414,7 +407,22 @@ export class MongoGraph implements IDataGraph {
       return false;
     }
 
-    if (typeof fieldSpec === 'object' && !Array.isArray(fieldSpec)) {
+    if (_.isArray(fieldSpec)) {
+      let arrayElemOps = _.chain(fieldSpec)
+        .map(index => _.isInteger(index)
+          ? ({ $arrayElemAt: [`$${field}`, index] })
+          : undefined
+        )
+        .filter()
+        .value();
+      return {
+        $cond: {
+          if: { $isArray: [`$${field}`] },
+          then: arrayElemOps,
+          else: `$${field}`,
+        }
+      };
+    } else if (typeof fieldSpec === 'object') {
       const ELEM_NAME = 'item';
       return {
         $cond: {
@@ -429,9 +437,9 @@ export class MongoGraph implements IDataGraph {
           else: `$${field}`,
         },
       };
+    } else if (typeof fieldSpec === 'boolean') {
+      return fieldSpec;
     }
-
-    return true;
   }
 
   /**
@@ -581,6 +589,7 @@ export class MongoGraph implements IDataGraph {
       expect(ret).to.include.all.keys('_id', '_type');
       return ret;
     });
+    // console.dir(ents, { depth: null });
 
     logger.log(`found ${ents.length}`);
     return ents;

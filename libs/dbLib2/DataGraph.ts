@@ -55,8 +55,16 @@ export type IEntQuery<T extends IEnt = IEnt> = IHasType &
   IHasData &
   { [K in keyof T]?: T[K] | IQueryOperator<ElementType<T[K]>> };
 
+/**
+ * Boolean value: whether to include the field or not
+ * Integer array: if the field value is an array, return only the elements whose
+ *  indices are in the array
+ * Object: if the field value is an array, return only the elements who match
+ *  the conditions specified in the object. The conditions are in a format
+ *  similar to IEntQuery
+ */
 export type IFields = {
-  [field: string]: boolean | object;
+  [field: string]: boolean | number[] | object;
 };
 
 export interface IEntAssocQuery
