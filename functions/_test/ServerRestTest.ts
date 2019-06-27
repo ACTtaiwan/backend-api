@@ -52,7 +52,6 @@ describe.skip('ServerRouteTest', function () {
       printResults = true
     ): Promise<boolean> {
       let q = `${endpoint}?${this.toString()}`;
-      // console.log(`GET ${q}`);
       let res = await request(app).get(q);
       if (res.error) {
         if (printResults) {
@@ -124,6 +123,15 @@ describe.skip('ServerRouteTest', function () {
     ]);
     qs.add('field', ['title', 'tags']);
     let success = await qs.query('/v2');
+    expect(success).to.be.true;
+  });
+
+  it('/v2/bills by congress', async function () {
+    let qs = new QueryString();
+    qs.add('congress', '116');
+    qs.add('field', ['type', 'congress', 'title']);
+    // qs.add('lang', 'zh');
+    let success = await qs.query('/v2/bills');
     expect(success).to.be.true;
   });
 

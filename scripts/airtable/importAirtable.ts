@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 import { AirtableReader } from './AirtableReader';
 import { DataGraph, Type, IEnt } from '../../libs/dbLib2/DataGraph';
-import { MongoDbConfig } from '../../config/mongodb';
 import { DataManager } from '../../libs/dbLib2/DataManager';
 import { Logger } from '../../libs/dbLib2/Logger';
 import Utility from '../../libs/utils/Utility';
@@ -286,7 +285,7 @@ async function importPersons (m: DataManager, source: AirtableReader) {
 }
 
 export async function main () {
-  let g = await DataGraph.get('MongoGraph', MongoDbConfig.getDbName());
+  let g = await DataGraph.getDefault();
   let m = new DataManager(g);
 
   let airtableReader = new AirtableReader(airtableConfig.billDbId);

@@ -3,9 +3,9 @@ import { ISubscribeAgent } from './Subscribe.interface';
 import * as request from 'request';
 import * as _ from 'lodash';
 import * as crypto from 'crypto';
-import { secret } from '../../config/secret';
 import html from './UnsubscribeConfirm.html';
 import * as format from 'string-template';
+import config from '../../config/appConfig';
 
 export class SendPulseAgent implements ISubscribeAgent {
   private static _instance: SendPulseAgent;
@@ -266,7 +266,7 @@ export class SendPulseAgent implements ISubscribeAgent {
 
   private encrypt (email: string): string {
     var hash = crypto.createHash('sha256')
-    .update(email + secret.encryptSecret)
+    .update(email + config.sendPulseEncrypSecret)
     .digest('hex');
    return hash;
   }

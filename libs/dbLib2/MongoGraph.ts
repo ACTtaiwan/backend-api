@@ -7,9 +7,9 @@ import { IDataGraph, Type, Id, IEnt, IEntQuery, IEntAssocQuery,
   IFields,
   AssocDirection,
 } from './DataGraph';
-import { MongoDbConfig } from '../../config/mongodb';
 import { expect } from 'chai';
 import { Logger } from './Logger';
+import config from '../../config/appConfig';
 
 export function isQueryOperator<T extends IEnt> (o: any): o is IQueryOperator<T> {
   return typeof o === 'object' && o['_op'] && o['_val'];
@@ -84,7 +84,7 @@ export class MongoGraph implements IDataGraph {
     url: string,
   ): Promise<MongoGraph> {
     if (!url) {
-      url = await MongoDbConfig.getUrl();
+      throw Error(`[MongoGraph.new] Invalid mongodb url: ${url}`);
     }
     let instance = new MongoGraph(
       dbName,
@@ -527,7 +527,7 @@ export class MongoGraph implements IDataGraph {
     fields?: IFields,
     sort?: ISortField[],
     limit?: number,
-    readPageSize: number = MongoDbConfig.getReadPageSize(),
+    readPageSize: number = config.mongodbReadPageSize,
   ): Promise<T[]> {
     let logger = MongoGraph._logger.in('findEntities');
     logger.log(JSON.stringify({
@@ -696,7 +696,7 @@ export class MongoGraph implements IDataGraph {
     query: IAssocQuery,
     fields?: IFields,
     sort?: ISortField[],
-    readPageSize: number = MongoDbConfig.getReadPageSize(),
+    readPageSize: number = config.mongodbReadPageSize,
   ): Promise<IAssoc[]> {
     let logger = MongoGraph._logger.in('findAssocs');
     logger.log(JSON.stringify({

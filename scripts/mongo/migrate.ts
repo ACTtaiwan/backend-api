@@ -525,7 +525,7 @@ async function migrateHasTag (m: DataManager, source: MongoClient) {
 
 async function main () {
   let sourceClient = await connectMongo(await MongoDbConfig.getUrl());
-  let g = await DataGraph.get('MongoGraph', MongoDbConfig.getDbName());
+  let g = await DataGraph.getDefault();
   let m = new DataManager(g);
 
   await migrateTags(m, sourceClient);

@@ -3,7 +3,7 @@
  */
 import * as _ from 'lodash';
 import { MongoGraph } from './MongoGraph';
-import { MongoDbConfig } from '../../config/mongodb';
+import config from '../../config/appConfig';
 
 export type Id = string; // uuid string
 export enum Type {
@@ -208,16 +208,16 @@ export class DataGraph {
   public static async get (
     type: 'MongoGraph',
     dbName: string,
-    entTableName = 'entities',
-    assocTableName = 'assocs',
-    connectInfo?: any
+    entTableName: string,
+    assocTableName: string,
+    url: string,
   ): Promise<IDataGraph> {
     let cacheKey = JSON.stringify({
       type: type,
       dbName: dbName,
       entTableName: entTableName,
       assocTableName: assocTableName,
-      connectInfo: connectInfo,
+      url: url,
     });
     if (cacheKey in DataGraph._cache) {
       return DataGraph._cache[cacheKey];
@@ -230,7 +230,7 @@ export class DataGraph {
           dbName,
           entTableName,
           assocTableName,
-          connectInfo
+          url
         );
         break;
     }
@@ -242,7 +242,13 @@ export class DataGraph {
   }
 
   public static async getDefault (): Promise<IDataGraph> {
-    return await DataGraph.get('MongoGraph', MongoDbConfig.getDbName());
+    return await DataGraph.get(
+      'MongoGraph',
+      'data',
+      'entities',
+      'assocs',
+      config.mongodbUrl
+    );
   }
 
   public static cleanup () {

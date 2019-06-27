@@ -1,21 +1,13 @@
 import * as _ from 'lodash';
 import * as airtable from 'airtable';
-import { secret } from '../../config/secret';
+import config from '../../config/appConfig';
 
 export class AirtableReader {
   private _db;
   private _cache = {};
 
-  private static get apiKey (): string {
-    if (secret && secret['airtable'] && secret['airtable']['apiKey']) {
-      return secret['airtable']['apiKey'];
-    }
-    throw Error('[AirtableReader.apiKey()] Cannot locate airtable key');
-  }
-
   public constructor (dbId: string) {
-    let apiKey = AirtableReader.apiKey;
-    this._db = new airtable({ apiKey: apiKey }).base(dbId);
+    this._db = new airtable({ apiKey: config.airtableApiKey }).base(dbId);
   }
 
   /**

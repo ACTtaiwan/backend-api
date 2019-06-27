@@ -1,8 +1,8 @@
 import * as aws from 'aws-sdk';
+import config from './appConfig';
 import * as mongodbUri from 'mongodb-uri';
-import { secret } from './secret';
-import { expect } from 'chai';
 
+// TODO: remove this file; migrate everything to .env
 export class MongoDbConfig {
   public static readonly READ_PAGE_SIZE = 500;
   public static readonly DB_NAME = 'data';
@@ -82,32 +82,18 @@ export class MongoDbConfig {
     });
   }
 
-  private static getSecretValueMaybe (key: string): any {
-    if (secret && secret[key]) {
-      return secret[key];
-    }
-  }
-
   public static async getUriComponents (): Promise<{
     username: string,
     password: string,
     host: string,
     port: number,
   }> {
-    let key = process.env.IS_LOCAL // for `serverless invoke local`
-      ? process.env.npm_package_config_db_config || // package.json
-        process.env.npm_config_db_config ||
-        'mongodb'
-      : process.env.DB_CONFIG || // for deployment; set in serverless.yml
-        process.env.npm_package_config_db_config || // package.json
-        process.env.npm_config_db_config ||
-        'mongodb';
-    let ret = this.getSecretValueMaybe(key);
-    if (ret === undefined) {
-      throw Error('Database config not found');
-    }
-    expect(ret).to.have.all.keys('username', 'password', 'host', 'port');
-    return ret;
+    return {
+      username: config.mongodbUsername,
+      password: config.mongodbPassword,
+      host: config.mongodbHost,
+      port: config.mongodbPort,
+    };
   }
 
   public static async getUrl (): Promise<string> {
@@ -129,19 +115,19 @@ export class MongoDbConfig {
     return mongodbUri.format(ret);
   }
 
-  public static getReadPageSize (key = 'mongoReadPageSize'): number {
-    let ret = MongoDbConfig.getSecretValueMaybe(key);
-    if (ret === undefined) {
-      ret = MongoDbConfig.READ_PAGE_SIZE;
-    }
-    return ret;
-  }
+  // public static getReadPageSize (key = 'mongoReadPageSize'): number {
+  //   let ret = MongoDbConfig.getSecretValueMaybe(key);
+  //   if (ret === undefined) {
+  //     ret = MongoDbConfig.READ_PAGE_SIZE;
+  //   }
+  //   return ret;
+  // }
 
-  public static getDbName (key = 'mongoDbName'): string {
-    let ret = MongoDbConfig.getSecretValueMaybe(key);
-    if (ret === undefined) {
-      ret = MongoDbConfig.DB_NAME;
-    }
-    return ret;
-  }
+  // public static getDbName (key = 'mongoDbName'): string {
+  //   let ret = MongoDbConfig.getSecretValueMaybe(key);
+  //   if (ret === undefined) {
+  //     ret = MongoDbConfig.DB_NAME;
+  //   }
+  //   return ret;
+  // }
 }
