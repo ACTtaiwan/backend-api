@@ -180,6 +180,10 @@ export class CongressMembersSync {
 
         case 'R':
           return 'Republican';
+
+        case 'I':
+        case 'ID':
+          return 'Independent';
       }
       throw new Error(`Can not map party: ${c}`);
     };
@@ -272,11 +276,12 @@ export class CongressMembersSync {
   }
 }
 
-// const o = new CongressMembersSync();
-// o.setMockWrite(true);
-// o.init().then(() => o.syncAllMembersFromPropublica(116));
-
-// o.init().then(async () => {
-//   let role = await o.createRoleFromPropublica(116, 'A000360');
-//   console.log(JSON.stringify(role, null, 2));
-// });
+if (require.main === module) {
+  const o = new CongressMembersSync();
+  // o.setMockWrite(true);
+  o.init().then(() => o.syncAllMembersFromPropublica(116));
+  // o.init().then(async () => {
+  //   let role = await o.createRoleFromPropublica(116, 'A000360');
+  //   console.log(JSON.stringify(role, null, 2));
+  // });
+}
