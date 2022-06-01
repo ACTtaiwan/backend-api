@@ -89,7 +89,7 @@
     "request": "^2.83.0",
     "sendgrid": "^5.2.3",
     "serverless": "^1.26.0",
-    "sharp": "^0.21.2",
+    "sharp": "^0.30.5",
     "strftime": "^0.10.0",
     "string-similarity": "^1.2.0",
     "string-template": "^1.0.0",
